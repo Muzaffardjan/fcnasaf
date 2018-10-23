@@ -1,0 +1,44 @@
+<?php
+$this->headTitle()->append($this->translate('Home championship background'))
+    ->append($this->translate('Website config'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Home championship background') ?></h1>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <?php if ($config->offsetExists('home_championship_background')
+                && $config->offsetGet('home_championship_background')
+            ): ?>
+                <div class="row">
+                    <?php foreach ($config->offsetGet('home_championship_background') as $img): ?>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <img src="<?php echo $this->basePath($img) ?>" style="width: auto; height: 200px;margin: 0 auto;">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="well text-center">
+                    <h1 class="icon wb-inbox"></h1>
+                    <h4><?php echo $this->translate('Nothing selected yet') ?></h4>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="site-action">
+        <a href="<?php echo $this->url(null, [], ['query' => ['chi' => true]], true) ?>" class="btn-raised btn btn-success btn-floating" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Select images')) ?>">
+            <i class="wb-image animation-scale-up"></i>
+        </a>
+    </div>
+</div>

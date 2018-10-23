@@ -1,0 +1,83 @@
+<?php
+/**
+ * @var \Datetime $now
+ */
+$now = new \Datetime();
+?>
+<div class="team-tab" data-example-id="togglable-tabs">
+    <div id="myTabContent" class="tab-content tab-team tab-team-bg">
+        <div role="tabpanel" class="tab-pane fade in active" id="primary" aria-labelledBy="primary-tab">
+            <div class="teams">
+                <div class="nav-team" id="primary-nav">
+                    <?php
+                        foreach ($players as $key => $player) :
+                            /**
+                             * @var \Soccer\Entity\ClubPlayer $playing
+                             */
+                            $playing = $player->getClubs()->filter(
+                                function($playing) use ($club)
+                                {
+                                    return ($club == $playing->getClub()->getId() && $playing->isPlaying());
+                                }
+                            )->first();
+
+                            $settings = $player->getSettings();
+                            $photos   = $player->getPhotos();
+
+                            /*if (!isset($photos['card'])) {
+                                continue;
+                            }*/
+                    ?>
+                        <div class="position <?php echo ($key == 0) ? 'active' : ''; ?>">
+                            <a title="">
+                                <span class="gk">GK</span>
+                                <?php echo $playing->getNumber() ?>.
+                                <?php echo $player->getFirstName($this->locale()->current()) ?>
+                                <?php echo $player->getLastName($this->locale()->current()) ?>
+                            </a>
+                        </div>
+                    <?php endforeach ?>
+                </div>
+            </div>
+
+            <div class="teams-caro">
+                <div id="primary-team-caro" class="owl-carousel owl-theme">
+                    <?php
+                        foreach ($players as $key => $player) :
+                        /**
+                         * @var \Soccer\Entity\ClubPlayer $playing
+                         */
+                        $playing = $player->getClubs()->filter(
+                            function($playing) use ($club)
+                            {
+                                return ($club == $playing->getClub()->getId() && $playing->isPlaying());
+                            }
+                        )->first();
+
+                        $settings = $player->getSettings();
+                        $photos   = $player->getPhotos();
+
+                        if (!isset($photos['profile'])) {
+                            continue;
+                        }
+                    ?>
+                        <div class="item">
+                            <div class="teams-image">
+                                <img src="<?php echo $this->basePath($player->getPhotos()['profile']) ?>" alt="" class="img-responsive" />
+                            </div>
+
+                            <div class="teams-description">
+                                <p>
+                                    <span class="title">NATIONAL : </span>
+                                    <?php echo mb_substr($player->getCountry($this->locale()->current()), 0, 3) ?>
+                                </p>
+                            </div>
+                        </div>
+                    <?php endforeach ?>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>

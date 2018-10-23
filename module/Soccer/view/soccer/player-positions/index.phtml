@@ -1,0 +1,142 @@
+<?php
+$this->headTitle()->append($this->translate('Player positions'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-table/bootstrap-table.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+        "
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-table/bootstrap-table.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js')
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Player positions') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php if ($positions->getCurrentItemCount()): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="staff"></table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="well text-center">
+            <h1>
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3>
+                <span><?php echo $this->translate('There is no any positions defined.') ?></span>
+            </h3>
+        </div>
+    <?php endif; ?>
+</div>
+<div style="display:none;">
+    <div id="colactions">
+        <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => ':id'], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon">
+            <i class="icon wb-settings"></i>
+        </a>
+        <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => ':id'], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon">
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<?php
+$this->inlineScript()
+    ->captureStart();
+?>
+/*<script>*/
+    replaceAll = function (key, value, text) {
+        if (typeof this === 'string' && !text) {
+            text = this;
+        }
+
+        while (text.indexOf(key) > -1) {
+            text = text.replace(key, value);
+        }
+
+        return text;
+    };
+    // Js core overwrite
+    String.prototype.replaceAll = replaceAll;
+
+    jQuery.fn.bootstrapTable.columnDefaults.formatter = function (value, row, index) {
+        switch (this.field) {
+            case 'label':
+            case 'plural':
+                var col = '';
+
+                for (var i in row[this.field]) {
+                    col += '<i class="flag-icon flag-icon'+i.substring(i.lastIndexOf('-'))+'"></i>&nbsp;'+row[this.field][i]+'<br>';
+                }
+
+                return col;
+            case 'actions':
+                return replaceAll(':id', row.id, $('#colactions').html());
+            default:
+                return value;
+        }
+    };
+
+    $('table#staff').bootstrapTable({
+        url: "<?php echo $this->escapeJs($this->url(null, [], true)) ?>",
+        striped: true,
+        search: true,
+        pagination: true,
+        showRefresh: true,
+        showToggle: true,
+        showColumns: true,
+        iconSize: 'outline',
+        sidePagination: 'server',
+        icons: {
+            refresh: 'wb-refresh',
+            toggle: 'wb-order',
+            columns: 'wb-list-bulleted'
+        },
+        columns: [
+            {
+                'field': 'label',
+                'title': "<?php echo $this->escapeJs($this->translate("Label")); ?>",
+                'sort' : false
+            },
+            {
+                'field': 'plural',
+                'title': "<?php echo $this->escapeJs($this->translate("Plural label")); ?>",
+                'sort' : false
+            },
+            {
+                'field': 'order',
+                'title': "<?php echo $this->escapeJs($this->translate("Order")); ?>",
+            },
+            {
+                'field': 'actions',
+                'title': "<?php echo $this->escapeJs($this->translate("Actions")); ?>",
+            }
+        ],
+    });
+    /*</script>*/
+<?php $this->inlineScript()->captureEnd(); ?>

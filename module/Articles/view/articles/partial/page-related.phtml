@@ -1,0 +1,44 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Articles\Entity\Article $rArticle
+ * @var \Doctrine\Common\Collections\Collection $related
+ */
+foreach ($related as $rArticle) :
+?>
+    <div class="media">
+        <div class="media-left">
+            <a href="<?php
+                echo $this->url(
+                    'app/article',
+                    [
+                        'uri' => $rArticle->getUri(),
+                        'locale' => $rArticle->getLocale()
+                    ]
+                );
+            ?>" title="detail news">
+                <img class="media-object" src="<?php echo $this->basePath($rArticle->getImage()) ?>">
+            </a>
+        </div>
+
+        <div class="media-body">
+            <p>
+                <a href="<?php
+                echo $this->url(
+                    'app/article',
+                    [
+                        'uri' => $rArticle->getUri(),
+                        'locale' => $rArticle->getLocale()
+                    ]
+                );
+                ?>" title="detail news">
+                    <?php echo $rArticle->getTitle() ?>
+                </a>
+            </p>
+
+            <div class="meta-date">
+                <?php echo $rArticle->getPublished()->format('F d, Y') ?>
+            </div>
+        </div>
+    </div>
+<?php endforeach; ?>

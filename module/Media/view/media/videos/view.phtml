@@ -1,0 +1,178 @@
+<?php  
+    $this->headTitle()->append($info->getTitle())
+    ->append($this->translate('Video'));
+
+    $this->headLink()
+    ->appendStylesheet(
+        $this->basePath('css/video.css')
+    );
+
+    $this->headMeta()
+    ->appendName('description', $short = $this->translate('Title name'))
+    ->appendName('twitter:card', 'summary_large_image')
+    ->appendName('twitter:title', $title = ($this->translate('Video') .': '. $info->getTitle()))
+    ->appendName('twitter:description', $short)
+    ->appendProperty('og:type', 'article')
+    ->appendProperty('og:title', $title)
+    ->appendProperty('og:description', $short)
+    ->appendProperty('og:url', $this->serverUrl(true))
+    ->appendProperty('og:site_name', str_replace('"', '', $this->translate('Title name')));
+
+    $this->headMeta()
+    ->appendProperty(
+        'og:image', 
+        $this->serverUrl($this->basePath($video->getPoster()))
+    )
+    ->appendName(
+        'twitter:image', 
+        $this->serverUrl($this->basePath($video->getPoster()))
+    );
+
+    $this->headStyle()->appendStyle(
+        "
+            .video:before {
+                background: -webkit-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(".$this->basePath($video->getPoster()).") center center no-repeat;
+                background: -moz-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(".$this->basePath($video->getPoster()).") center center no-repeat;
+                background: -o-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(".$this->basePath($video->getPoster()).") center center no-repeat;
+                background: linear-gradient(to top right, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(".$this->basePath($video->getPoster()).") center center no-repeat;
+            }
+        "
+    );
+?>
+<section class="video">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1">
+                <div class="video-viewbox" id="viewbox">
+                    <div class="video-viewbox-head embed-responsive embed-responsive-16by9">
+                        <?php echo $video->getSource() ?>
+                    </div>
+                    <div class="video-viewbox-content">
+                        <div>
+                            <div class="video-info">
+                                <h3 class="item-title margin-0">
+                                    <span><?php echo $info->getTitle() ?></span>
+                                    <span class="pull-right small" style="padding-top: 10px;">
+                                        <i class="icon md-favorite"></i>
+                                        <span class="video-likes"><?php echo $video->getLikes() ?></span>&nbsp;
+                                        <span><?php echo $this->translate('like(s)') ?></span>
+                                    </span>
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div>
+                                <button data-liked="<?php echo $liked ? 'true': 'false' ?>" type="button" class="video-nav-link like-button">
+                                    <i aria-hidden="true" class="icon md-favorite-outline"></i>
+                                </button>
+                                <a href="<?php echo $this->url('app/home', ['locale' => $this->locale()->current()]) ?>" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Home')) ?>" class="video-nav-link">
+                                    <i aria-hidden="true" class="icon md-home"></i>
+                                </a>
+                                <a href="<?php echo $this->url('app/media/videos', ['locale' => $this->locale()->current()]) ?>" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Back to videos')) ?>" class="video-nav-link">
+                                    <i aria-hidden="true" class="icon md-collection-video"></i>
+                                </a>
+                                <a data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Share')) ?>" target="_blank" data-href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $this->serverUrl(true); ?>" class="video-nav-link social-action-btn">
+                                    <i aria-hidden="true" class="icon md-facebook"></i>
+                                </a>
+                                <a data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Tweet')) ?>" target="_blank" data-href="https://twitter.com/home?status=<?php echo $this->serverUrl(true); ?>" class="video-nav-link social-action-btn">
+                                    <i aria-hidden="true" class="icon md-twitter"></i>
+                                </a>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<?php  
+    $this->inlineScript()
+    ->appendScript(
+        "
+            $('*[data-toggle=tooltip]').tooltip();
+
+            $('a.social-action-btn').click(function (e) {
+                e.preventDefault();
+
+                window.open(
+                    $(this).attr('data-href'),
+                    'sharer',
+                    'toolbar=0,status=0,width=360,height=480'
+                );
+
+                return false;
+            });
+
+            var checkIfLiked = function () {
+                var state = $('.like-button').data('liked');
+
+                if (state == 'true' || state === true) {
+                    $('.like-button').css('color', '#E74C3C');
+                    var icon = $('.like-button').children('.icon');
+    
+                    icon.removeClass('md-favorite-outline')
+                    .addClass('md-favorite');
+
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            $(window).ready(checkIfLiked);
+
+            $('.like-button').click(
+                function () {
+
+                    var btn     = $(this);
+                    var aTime   = 1100;
+                    var likes   = parseInt(
+                        $('.video-likes').text()
+                    );
+
+                    var showLike = function () {
+                        $('#viewbox').removeClass('liked').addClass('liked');
+                        this.to = setTimeout(
+                            function () {
+                                $('#viewbox').removeClass('liked');
+                            },
+                            aTime
+                        );
+                    }
+
+                    if (checkIfLiked()) {
+                        showLike();
+                        return;
+                    }
+
+                    $('.video-likes:visible').text(++likes);
+                    showLike();
+                    btn.data('liked', 'true');
+
+                    $.ajax(
+                        '".$this->escapeJs($this->url('app/media/video-like', ['locale' => $this->locale()->current(), 'id' => $video->getId()]))."'
+                    );
+                    checkIfLiked();
+                }
+            );
+
+            $(window).resize(
+                function () {
+                    var wHeight = $(window).height();
+                    var vHeight = $('#viewbox').height();
+                    var diff    = ((wHeight - vHeight) / 2);
+                    var viewboxMinTopMargin = 15;
+
+                    if (diff < 0) {
+                        diff = viewboxMinTopMargin;
+                    }
+
+                    $('#viewbox').css(
+                        'margin-top', 
+                        diff + 'px'
+                    );
+                }
+            ).resize();
+        "
+    );
+?>

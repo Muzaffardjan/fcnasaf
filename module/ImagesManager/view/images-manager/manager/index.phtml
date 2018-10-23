@@ -1,0 +1,293 @@
+<?php
+    use ImagesManager\Controller\ManagerController as Controller;
+
+    function prepareTreview($folders)
+    {
+        $list = [];
+
+        foreach ($folders as $folder) {
+            $item = [
+                'text'  => $folder['folder']->getBasename(),
+                'href'  => $folder['href'],
+            ];  
+
+            if ($folder['children']) {
+                $item['nodes'] = prepareTreview($folder['children']);
+
+                if ($folder['isActive']) {
+                    $item['state'] = [
+                        'expanded' => true,
+                    ];
+                }
+            }            
+
+            if ($folder['isCurrent']) {
+                $item['state']['selected'] = true;
+            }
+
+            $list[] = $item;
+        }
+
+        return $list;
+    }
+
+    $this->headTitle()->append($this->translate('Images'));
+    $this->headLink()->appendStylesheet($this->basePath('assets/admin/vendor/bootstrap-treeview/bootstrap-treeview.css'))
+    ->appendStylesheet($this->basePath('assets/admin/css/apps/media.css'))
+    ->appendStylesheet($this->basePath('assets/admin/vendor/magnific-popup/magnific-popup.css'));
+    $this->headStyle()->appendStyle(
+        "
+            .is-grid > .col-md-4,
+            .is-grid > .col-sm-6 {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .node-selected .node-icon,
+            .node-selected .expand-icon {
+                color: white !important;
+            }
+
+            .image {
+                cursor: zoom-in !important;
+            }
+
+            .app-media .media-list {
+                overflow: initial !important;
+            }
+
+            .title {
+                width:          90%;
+                white-space:    nowrap;
+                overflow:       hidden;
+                text-overflow:  ellipsis;
+            }
+        "
+    );
+?>
+<!-- Media Sidebar -->    
+<div class="page-aside">
+    <div class="page-aside-switch"> 
+        <i class="icon wb-chevron-left" aria-hidden="true"></i> 
+        <i class="icon wb-chevron-right" aria-hidden="true"></i>
+    </div>
+    <div class="page-aside-inner" style="overflow: auto;">
+        <section class="page-aside-section">
+            <h5 class="page-aside-title"><?php echo $this->translate('Folders') ?></h5>
+            <div>
+                <div style="overflow: auto;max-height: 300px;">
+                    <div id="folders-tree"></div>
+                </div>
+            </div>
+        </section>
+        <section class="page-aside-section">
+            <h5 class="page-aside-title"><?php echo $this->translate('Options') ?></h5>
+            <div class="list-group">
+                <a href="<?php echo $this->url('app/admin/images-manager', ['action' => 'upload', 'locale' => $this->locale()->current()], ['query' => ['path' => $this->path, 'redirect_to' => base64_encode($this->serverUrl(true))]]) ?>" class="list-group-item"> 
+                    <i aria-hidden="true" class="icon wb-upload"></i>
+                    <span><?php echo $this->translate('Upload images') ?></span>
+                </a>
+                <a href="<?php echo $this->url('app/admin/images-manager', ['action' => 'createFolder', 'locale' => $this->locale()->current()], ['query' => ['path' => $this->path, 'redirect_to' => base64_encode($this->serverUrl(true))]]) ?>" class="list-group-item"> 
+                    <i aria-hidden="true" class="icon wb-plus"></i>
+                    <span><?php echo $this->translate('Create new folder') ?></span>
+                </a>
+                <?php if ($path != '/'): ?>
+                <a href="<?php echo $this->url('app/admin/images-manager', ['action' => 'deleteFolder', 'locale' => $this->locale()->current()], ['query' => ['path' => $this->path, 'redirect_to' => base64_encode($this->serverUrl(true))]]) ?>" class="list-group-item">
+                    <i aria-hidden="true" class="icon wb-trash"></i>
+                    <span><?php echo $this->translate('Delete folder') ?></span>
+                </a>                    
+                <?php endif ?>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Media Content -->    
+<div class="page-main">
+
+    <!-- Media Content Header -->    
+    <div class="page-header">
+        <!-- <h1 class="page-title">Overview</h1> -->
+        <div class="page-header-actions">
+            
+        </div>
+    </div>
+
+    <!-- Media Content -->    
+    <div class="page-content">
+
+        <!-- Actions -->    
+        <div class="page-content-actions">
+            <div style="margin-bottom: 10px;">
+                <form id="images-search">
+                    <div class="input-search input-search-dark">
+                        <i class="input-search-icon wb-search" aria-hidden="true"></i>
+                        <input class="form-control" name="text" style="height: 40px;" placeholder="<?php echo $this->escapeHtml($this->translate('Search')) ?>..." type="text">
+                    </div>
+                </form>
+            </div>
+            <div class="actions-inner">
+                <!-- <div class="checkbox-custom checkbox-primary checkbox-lg select-all">
+                    <input id="media_all" type="checkbox">    
+                    <label for="media_all"><?php echo $this->translate('Check/Uncheck all') ?></label>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Media -->    
+        <div class="media-list is-grid">
+            <?php if (!$files): ?>
+                <div class="well well-lg text-center">
+                    <?php echo $this->translate('Empty folder') ?>
+                </div>
+            <?php endif ?>
+            <?php if ($mode != Controller::LISTER_MODE_VIEW): ?>
+                <form id="mode-form" action="<?php echo $this->serverUrl(true) ?>" method="POST">
+                <div style="position: fixed; bottom: 5%;right: 1%;">
+                    <?php if (!(Controller::LISTER_MODE_SELECT_FOLDER && !count($files))): ?>
+                        <button class="btn-raised btn btn-success btn-floating" type="submit" title="<?php echo $this->escapeHtmlAttr($this->translate('Select')) ?>"> 
+                            <i aria-hidden="true" class="front-icon wb-check animation-scale-up"></i>
+                        </button>                        
+                    <?php endif ?>
+                </div>
+            <?php endif ?>
+            <?php foreach ($files as $key => $image): ?>
+                <div class="col-sm-6 col-md-4">
+                    <div class="media-item">
+                        <?php if ($mode == Controller::LISTER_MODE_SELECT_IMAGES || $mode == Controller::LISTER_MODE_SELECT_IMAGE): ?>
+                        <div class="checkbox-custom checkbox-primary checkbox-lg multi-select">
+                            <?php if ($mode == Controller::LISTER_MODE_SELECT_IMAGE): ?>
+                                <input type="checkbox" name="image" class="checkbox-select" value="<?php echo $image->getPathname(); ?>">
+                                <label for="image"></label>
+                            <?php else: ?>
+                                <input type="checkbox" name="images[]" value="<?php echo $image->getPathname(); ?>">
+                                <label for="images[]"></label>
+                            <?php endif ?>
+                        </div>
+                        <?php endif; ?>
+                        <div class="image-wrap">
+                            <img class="image img-rounded img-responsive" src="<?php echo $image->getThumbnailHref() ?>" href="<?php echo $image->getHref() ?>" title="<?php echo $this->escapeHtmlAttr($image->getFileInfo()->getBasename()) ?>">
+                        </div>
+                        <div class="info-wrap">
+                            <?php if ($mode == Controller::LISTER_MODE_VIEW): ?>
+                            <div class="dropdown">
+                                <span class="icon wb-settings dropdown-toggle" data-toggle="dropdown" aria-expanded="false" role="button"></span>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="<?php echo $image->getHref() ?>">
+                                            <i class="icon wb-download" aria-hidden="true"></i>
+                                            <span><?php echo $this->translate('Download') ?></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="<?php echo $this->url('app/admin/images-manager', ['locale' => $this->locale()->current(), 'action' => 'deleteImage'], ['query' => ['redirect_to' => base64_encode($this->serverUrl(true)), 'file' => $image->getPathname()]]) ?>">
+                                            <i class="icon wb-trash" aria-hidden="true"></i>
+                                            <span><?php echo $this->translate('Delete') ?></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <?php endif ?>
+                            <div class="title" title="<?php echo $this->escapeHtmlAttr($image->getFileInfo()->getBasename()) ?>"><?php echo $image->getFileInfo()->getBasename() ?></div>
+                        </div>
+                    </div>
+                </div>                
+            <?php endforeach ?>
+            <?php if ($mode != Controller::LISTER_MODE_VIEW): ?>
+                </form>
+            <?php endif ?>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/js/apps/app.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-treeview/bootstrap-treeview.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-treeview.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/magnific-popup/jquery.magnific-popup.js'))
+    ->appendFile($this->basePath('assets/admin/js/apps/media.js'));
+
+    $this->inlineScript()->appendScript(
+        "
+            var defaults = $.components.getDefaults('treeview');
+
+            (function() {
+                var options = $.extend({}, defaults, {
+                  levels: 1,
+                  data: ".$this->json([['text' => 'Server', 'nodes' => prepareTreview($folders), 'href' => $this->url('app/admin/images-manager', ['locale' => $this->locale()->current()], ['query' => ['path' => '/']]), 'state' => ['expanded' => true, 'selected' => ($path === '/')]]]).",
+                });
+
+                var searchableTree = $('#folders-tree').treeview(options);
+
+                $('#tree-search').on('keyup', function(e) {
+                  var pattern = $(e.target).val();
+
+                  var results = searchableTree.treeview('search', [pattern, {
+                    'ignoreCase': true,
+                    'exactMatch': false
+                  }]);
+                });
+
+                searchableTree.on('nodeSelected', function (e, node) {
+                    if (node.href) {
+                        location.href = node.href;
+                    }
+                });
+            })();
+        "
+    )
+    ->appendScript(
+        "
+            // Search
+            (function () {
+                $('#images-search').submit(function (e) { e.preventDefault(); });
+                $('#images-search input').on('keyup', function (e) { 
+                    e.preventDefault();
+
+                    var searchText = $(this).val().trim().toLowerCase();
+
+                    /*if (!searchText.length) {
+                        $('.media-item > .info-wrap > .title').removeClass('hide');
+                        return;
+                    }*/
+
+                    $('.media-item > .info-wrap > .title').each(function () {
+                        var _this = $(this);
+
+                        if (_this.text().trim().toLowerCase().indexOf(searchText) == -1) {
+                            _this.parents('.col-sm-6').addClass('hide');
+                        } else {
+                            _this.parents('.col-sm-6').removeClass('hide');
+                        }
+                    });
+                });
+            })();
+
+            // Lightbox
+            $('.image-wrap').magnificPopup({
+              delegate: '.image',
+              type: 'image',
+              gallery: {
+                enabled: true
+              },
+              // other options
+            });
+        "
+    );
+
+    if ($mode == Controller::LISTER_MODE_SELECT_IMAGE) {
+        $this->inlineScript()->appendScript(
+            "
+                $('.checkbox-select').click(
+                    function () {
+                        $('.checkbox-select').not(this).prop('checked', false);
+                        $('.media-item .item-checked')
+                        .not($(this).parents('.media-item'))
+                        .removeClass('item-checked');
+                    }
+                );
+            "
+        );
+    }
+?>

@@ -1,0 +1,71 @@
+<div class="brand">
+    <img class="brand-img" src="<?php echo $this->basePath('assets/admin/images/logo@2x.png') ?>" alt="...">
+    <h2 class="brand-text">
+        <b><?php echo $this->translate('Brand name') ?></b>
+    </h2>
+</div>
+<div class="language-block btn-group">
+    <?php foreach ($this->locale()->all() as $locale => $language): ?>
+        <a title="<?php echo $this->escapeHtmlAttr($language) ?>" class="btn <?php echo $locale == $this->locale()->current() ? '':'btn-outline' ?> btn-primary" href="<?php echo $this->url('login', ['locale' => $locale]) ?>">
+            <span class="flag-icon flag-icon-<?php echo strtolower(substr($locale, strrpos($locale, '-') + 1)) ?>"></span>
+            <br>
+            <span class="hidden-xs"><?php echo $language ?></span>
+        </a>
+    <?php endforeach ?>
+</div>
+<?php 
+    $form->setAttribute(
+        'action', 
+        $this->url('login', ['locale' => $this->locale()->current()])
+    );
+
+    echo $this->form()->openTag($form) 
+?>
+    <div class="form-group <?php if ($form->get('login')->getMessages()) echo 'has-error' ?>">
+        <?php echo $this->formLabel($form->get('login')) ?>
+        <?php  
+            echo $this->formText(
+                $form->get('login')
+                ->setAttribute(
+                    'placeholder', 
+                    $this->translate($form->get('login')->getLabel())
+                )
+                ->setAttribute('autofocus', true)
+                ->setAttribute('class', 'form-control')
+            );
+        ?>
+        <?php if ($form->get('login')->getMessages()): ?>
+            <ul class="list-group list-group-gap" style="margin-top: 5px;">
+                <?php foreach ($form->get('login')->getMessages() as $message): ?>
+                    <li class="list-group-item list-group-item-danger">
+                        <?php echo $this->translate($message) ?>
+                    </li>
+                <?php endforeach ?>
+            </ul>
+        <?php endif ?>
+    </div>
+    <div class="form-group <?php if ($form->get('password')->getMessages()) echo 'has-error' ?>">
+        <?php echo $this->formLabel($form->get('password')) ?>
+        <?php  
+            echo $this->formPassword(
+                $form->get('password')
+                ->setAttribute(
+                    'placeholder', 
+                    $this->translate($form->get('password')->getLabel())
+                )
+                ->setAttribute('class', 'form-control')
+            );
+        ?>
+        <?php if ($form->get('password')->getMessages()): ?>
+            <ul class="list-group list-group-gap" style="margin-top: 5px;">
+                <?php foreach ($form->get('password')->getMessages() as $message): ?>
+                    <li class="list-group-item list-group-item-danger">
+                        <?php echo $this->translate($message) ?>
+                    </li>
+                <?php endforeach ?>
+            </ul>
+        <?php endif ?>
+    </div>
+    <?php echo $this->formHidden($form->get('csrf')) ?>
+    <button type="submit" class="btn btn-primary btn-block"><?php echo $this->translate('Sign in') ?></button>
+<?php echo $this->form()->closeTag($form) ?>

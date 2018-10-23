@@ -1,0 +1,71 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ */
+$this->headTitle()->append($this->info->getTitle())->append($this->translate('Photo gallery'));
+$this->headMeta()
+    ->appendName('description', $short = $this->translate('Title name'))
+    ->appendName('twitter:card', 'summary_large_image')
+    ->appendName('twitter:title', $title = ($this->translate('Photogallery') .': '. $this->info->getTitle()))
+    ->appendName('twitter:description', $short)
+    ->appendProperty('og:type', 'article')
+    ->appendProperty('og:title', $title)
+    ->appendProperty('og:description', $short)
+    ->appendProperty('og:url', $this->serverUrl(true))
+    ->appendProperty('og:site_name', str_replace('"', '', $this->translate('Title name')));
+if ($this->gallery->getPhotos()->count()) {
+    $this->headMeta()
+        ->appendProperty('og:image', $this->serverUrl($this->basePath($this->gallery->getPhotos()->first()->getThumbnail())))
+        ->appendName('twitter:image', $this->serverUrl($this->basePath($this->gallery->getPhotos()->first()->getThumbnail())));
+} else {
+    $imageSrc = $this->serverUrl() . $this->basePath('img/placeholder.jpg');
+
+    $this->headMeta()
+        ->appendProperty('og:image', $imageSrc)
+        ->appendName('twitter:image', $imageSrc);
+}
+?>
+
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="caption">
+                    <?php echo $this->translate('Gallery') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section singlepage" >
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="page-title">
+                    <h2 class="lead">
+                        <?php echo $this->info->getTitle(); ?>
+                    </h2>
+                    <div class="border-style"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row popup-gallery">
+            <?php foreach ($this->gallery->getPhotos() as $key => $photo) : ?>
+                <div class="col-xs-4 col-sm-3 col-md-3">
+                    <div class="w-item">
+                        <a href="<?php echo $this->basePath($photo->getSource()) ?>" title="<?php echo $this->info->getTitle(); ?>">
+                            <img src="<?php echo $this->basePath($photo->getSource()) ?>" alt="" class="img-responsive" />
+                            <div class="project-info">
+                                <div class="project-icon">
+                                    <span class="fa fa-search"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>

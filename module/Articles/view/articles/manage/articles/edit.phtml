@@ -1,0 +1,384 @@
+<?php  
+    $this->headTitle()->append($this->translate('Edit article'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/clockpicker/clockpicker.css')
+    )->appendStylesheet(
+        $this->basePath('assets/admin/vendor/summernote/summernote.css')
+    )->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+    )->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/font-awesome/font-awesome.css')
+    );/*
+
+    $this->headStyle()->appendStyle(
+        "
+            .has-image-on-clipboard .note-editor {
+                cursor: cell !important;
+            }
+
+            .animated-red-to-black {
+                animation: 1s redtoblack ease infinite;
+            }
+
+            @keyframes redtoblack {
+                from {
+                    color: red;
+                }
+
+                50% {
+                    color: black;
+                }
+
+                to  {
+                    color: red;
+                }
+            }
+        "
+    );*/
+
+    $form->setAttribute(
+        'action', 
+        $this->url(
+            null, 
+            [
+                'locale' => $this->locale()->current(), 
+                'action' => 'edit',
+                'id'     => $article ? $article->getId() : null
+            ]
+        )
+    )->prepare();
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit article') ?></h1>
+<div class="page-header-actions">
+    <a href="<?php echo $this->url('app/admin/articles/articles', ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+        <i class="icon wb-close" aria-hidden="true"></i>
+    </a>
+</div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <?php echo $this->form()->openTag($form); ?>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group <?php $form->get('locale')->getMessages() ? 'has-error': '' ?>">
+                        <?php  
+                            echo 
+                            $this->formLabel($form->get('locale')),
+                            $this->formSelect(
+                                $form->get('locale')
+                                ->setAttribute('class', 'form-control')
+                            ),
+                            $this->formElementErrors($form->get('locale'))
+                        ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group <?php $form->get('category')->getMessages() ? 'has-error': '' ?>">
+                        <?php  
+                            echo 
+                            $this->formLabel($form->get('category')),
+                            $this->formSelect(
+                                $form->get('category')
+                                ->setAttribute('class', 'form-control')
+                            ),
+                            $this->formElementErrors($form->get('category'))
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group <?php $form->get('title')->getMessages() ? 'has-error': '' ?>">
+                <?php  
+                    echo 
+                    $this->formLabel($form->get('title')),
+                    $this->formText(
+                        $form->get('title')
+                        ->setAttribute('class', 'form-control')
+                    ),
+                    $this->formElementErrors($form->get('title'))
+                ?>
+            </div>
+            <div class="form-group <?php $form->get('image')->getMessages() ? 'has-error': '' ?>">
+                <?php  
+                    echo 
+                    $this->formLabel($form->get('image'));
+                ?>
+                <?php if ($form->get('image')->getValue()): ?>
+                    <div class="img-thumbnail" style="width: 60%;margin: 15px auto;display: block;">
+                        <img src="<?php echo $this->basePath($form->get('image')->getValue()), '?', time() ?>" class="img-responsive">
+                    </div>
+                <?php else: ?>
+                    <!-- <div class="img-thumbnail" style="width: 60%;margin: 15px auto;display: block;">
+                        <img src="" class="img-responsive">
+                    </div> -->
+                <?php endif ?>
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="title-image-select">
+                            <i class="fa fa-server"></i> 
+                            <span><?php echo $this->translate('Select image from server') ?></span>
+                        </button>
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('image')
+                            ->setAttribute('class', 'form-control')
+                        )
+                    ?>
+                </div>
+                <?php
+                    echo $this->formElementErrors($form->get('image'));
+                ?>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <label><?php echo $this->translate('Publish at') ?>:</label>
+                </div>
+                <div class="col-sm-6 col-md-8">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="icon wb-calendar"></span>
+                            </span>
+                            <?php echo $this->formText($form->get('publish_date')->setAttribute('class', 'form-control p-date')) ?>
+                        </div> 
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="form-group">
+                        <div class="input-group clockpicker" data-autoclose="true">
+                            <span class="input-group-addon">
+                                <span class="icon wb-time"></span>
+                            </span>
+                            <?php echo $this->formText($form->get('publish_time')->setAttribute('class', 'form-control p-time')) ?>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+            <div class="form-group <?php $form->get('body')->getMessages() ? 'has-error': '' ?>">
+                <?php  
+                    echo 
+                    $this->formLabel($form->get('body')),
+                    $this->formTextarea(
+                        $form->get('body')
+                        ->setAttribute('id', 'txta-body')
+                        ->setAttribute('class', 'form-control')
+                    ),
+                    $this->formElementErrors($form->get('body'))
+                ?>
+            </div>
+            <div class="clearfix"></div>
+            <div class="checkbox-custom checkbox-primary">
+                <?php echo $this->formCheckbox($form->get('hidden')->setAttribute('id', 'in-hidden')) ?>          
+                <label for="in-hidden"><?php echo $this->translate($form->get('hidden')->getLabel()) ?></label>
+            </div>
+            <?php echo $this->formElementErrors($form->get('hidden')) ?>
+            <button class="btn btn-default" name="save" value="1">
+                <i class="icon wb-check"></i>
+                <span><?php echo $form->get('save')->getLabel() ?></span>
+            </button>
+            <button class="btn btn-default" name="draft" value="1">
+                <i class="icon wb-bookmark"></i>
+                <span><?php echo $form->get('draft')->getLabel() ?></span>
+            </button>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+</div>
+<?php
+    $langParts = explode('-', $this->locale()->current());
+
+    if (count($langParts) > 2) {
+        array_pop($langParts);        
+    }
+
+    $ckEditorLang = strtolower(join('-', $langParts));
+
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/clockpicker/bootstrap-clockpicker.min.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/js/plugins/summernote/imagess.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/js/plugins/summernote/transliterate.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/ckeditor/ckeditor.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/ckfinder/ckfinder.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/ckeditor/lang/'.$ckEditorLang.'.js'
+        )
+    )/*
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/summernote/summernote.js'
+        )
+    )*/;  
+
+    /*if (!in_array(strtolower($this->locale()->current()), ['en-us', 'en-gb'])) {
+        $this->inlineScript()->appendFile(
+            $this->basePath(
+                'assets/admin/vendor/summernote/lang/summernote-'. $this->locale()->currentAsIso639() .'.js'
+            )
+        );
+    }*/
+
+    $this->inlineScript()->appendScript(
+        "
+            if (CKEDITOR.lang['".$ckEditorLang."']) {
+                CKEDITOR.config.defaultLanguage = '".$ckEditorLang."'
+            }
+
+            CKEDITOR.config.height = 500;
+
+            var ckedit1 = CKEDITOR.replace('body'/*, {language: 'uz-latn'}*/);
+            
+            CKFinder.setupCKEditor(ckedit1);
+
+            $('.clockpicker').clockpicker();
+            $('input.p-date').datepicker(
+                {
+                    format: 'dd.mm.yyyy',
+                    //startDate: '".date('d.m.Y')."'
+                }
+            );
+
+            /*$.summernote.lang['".$this->locale()->currentAsIso639()."'].transliterate = {
+                latnToCyrl: '".$this->escapeJs($this->translate('Latin to cyrill'))."',
+                transliterate: '".$this->escapeJs($this->translate('Transliteration'))."',
+                latin: '".$this->escapeJs($this->translate('latin'))."',
+                cyrill: '".$this->escapeJs($this->translate('cyrill'))."',
+            }
+
+            $.summernote.lang['".$this->locale()->currentAsIso639()."'].imagess = {
+                emptyInput: '".$this->escapeJs($this->translate('Insert the link first'))."',
+            };
+
+            var editor = $('#txta-body');
+            editor.summernote(
+                {
+                    buttons: {
+                        imagess      : window.Imagess,
+                        transliterate: window.TransliterationBtn,
+                    },
+                    ". (substr($this->locale()->current(), 0, 2) == 'en' ? '// silence is gold ;)' : 'lang: "'.$this->locale()->currentAsIso639().'",')  ."
+                    height: 400,
+                    toolbar: [
+                        ['navigation',  ['undo', 'redo']],
+                        ['font',   ['style', 'color', 'bold', 'italic', 'underline', 'clear']],
+                        //['color',  []],
+                        ['para',   ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['table',  ['table']],
+                        ['insert', ['link', 'hr', 'imagess', 'video']],
+                        ['view',   ['fullscreen', 'codeview', 'transliterate', 'help']]
+                    ],
+                    mode: {
+                        insertImage: 'recall=".$insertImageToEditor."',
+                    },
+                    imagess: {
+                        insert: '".$editorAppendImage."',
+                    },             
+                }
+            );*/
+
+            var titleImageSelectBtn = $('#title-image-select');
+
+            titleImageSelectBtn.click(function (e) {
+                var query  = location.search;
+                var append = 'recall=".$insertImageToTitle."';
+                var target = location.pathname;
+
+                if (query) {
+                    query += '&' + append;
+                } else {
+                    query = '?' + append;
+                }
+
+                var action = target + query;
+                var form   = $(this).parents('form');
+
+                form.attr('action', action);
+                form.submit();
+            });
+
+            $('input.p-date').change(function () {
+                if (!$('input.p-time').val().trim()) {
+                    $('input.p-time').val('00:00');
+                }
+            });
+
+            $('select[name=locale]').change(function (e) {
+                var locale = $(this).val().trim();
+
+                if (!locale) {
+                    categories.html('<option value=\"\">".$this->escapeJs($this->translate('Select category'))."</option>');
+                    return;
+                }
+
+                var categories  = $('select[name=category]');
+                var api         = '".$this->url(null, ['locale' => $this->locale()->current(), 'action' => 'getCategories', 'id' => ':locale'])."';
+                var selected    = categories.find(':selected').attr('value');
+
+                $.ajax(
+                    api.replace(':locale', locale),
+                    {
+                        beforeSend: function () {
+                            categories.attr('disabled', true);
+                        },
+                        success: function (data) {
+                            
+                            categories.html('<option value=\"\">".$this->escapeJs($this->translate('Select category'))."</option>');
+    
+                            for (var i=0; i<data.length; i++) {
+                                var chosen = '';
+
+                                if (selected == data[i].id) {
+                                    chosen = 'selected=\"\"';
+                                }
+
+                                categories.append('<option '+chosen+' value=\"'+data[i].id+'\">'+data[i].title+'</option>');
+                            }
+                        },
+                        complete: function () {
+                            categories.removeAttr('disabled', true);
+                        }
+                    }
+                );
+            });
+        "
+    );
+?>

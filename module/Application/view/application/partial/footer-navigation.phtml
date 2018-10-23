@@ -1,0 +1,31 @@
+<?php if ($container instanceof \Zend\Navigation\Navigation): ?>
+    <?php foreach ($container as $page): ?>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+            <div class="footer-item">
+                <div class="footer-title">
+                    <h4><?php echo $page->getLabel() ?></h4>
+                </div>
+
+                <ul class="sitemap">
+                    <?php if ($page->hasPages()): ?>
+                        <?php
+                            echo $this->partial(
+                                'application/partial/footer-navigation',
+                                ['container' => $page]
+                            );
+                        ?>
+                    <?php endif ?>
+                </ul>
+            </div>
+        </div>
+    <?php endforeach ?>
+<?php else: ?>
+    <?php foreach ($container as $page): ?>
+        <li>
+            <a href="<?php echo $page->getHref() ?>">
+                <?php echo $page->getLabel() ?>
+            </a>
+        </li>
+    <?php endforeach ?>
+<?php endif ?>
+

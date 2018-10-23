@@ -1,0 +1,53 @@
+<?php
+$this->headTitle()->append($this->translate('Player cards settings'))
+    ->append($this->translate('Website config'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/vendor/select2/select2.css')
+);
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+    <div class="page-header">
+        <h1 class="page-title"><?php echo $this->translate('Player cards settings') ?></h1>
+    </div>
+    <div class="page-content">
+        <?php echo $this->form()->openTag($form) ?>
+        <div class="panel">
+            <div class="panel-body container-fluid">
+
+                <div class="form-group">
+                    <?php echo $this->formLabel($form->get('club')) ?>
+                    <?php
+                    echo $this->formSelect(
+                        $form->get('club')->setAttribute('data-plugin', 'select2')
+                    )
+                    ?>
+                    <?php echo $this->formElementErrors($form->get('club')) ?>
+                </div>
+            </div>
+        </div>
+        <div class="site-action">
+            <button type="submit" class="btn-raised btn btn-success btn-floating" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Save changes')) ?>">
+                <i class="wb-check animation-scale-up"></i>
+            </button>
+        </div>
+        <?php echo $this->form()->closeTag($form) ?>
+    </div>
+<?php
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.js')
+    )
+?>

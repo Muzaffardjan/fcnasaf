@@ -1,0 +1,122 @@
+<?php
+/**
+ * @var \Soccer\Entity\Tournament $tournament
+ * @var \Soccer\Entity\Season     $season
+ * @var \Soccer\Entity\Stage      $stage
+ */
+
+$this->headTitle()->append($this->translate('Tours'));
+
+if (isset($stage)) {
+    $this->headTitle()->append(sprintf($this->translate('%s stage'), $stage->getLabel($this->locale()->current())));
+}
+
+$this->headTitle()->append(sprintf($this->translate('Season %s'), $season->getLabel($this->locale()->current())))
+    ->append($tournament->getLabel($this->locale()->current()))
+    ->append($this->translate('Soccer'));
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Tours') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index'], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $tournament->getId(), 'action' => 'index'], true) ?>"><?php echo $tournament->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <?php if (isset($stage) && $stage instanceof \Soccer\Entity\Stage): ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/stages', ['tournament' => $tournament->getId(), 'season' => $season->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php printf('Season %s', $season->getLabel($this->locale()->current())) ?></a>
+            </li>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/group-play', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>">
+                    <span><?php echo $stage->getParent()->getLabel($this->locale()->current()) ?></span>
+                </a>
+            </li>
+            <li class="active"><span><?php printf('Group %s', $stage->getLabel($this->locale()->current())) ?></span></li>
+        <?php else: ?>
+            <li class="active"><?php echo $season->getLabel($this->locale()->current()) ?></li>
+        <?php endif; ?>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php
+        /**
+         * @var \Soccer\Entity\Stage $_stage
+         */
+        if (isset($stage) && $stage) {
+            $_stage = $stage;
+        } elseif ($season->getType() === \Soccer\Entity\Season::TYPE_LEAGUE) {
+            $_stage = $season->getStages()->first();
+        }
+    ?>
+    <?php if ($_stage->getTours()->count()): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="tours" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <?php foreach ($this->locale()->all() as $locale => $lang): ?>
+                                    <th>
+                                        <i class="flag-icon flag-icon<?php echo substr($locale, strrpos($locale, '-')) ?>"></i>
+                                        <span><?php echo $lang ?></span>
+                                    </th>
+                                <?php endforeach; ?>
+                                <th><?php echo $this->translate('Actions') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                                /**
+                                 * @var \Soccer\Entity\Tour $tour
+                                 */
+                                foreach ($_stage->getTours() as $tour):
+                            ?>
+                                <tr>
+                                    <?php foreach ($this->locale()->all() as $locale => $lang): ?>
+                                        <td><?php echo $tour->getLabel($locale) ?></td>
+                                    <?php endforeach; ?>
+                                    <td>
+                                        <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $tour->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Edit")); ?>">
+                                            <i class="icon wb-settings"></i>
+                                        </a>
+                                        <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $tour->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Delete")); ?>">
+                                            <i class="icon wb-close"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+            <div class="well text-center">
+                <h1>
+                    <i class="icon wb-inbox"></i>
+                </h1>
+                <h3>
+                    <span><?php echo $this->translate('There is no any record.') ?></span>
+                </h3>
+            </div>
+    <?php endif; ?>
+</div>

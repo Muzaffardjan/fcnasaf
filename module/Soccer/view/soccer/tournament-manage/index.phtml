@@ -1,0 +1,83 @@
+<?php
+$this->headTitle()->append($this->translate('Tournaments'))
+    ->append($this->translate('Soccer'));
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Tournaments') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php if ($tournaments): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="tournaments" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th><?php echo $this->escapeHtml($this->translate("Alias name")); ?></th>
+                                <th><?php echo $this->escapeHtml($this->translate("Label")); ?></th>
+                                <th><?php echo $this->escapeHtml($this->translate("Actions")); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($tournaments as $tournament): ?>
+                                <?php
+                                /**
+                                 * @var \Soccer\Entity\Tournament $tournament
+                                 */
+                                $tournament;
+                                ?>
+                                <tr>
+                                    <td><?php echo $tournament->getAliasName() ?></td>
+                                    <td>
+                                        <?php foreach ($tournament->getLabel() as $locale => $label): ?>
+                                            <i class="flag-icon flag-icon<?php echo substr($locale, strrpos($locale, '-')) ?>"></i>
+                                            <span><?php echo $label ?></span>
+                                            <br>
+                                        <?php endforeach; ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $tournament->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Edit")); ?>">
+                                            <i class="icon wb-settings"></i>
+                                        </a>
+                                        <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $tournament->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Seasons")); ?>">
+                                            <i class="icon wb-clipboard"></i>
+                                        </a>
+                                        <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $tournament->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Delete")); ?>">
+                                            <i class="icon wb-close"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="well text-center">
+            <h1>
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3>
+                <span><?php echo $this->translate('There is no any record.') ?></span>
+            </h3>
+        </div>
+    <?php endif; ?>
+</div>

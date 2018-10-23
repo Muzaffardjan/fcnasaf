@@ -1,0 +1,328 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Zend\Config\Config $config
+ * @var \Doctrine\Common\Persistence\ObjectManager $objectManager
+ * @var \Soccer\Repository\MatchesRepository $matchesR
+ */
+$config = $this->getHelperPluginManager()
+    ->getServiceLocator()
+    ->get(\Admin\WebsiteConfig\TemplatePositionsConfig::class)
+    ->get();
+
+$objectManager = $this->getHelperPluginManager()
+    ->getServiceLocator()
+    ->get('Doctrine\ORM\EntityManager');
+
+$matchesR = $objectManager->getRepository(\Soccer\Entity\Match::class);
+$matches  = $matchesR->findNextClosestOfClub(1, null, null, null, 3);
+?>
+
+<!-- BANNER -->
+<div class="section banner" >
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <img src="<?php echo $this->basePath('qizilqum/images/slide-1.jpg') ?>">
+                <div class="carousel-caption">
+                    <div class="container">
+                        <div class="wrap-caption">
+                            <div class="caption-heading">Title</div>
+                            <div class="caption-desc">Description</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <img src="<?php echo $this->basePath('qizilqum/images/slide-2.jpg') ?>">
+                <div class="carousel-caption">
+                    <div class="container">
+                        <div class="wrap-caption">
+                            <div class="caption-heading">Title</div>
+                            <div class="caption-desc">Description</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <img src="<?php echo $this->basePath('qizilqum/images/slide-3.jpg') ?>">
+                <div class="carousel-caption">
+                    <div class="container">
+                        <div class="wrap-caption">
+                            <div class="caption-heading">Title</div>
+                            <div class="caption-desc">Description</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+            <span class="fa fa-chevron-left" ></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+            <span class="fa fa-chevron-right" ></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
+<!-- BLOG/NEWS SECTION -->
+<div class="section blog">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-md-offset-3">
+                <div class="page-title">
+                    <h2 class="lead"><?php echo $this->translate('Latest news') ?></h2>
+                    <div class="border-style"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <?php
+                echo $this->showArticles()
+                    ->setDisplayCount(4)
+                    ->setPartial('application/index/top-news')
+                    ->render();
+            ?>
+        </div>
+    </div>
+</div>
+
+    <!-- MATCH FACTS -->
+    <div class="section stat-facts">
+        <div class="bg-overlay">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-10 col-md-offset-1">
+                        <div class="row">
+
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-club">
+                                    <img src="images/club-fc-1.png" alt="" />
+                                    <div class="club-name">PROSOCCER</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-description">
+                                    <div class="liga-name">LIGA PREMIERE</div>
+                                    <div class="liga-date">JUNE 16, 17:00</div>
+                                    <div class="liga-vs">VS</div>
+                                    <div class="liga-location">STADION JAKABARING<br />PEKANBARU</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-club">
+                                    <img src="images/club-fc-2.png" alt="" />
+                                    <div class="club-name">JUPENTUS</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- div class="section">
+    <div class="bg-overlay">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 page-title" style="margin-top: 0;">
+                    <h2 class="lead text-center">
+                        <?php echo $this->translate('Fixtures & Results') ?>
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <?php
+                            $i = 1;
+                            /**
+                             * @var \Soccer\Entity\Match $match
+                             */
+                            foreach ($matches as $match) :
+                        ?>
+                            <li role="presentation" class="<?php echo ($i === 1) ? 'active' : ''; ?>">
+                                <a href="#match-<?php echo $match->getId() ?>" aria-controls="home" role="tab" data-toggle="tab">
+                                    <?php
+                                        echo $match->getHost()->getName($this->locale()->current());
+                                        echo ' - ';
+                                        echo $match->getGuest()->getName($this->locale()->current());
+                                    ?>
+                                </a>
+                            </li>
+                        <?php $i++; endforeach; ?>
+                    </ul>
+
+                    <div class="tab-content" style="padding-top: 100px;">
+                        <?php
+                            $i = 1;
+                            /**
+                             * @var \Soccer\Entity\Match $match
+                             */
+                            foreach ($matches as $match) :
+                        ?>
+                        <div role="tabpanel" class="tab-pane <?php echo ($i === 1) ? 'active' : ''; ?>" id="match-<?php echo $match->getId() ?>">
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-club">
+                                    <img src="<?php echo $this->basePath($match->getHost()->getLogo()) ?>" />
+                                    <div class="club-name">
+                                        <?php echo $match->getHost()->getName($this->locale()->current()) ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-description">
+                                    <div class="liga-name">
+                                        <?php echo $match->getSeason()->getTournament()->getLabel($this->locale()->current()) ?>
+                                    </div>
+
+                                    <div class="liga-date">
+                                        <?php
+                                            echo $match->getDate()->format('d'), ' ', $this->translate(strtolower($match->getDate()->format('F')));
+                                            echo $match->getDate()->format('Y H:i');
+                                        ?>
+                                    </div>
+
+                                    <div class="liga-vs">
+                                        <span class="fa fa-clock"></span>
+                                    </div>
+
+                                    <div class="liga-location">
+                                        <?php
+                                            printf(
+                                                "%s, '%s' %s",
+                                                $match->getStadium()->getLocated($this->locale()->current()),
+                                                $match->getStadium()->getName($this->locale()->current()),
+                                                $this->translate('stadium')
+                                            );
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 col-md-4">
+                                <div class="match-club">
+                                    <img src="<?php echo $this->basePath($match->getGuest()->getLogo()) ?>" />
+                                    <div class="club-name">
+                                        <?php echo $match->getGuest()->getName($this->locale()->current()) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php $i++; endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div -->
+
+<!-- ABOUT SECTION -->
+<div class="section about">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="page-title"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                <div id="shop-caro" class="owl-carousel owl-theme">
+                    <?php if ($config->offsetExists('home_championship_background') && $images = $config->offsetGet('home_championship_background')) : ?>
+                        <div class="item shop-item">
+                            <div class="img">
+                                <img src="<?php echo $this->basePath($images[array_rand($images->toArray())]) ?>" alt="" class="img-responsive" />
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+                <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
+                    <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                        <?php foreach ($this->tableLabel as $key => $value): ?>
+                            <li class="<?php echo ($key == 0) ? 'active' : ''; ?>">
+                                <a href="#league-<?php echo $key; ?>" id="match-tab" role="tab" data-toggle="tab" aria-controls="match" aria-expanded="true">
+                                    <?php echo $value ?>
+                                </a>
+                            </li>
+                        <?php endforeach ?>
+                    </ul>
+
+                    <div id="myTabContent" class="tab-content tab-content-bg">
+                        <?php foreach ($this->tableBody as $key => $value): ?>
+                            <div role="tabpanel" class="tab-pane fade <?php echo ($key == 0) ? 'in active' : ''; ?>" id="league-<?php echo $key; ?>" aria-labelledBy="match-tab">
+                                <div class="table-responsive">
+                                        <?php echo $value ?>
+                                </div>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VIDEO SECTION -->
+<?php
+echo $this->videos()
+    ->setDisplayCount(3)
+    ->setPartial('application/index/nasaf-tv-section')
+    ->render();
+?>
+
+<!-- OUR PLAYER SECTION -->
+<div class="section player" >
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="page-title">
+                    <h2 class="lead">OUR PLAYER</h2>
+                    <div class="border-style"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <?php echo $this->playerCards('application/index/player-cards') ?>
+        </div>
+
+        <div class="player-pagination pagination">
+            <a href="<?php echo $this->url('app/home', ['action' => 'team'], true) ?>" title="<?php echo $this->translate('View all players') ?>">
+                <?php echo $this->translate('View all players') ?>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- GALLERY SECTION -->
+<?php
+echo $this->galleries()
+    ->setDisplayCount(5)
+    ->setPartial('application/index/top-galleries.phtml')
+    ->render();
+?>

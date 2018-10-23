@@ -1,0 +1,108 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <?php echo $this->headTitle($this->translate('Title name'))->prepend($this->translate('Administrative control panel'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+    <?php echo $this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
+
+    <!-- Le styles -->
+    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/pages/login.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/fonts/brand-icons/brand-icons.min.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/fonts/web-icons/web-icons.min.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/dashboard/v1.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/../fonts/roboto/roboto.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/../fonts/weather-icons/weather-icons.css'))
+                    /*->prependStylesheet($this->basePath('assets/admin/vendor/jvectormap/jquery-jvectormap.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/chartist-js/chartist.css'))*/
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/flag-icon-css/flag-icon.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/slidepanel/slidePanel.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/intro-js/introjs.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/switchery/switchery.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/asscrollable/asScrollable.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/vendor/animsition/animsition.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/site.min.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/bootstrap-extend.min.css'))
+                    ->prependStylesheet($this->basePath('assets/admin/css/bootstrap.min.css')) ?>
+    <?php echo $this->headStyle(); ?>
+
+    <!-- Scripts -->
+    <?php echo $this->headScript()
+        ->prependFile($this->basePath('assets/admin/vendor/breakpoints/breakpoints.js'))
+        ->prependFile($this->basePath('assets/admin/vendor/modernizr/modernizr.js'))
+        ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array('conditional' => 'lt IE 9',))
+        ->prependFile($this->basePath('js/html5shiv.min.js'),   'text/javascript', array('conditional' => 'lt IE 9',))
+    ; ?>
+    <script>
+        Breakpoints();
+    </script>
+
+</head>
+<body class="page-login layout-full">
+    <!--[if lt IE 8]>
+    <p class="browserupgrade">
+        You are using an <strong>outdated</strong>
+        browser. Please
+        <a href="http://browsehappy.com/">upgrade your browser</a>
+        to improve your experience.
+    </p>
+    <![endif]-->
+
+    <!-- Page -->
+    <div class="page animsition vertical-align text-center" data-animsition-in="fade-in" data-animsition-out="fade-out">
+        <div class="page-content vertical-align-middle">
+            <?php echo $this->content; ?>
+            <footer class="page-copyright">
+                <span class="site-footer-legal">© <?php echo date('Y') ?> FOREACH.SOFT Ltd.</span>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Core  -->
+    <script src="<?php echo $this->basePath('assets/admin/vendor/jquery/jquery.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/bootstrap/bootstrap.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/animsition/jquery.animsition.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/asscroll/jquery-asScroll.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/mousewheel/jquery.mousewheel.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/asscrollable/jquery.asScrollable.all.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/ashoverscroll/jquery-asHoverScroll.js') ?>"></script>
+
+    <!-- Plugins -->
+    <script src="<?php echo $this->basePath('assets/admin/vendor/switchery/switchery.min.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/intro-js/intro.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/screenfull/screenfull.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/vendor/slidepanel/jquery-slidePanel.js') ?>"></script>
+
+    <!-- Scripts -->
+    <script src="<?php echo $this->basePath('assets/admin/js/core.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/site.js') ?>"></script>
+
+    <script src="<?php echo $this->basePath('assets/admin/js/sections/menu.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/sections/menubar.js') ?>"></script>
+
+    <script src="<?php echo $this->basePath('assets/admin/js/configs/config-colors.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/configs/config-tour.js') ?>"></script>
+
+    <script src="<?php echo $this->basePath('assets/admin/js/components/asscrollable.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/components/animsition.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/components/slidepanel.js') ?>"></script>
+    <script src="<?php echo $this->basePath('assets/admin/js/components/switchery.js') ?>"></script>
+
+    <script>
+        (function(document, window, $) {
+            'use strict';
+
+            var Site = window.Site;
+            $(document).ready(function() {
+                Site.run();
+            });
+        })(document, window, jQuery);
+    </script>
+    <?php echo $this->inlineScript() ?>
+</body>
+</html>

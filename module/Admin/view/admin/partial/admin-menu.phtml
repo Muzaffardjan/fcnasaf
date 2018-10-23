@@ -1,0 +1,57 @@
+<?php 
+use Zend\Navigation\Page\Mvc as MvcPage;
+
+if ($container instanceof \Zend\Navigation\Navigation)
+{
+    function isActive(\Zend\Navigation\Page\AbstractPage $page) {
+        if ($page->isActive()) {
+            return true;
+        }
+
+        if ($page->hasPages()) {
+            foreach ($page as $sub) {
+                if (isActive($sub)) {
+                    return true;
+                }
+            }
+        }
+    }
+}
+?>
+<?php foreach ($container as $item): ?>
+    <?php  
+        if (!$this->isGranted($item->getPermission())) {
+            continue;
+        }
+
+        if ($item instanceof MvcPage) {
+            $params = $item->getParams() ? $item->getParams() : [];
+
+            $item->setParams(array_merge($params, ['locale' => $this->locale()->current()]));
+        }
+    ?>
+
+    <?php if ($item->hasPages() || $item->hasChildren() && !$item->isCategory): ?>
+        <li class="site-menu-item has-sub <?php if(isActive($item)) echo 'active open' ?>">
+            <a data-slug="uikit" href="javascript:void(0)" title="<?php echo $this->escapeHtmlAttr($this->translate($item->getLabel())) ?>">
+                <i aria-hidden="true" class="site-menu-icon <?php echo $item->icon ?>"></i>
+                <span class="site-menu-title"><?php echo $this->translate($item->getLabel()) ?></span>
+                <span class="site-menu-arrow"></span>
+            </a>
+            <ul class="site-menu-sub">
+                <?php echo $this->partial('admin/partial/admin-menu', ['container' => $item]) ?>
+            </ul>
+        </li>
+    <?php elseif ($item->isCategory):  ?>
+        <li class="site-menu-category" title="<?php echo $this->escapeHtmlAttr($this->translate($item->getLabel())) ?>">
+            <span><?php echo $this->translate($item->getLabel()) ?></span>
+        </li>
+    <?php else: ?>
+        <li class="site-menu-item <?php if($item->isActive()) echo 'active open' ?>">
+            <a data-slug="uikit-buttons" href="<?php echo $item->getHref() ?>" class="animsition-link" title="<?php echo $this->escapeHtmlAttr($this->translate($item->getLabel())) ?>">
+                <i aria-hidden="true" class="site-menu-icon <?php echo $item->icon ?>"></i>
+                <span class="site-menu-title"><?php echo $this->translate($item->getLabel()) ?></span>
+            </a>
+        </li>
+    <?php endif; ?>
+<?php endforeach ?>

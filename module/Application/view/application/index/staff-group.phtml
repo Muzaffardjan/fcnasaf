@@ -1,0 +1,46 @@
+<?php if (!$container): ?>
+    <div class="well text-center">
+        <h1><i class="icon md-inbox"></i></h1>
+        <h3><?php echo $this->escapeHtml($this->translate("Content will be added soon")); ?></h3>
+    </div>
+<?php return; endif; ?>
+
+<?php
+    $staff = [];
+    if (is_array($container)) {
+        foreach ($container as $group) {
+            foreach ($group->getMembers() as $item) {
+                $staff[] = $item;
+            }
+        }
+    } else {
+        foreach ($container->getMembers() as $item) {
+            $staff[] = $item;
+        }
+    }
+
+    if ($staff) {
+        $member = $staff[array_rand($staff)];
+    }
+?>
+<?php if (isset($member)): ?>
+    <div class="staff-card">
+        <div class="content">
+            <div class="club-logo" style="background-image: url('<?php echo $this->basePath('img/logo_transparent_20.png') ?>')"></div>
+            <h3 class="staff-name"><?php echo $member->getFirstname() ?> <b><?php echo $member->getLastname() ?></b></h3>
+            <div class="info">
+                <p><?php echo $member->getPosition() ?></p>
+            </div>
+            <div class="staff-image" style="background-image: url('<?php echo $this->basePath($member->getPhoto()) ?>');"></div>
+        </div>
+    </div>
+    <a href="<?php echo $this->url('app/staff/group', ['id' => $member->getGroup()->getId(), 'action' => 'view', 'locale' => $this->locale()->current()], true) ?>" class="view-all">
+        <i class="icon md-arrow-right"></i>
+        <?php echo $this->escapeHtml($this->translate("View all")); ?>
+    </a>
+<?php else: ?>
+    <div class="well text-center">
+        <h1><i class="icon md-inbox"></i></h1>
+        <h3><?php echo $this->escapeHtml($this->translate("Content will be added soon")); ?></h3>
+    </div>
+<?php endif; ?>

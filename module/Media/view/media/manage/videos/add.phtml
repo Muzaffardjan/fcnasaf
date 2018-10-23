@@ -1,0 +1,116 @@
+<?php  
+    $this->headTitle()->append($this->translate('Add video'))
+    ->append($this->translate('Media'));
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Add video') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-placement="left" title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $this->translate('Required information') ?></h3>
+        </div>
+        <div class="alert alert-info">
+            <?php echo $this->translate('Please select the video poster before filling other information') ?>
+        </div>
+        <?php 
+            $form->setAttribute('action', $this->url(null, [], true));
+
+            $form->get('poster')->setValue('img/placeholder.jpg');
+
+            echo $this->form()->openTag($form);
+        ?>
+        <div class="panel-body container-fluid">
+                <div class="form-group">
+                    <?php echo $this->formLabel($form->get('poster')) ?>
+                    <div class="center-block" style="max-width: 480px;">
+                        <img src="<?php echo $form->get('poster')->getValue() ?: $this->basePath('img/placeholder.jpg') ?>" class="img-responsive img-thumbnail" alt="<?php echo $this->escapeHtmlAttr($this->translate('Video poster')) ?>">
+                    </div>
+                    <br>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('poster')
+                            ->setAttribute('class', 'form-control')
+                            ->setAttribute('style', 'display:none;')
+                        ) 
+                    ?>
+                    <a href="<?php echo $this->url(null, [], ['query' => ['poster' => true]], true) ?>" class="btn btn-default">
+                        <i class="icon wb-image"></i>
+                        <?php if ($form->get('poster')->getValue()): ?>
+                            <span><?php echo $this->translate('Select poster') ?></span>
+                        <?php else: ?>
+                            <span><?php echo $this->translate('Change poster') ?></span>
+                        <?php endif ?>
+                    </a>
+                    <?php echo $this->formElementErrors($form->get('poster')) ?>
+                </div>
+                <div class="form-group">
+                    <?php echo $this->formLabel($form->get('date')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-calendar"></i>
+                        </span>     
+                        <?php  
+                            echo $this->formText(
+                                $form->get('date')
+                                ->setAttribute('class', 'form-control')
+                                ->setAttribute('data-plugin', 'datepicker')
+                                ->setAttribute('data-format', 'dd.mm.yyyy')
+                                ->setValue(date('d.m.Y'))
+                            )
+                        ?>                   
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('date')) ?>
+                </div>
+                <div class="form-group">
+                    <?php echo 
+                        $this->formLabel($form->get('source')),
+                        $this->formTextarea(
+                            $form->get('source')
+                            ->setAttribute('class', 'form-control')
+                        ),
+                        $this->formElementErrors($form->get('source'))
+                    ?>
+                </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-success">
+                <i class="icon wb-check"></i>
+                <span><?php echo $this->translate('Save') ?></span>
+            </button>
+            <button class="btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->translate('Cancel') ?></span>
+            </button>
+        </div>
+        <?php echo $this->form()->closeTag($form) ?>
+    </div>
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-datepicker.js')
+    )
+?>

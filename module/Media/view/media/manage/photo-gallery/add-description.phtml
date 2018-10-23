@@ -1,0 +1,290 @@
+<?php  
+    $this->headTitle()->append($this->translate('Add description to the new gallery'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+    $this->headStyle()->appendStyle(
+        "
+            .info {
+                position: relative;
+                padding: 50px 15px 15px 50px;
+                background-color: #f3f7fa;
+                border: 1px solid #eee;
+            }
+        "
+    );
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+
+    $form->setAttribute(
+        'action', 
+        $this->url(
+            null, 
+            [
+                'locale' => $this->locale()->current(), 
+                'action' => 'addDescription',
+                'id'     => $photoGallery->getId(),
+            ]
+        )
+    )
+    ->prepare();
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Add description to the new gallery') ?></h1>
+    <div class="page-header-actions">
+        <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-placement="bottom" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+<hr style="margin-top: 0;">
+<?php echo $this->partial('media/manage/partial/gallery-steps', ['current' => 'edit_gallery_description', 'class' => ($form->getMessages() ? 'error' : '')]) ?>
+<div class="page-content">
+    <!-- Panel -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <?php if ($photoGallery->getInfo()->count()): ?>
+                        <?php  
+                            $locales = $this->locale()->all();
+                        ?>
+                        <?php foreach ($photoGallery->getInfo() as $info): ?>
+                            <div class="col-sm-3">
+                                <div class="info">
+                                    <div class="ribbon ribbon-warning ribbon-reverse">
+                                        <span class="ribbon-inner"><?php echo $locales[$info->getLocale()] ?></span>
+                                    </div>
+                                    <h5>
+                                        <?php echo $this->translate('Title') ?>: <b><?php echo $info->getTitle() ?></b>
+                                    </h5>
+                                    <hr style="margin: 10px 0;">
+                                    <div class="btn-group" style="margin: 0 auto;">
+                                        <button data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Edit')) ?>" data-id="<?php echo $info->getId() ?>" class="btn btn-primary edit-description">
+                                            <i class="icon wb-pencil"></i>
+                                        </button>
+                                        <button data-href="<?php echo $this->url(null, ['action' => 'deleteGalleryInfo', 'id' => $info->getId()], ['query' => ['return' => $this->url(null, [], true), 'confirm' => true]], true) ?>" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Delete')) ?>" class="btn btn-danger confirm-action">
+                                            <i class="icon wb-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach ?>
+                        <div class="clearfix"></div>
+                        <br>
+                    <?php else: ?>
+                        <div class="well text-center">
+                            <h1 class="text-warning">
+                                <i class="icon wb-warning"></i>
+                            </h1>
+                            <h3><?php echo $this->translate('No descriptions provided yet!') ?></h3>
+                        </div>                     
+                    <?php endif ?>
+                    <?php if ($form->get('locale')->getValueOptions()): ?>
+                        <?php echo $this->form()->openTag($form) ?>
+                            <div class="form-group <?php echo $form->get('locale')->getMessages() ? 'has-error' : '' ?>">
+                                <?php echo $this->formLabel($form->get('locale')) ?>
+                                <div class="input-group">
+                                    <span class="input-group-addon"> 
+                                        <i class="icon wb-flag" aria-hidden="true"></i>
+                                    </span>
+                                    <?php 
+                                        echo $this->formSelect(
+                                            $form->get('locale')
+                                            ->setAttribute('class', 'form-control')
+                                        )
+                                    ?>
+                                </div> 
+                                <?php echo $this->formElementErrors($form->get('locale')) ?>
+                            </div>
+                            <div class="form-group <?php echo $form->get('title')->getMessages() ? 'has-error' : '' ?>">
+                                <?php echo $this->formLabel($form->get('title')) ?>
+                                <div class="input-group">
+                                    <span class="input-group-addon"> 
+                                        <i class="icon wb-pencil" aria-hidden="true"></i>
+                                    </span>
+                                    <?php 
+                                        echo $this->formText(
+                                            $form->get('title')
+                                            ->setAttribute('class', 'form-control')
+                                        )
+                                    ?>
+                                </div> 
+                                <?php echo $this->formElementErrors($form->get('title')) ?>
+                            </div>
+                            <div class="text-center form-group">
+                                <button class="btn btn-default">
+                                    <i class="icon wb-plus"></i>
+                                    <span><?php echo $this->translate('Add') ?></span>
+                                </button>
+                            </div>
+                        <?php echo $this->form()->closeTag($form) ?>
+                    <?php endif ?>
+                    <a href="<?php echo $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current(), 'action' => 'editGalleryStep', 'id' => $photoGallery->getId()]) ?>" class="btn btn-default pull-left">
+                        <i class="icon wb-chevron-left"></i>
+                        <span><?php echo $this->translate('Back') ?></span>
+                    </a>
+                    <div class="pull-right">
+                        <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+                            <i class="icon wb-close" aria-hidden="true"></i>
+                            <span><?php echo $this->translate('Cancel') ?></span>
+                        </button>
+                        <?php if ($photoGallery->getInfo()->count()): ?>
+                            <a href="<?php echo $this->url(null, ['action' => 'addPhotosStep'], true) ?>" class="btn btn-success">
+                                <span><?php echo $this->translate('Next') ?></span>
+                                <i class="icon wb-chevron-right"></i>
+                            </a> 
+                        <?php else: ?>
+                            <button title="<?php echo $this->escapeHtmlAttr($this->translate('Add at least one description')) ?>" data-toggle="tooltip" class="btn btn-success disabled" disabled="">
+                                <span><?php echo $this->translate('Next') ?></span>
+                                <i class="icon wb-chevron-right"></i>
+                            </button>                       
+                        <?php endif ?>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel -->
+</div>
+<?php  
+    $this->inlineScript()->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendScript(
+        "
+            $('.confirm-action').click(
+                function () {
+                    var btn = $(this);
+                    
+                    if (!btn.data('href')) {
+                        return;
+                    }
+
+                    swal({
+                      title: '".$this->escapeJs($this->translate('Are you sure'))."?',
+                      text: '".$this->escapeJs($this->translate('This operation can not be prevented'))."!',
+                      type: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#DD6B55',
+                      confirmButtonText: '".$this->escapeJs($this->translate('Yes'))."',
+                      cancelButtonText: '".$this->escapeJs($this->translate('No'))."',
+                      closeOnConfirm: false,
+                    },
+                    function() {
+                      swal('".$this->escapeJs($this->translate('Cancelled'))."!',
+                        '".$this->escapeJs($this->translate('New gallery creation cancelled'))."!',
+                        'success');
+
+                      location.href = btn.data('href');
+                    });
+                }
+            );
+        "   
+    )
+    ->appendScript(
+        "
+            $('.edit-description').click(
+                function () {
+                    if (!$(this).data('id')) {
+                        return;
+                    }
+                    
+                    var id = $(this).data('id');
+                    var target = '".$this->url(null, ['action' => 'editGalleryDescriptionStep', 'id' => ':id'], true)."';
+
+                    var showModal = function () {
+                        $('.edit-description').attr('disabled', '1');
+                        $.ajax(
+                            target.replace(':id', id),
+                            {
+                                success: function (response) {
+                                    response = $(response);
+                                    var mdl  = response;
+                                    var form = response.find('form');
+
+                                    form.submit(formSubmit);
+                                    mdl.on('hidden.bs.modal', onModalHide);
+
+                                    $('body').append(response);
+                                    mdl.modal('show').focus();
+                                    $('.edit-description').removeAttr('disabled', '1');
+                                },
+                                error: function (xhr) {
+                                    console.log(xhr);
+
+                                    alert('".$this->escapeJs($this->translate('Something went wrong') . ",\n" . $this->translate('Please try again')).".');
+                                }
+                            }
+                        );
+                    };
+
+                    var onModalHide = function () {
+                        $(this).nextAll('.modal-backdrop').remove();
+                        $(this).remove();
+                    }
+
+                    var formSubmit = function (e) {
+                        e.preventDefault();
+                        var _form = $(this);
+
+                        $.ajax(
+                            _form.attr('action'),
+                            {
+                                method: _form.attr('method') || 'POST',
+                                data: _form.serialize(),
+                                success: function (response) {
+                                    if (typeof response === 'string') {
+                                        var _mdl  = _form.parents('.modal');
+                                        
+                                        _mdl.modal('hide');
+
+                                        setTimeout(
+                                            function () {
+                                                _mdl.remove();
+                                                response = $(response);
+                                                var mdl  = response;
+                                                var form = response.find('form');
+
+                                                form.submit(formSubmit);
+                                                mdl.on('hidden.bs.modal', onModalHide);
+
+                                                $('body').append(response);
+                                                mdl.modal('show').focus();
+                                            }, 
+                                            1000
+                                        );
+                                    }
+
+                                    if (typeof response === 'object') {
+                                        location.reload();
+                                    }
+                                },
+                                error: function (xhr) {
+                                    console.log(xhr);
+
+                                    alert('".$this->escapeJs($this->translate('Something went wrong') . ",\n" . $this->translate('Please try again')).".');
+                                }
+                            }
+                        );
+
+                        return false;
+                    };
+
+                    showModal();
+                }
+            );
+        "
+    );
+?>

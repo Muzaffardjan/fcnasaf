@@ -1,0 +1,71 @@
+<?php
+$this->headTitle()->append($this->translate('Add staff group to menu'))
+    ->append($this->translate('Menu'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.min.css')
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.min.js')
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+
+$form->setAttribute('action', $this->url(null, [], [], true));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New staff member') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/menu/container', ['action' => 'edit'], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form); ?>
+    <div class="panel panel-bordered">
+        <div class="panel-body">
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('group')) ?>
+                <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-users"></i>
+                        </span>
+                    <?php
+                    echo $this->formSelect(
+                        $form->get('group')
+                            ->setAttribute('class', 'form-control')
+                            ->setAttribute('data-plugin', 'select2')
+                    )
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('group')) ?>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-success">
+                <i class="icon wb-plus"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Add")); ?></span>
+            </button>
+            <a href="<?php echo $this->url('app/admin/menu/container', ['action' => 'edit'], true) ?>" class="btn btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Cancel")); ?></span>
+            </a>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

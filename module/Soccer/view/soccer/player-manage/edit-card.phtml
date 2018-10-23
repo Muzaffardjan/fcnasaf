@@ -1,0 +1,385 @@
+<?php
+$this->headTitle()->append($this->translate('Edit player card'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+)
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-touchspin/bootstrap-touchspin.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.min.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+        player-card, .staff-card {
+            border-radius: 15px 15px 0 0;
+            -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+        
+        .player-card {
+            border-radius: 15px;
+        }
+        
+        .player-card > .content {
+            height: 381px;
+            background: #00d2ff; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to left, #00d2ff , #3a7bd5); /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to left, #00d2ff , #3a7bd5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+        
+        .player-card > .content > .player-image {
+            content: ' ';
+            position: absolute;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .player-card > .content > .player-number {
+            font-size: 26em;
+            margin: 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            color: rgba(255, 255, 255, 0.15);
+            width: 100%;
+            line-height: 1em;
+        }
+        
+        @media (max-width: 769px) {
+            .player-card > .content > .player-number {
+                font-size: 21.5em;
+            }
+        }
+        
+        @media (max-width: 321px) {
+            .player-card > .content > .player-number {
+                font-size: 19em;
+            }
+        }
+        
+        .player-card > .content > .club-logo {
+            content: ' ';
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            width:  270px;
+            height: 270px;
+            background: no-repeat center center;
+            background-size: cover;
+        }
+        
+        @media (max-width: 639px) {
+            .player-card > .content > .club-logo {
+                display: none;
+            }
+        }
+        
+        .player-card > .footer {
+            background-color: #3D4FB5;
+            color: #FFFFFF;
+            text-align: center;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            font-weight: 300;
+            min-height: 145px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .player-card > .footer > .player-name {
+            text-transform: uppercase;
+            margin: 10px 0;
+            color: #FFFFFF;
+        }
+        
+        .player-card > .footer > .info > .info-section {
+            margin-top: 7px;
+            margin-bottom: 7px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .player-card > .footer > .info > .info-section:not(:first-child) {
+            border-left: 1.2px solid #dcdcdc;
+        }
+        
+        .player-card > .footer > .info > .info-section > * {
+            color: #FFFFFF;
+            margin: 0;
+        }
+        
+        .player-number {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+        }
+        "
+    );
+
+$this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-touchspin.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/select2/select2.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/select2.min.js'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit player card') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/soccer/club', ['action' => 'players', 'id' => $player->getClubs()->first()->getId()], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <div style="margin-bottom: 25px;">
+                <div class="center-block" style="width:330px; margin-bottom: 30px;">
+                    <div class="player-card">
+                        <div class="content">
+                            <p class="player-number"><?php echo $player->getClubs()->first()->getNumber() ?></p>
+                            <div class="player-image" style="background-image: url('<?php echo $this->escapeCss($this->basePath($player->getPhotos()['card'])) ?>');"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="center-block" style="width:550px; margin-bottom: 15px;">
+                    <div class="player-card">
+                        <div class="content">
+                            <div class="club-logo" style="background-image: url('<?php echo $this->basePath('img/logo_long_shadow.png') ?>')"></div>
+                            <p class="player-number"><?php echo $player->getClubs()->first()->getNumber() ?></p>
+                            <div class="player-image" style="background-image: url('<?php echo $this->escapeCss($this->basePath($player->getPhotos()['card'])) ?>');"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                    <h5><?php echo $this->formLabel($form->get('width')) ?></h5>
+                    <?php
+                    echo $this->formText(
+                        $form->get('width')
+                            ->setAttribute('class', 'form-control card-control')
+                            ->setAttribute('data-plugin', 'TouchSpin')
+                            ->setAttribute('data-max', 480)
+                            ->setAttribute('data-min', 0)
+                            ->setAttribute('data-controls', 'width')
+                    );
+                    ?>
+                    <?php echo $this->formElementErrors($form->get('width')); ?>
+                </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                    <h5><?php echo $this->formLabel($form->get('height')) ?></h5>
+                    <?php
+                    echo $this->formText(
+                        $form->get('height')
+                            ->setAttribute('class', 'form-control card-control')
+                            ->setAttribute('data-plugin', 'TouchSpin')
+                            ->setAttribute('data-max', 1080)
+                            ->setAttribute('data-min', 0)
+                            ->setAttribute('data-controls', 'height')
+                    );
+                    ?>
+                    <?php echo $this->formElementErrors($form->get('height')); ?>
+                </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                    <h5><?php echo $this->formLabel($form->get('top')) ?></h5>
+                    <?php
+                    echo $this->formText(
+                        $form->get('top')
+                            ->setAttribute('class', 'form-control card-control')
+                            ->setAttribute('data-plugin', 'TouchSpin')
+                            ->setAttribute('data-max', 1080)
+                            ->setAttribute('data-min', -1080)
+                            ->setAttribute('data-controls', 'top')
+                    );
+                    ?>
+                    <?php echo $this->formElementErrors($form->get('top')); ?>
+                </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                    <h5><?php echo $this->formLabel($form->get('left')) ?></h5>
+                    <?php
+                    echo $this->formText(
+                        $form->get('left')
+                            ->setAttribute('class', 'form-control card-control')
+                            ->setAttribute('data-plugin', 'TouchSpin')
+                            ->setAttribute('data-max', 480)
+                            ->setAttribute('data-min', -480)
+                            ->setAttribute('data-controls', 'left')
+                    );
+                    ?>
+                    <?php echo $this->formElementErrors($form->get('left')); ?>
+                </div>
+                </div>
+            </div>
+            <div class="alert alert-info">
+                <b><?php echo $this->escapeHtml($this->translate("If you set 0 for width or height it means outo sizing")); ?></b>
+            </div>
+            <div class="alert alert-warning">
+                <b><?php echo $this->escapeHtml($this->translate("Do not touch width value if yo do not know what are you doing!")); ?></b>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Save changes') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, [], ['query' => ['change' => true]], true) ?>" class="btn btn-raised btn-default">
+                    <i class="icon md-refresh"></i>
+                    <?php echo $this->translate('Change photo') ?>
+                </a>
+                <a href="<?php echo $this->url('app/admin/soccer/club', ['action' => 'players', 'id' => $player->getClubs()->first()->getClub()->getId()], true) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>
+<?php $this->inlineScript()->captureStart(); ?>
+/*<script>*/
+    setInterval(
+        function () {
+            $('.card-control').each(
+                function () {
+                    var target = $(this);
+                    var property = '';
+
+                    if (!target.data('controls')) {
+                        return;
+                    } else {
+                        property = target.data('controls');
+                    }
+
+                    $('.player-image').css(property, target.val() + 'px');
+                }
+            );
+        },
+        16.66666
+    );
+
+    (function () {
+        var mouseDown = false;
+        var downEvent = {};
+        var margins   = {
+            top : 0,
+            left: 0,
+        };
+        var startPos  = {
+            top:  parseInt($('.player-image').css('top')),
+            left: parseInt($('.player-image').css('left')),
+        };
+
+        $('.player-image').on(
+            'mousedown',
+            function (e) {
+                var $this  = $(this);
+                mouseDown  = true;
+                margins    = {
+                    top : e.pageY - $this.parent().offset().top,
+                    left: e.pageX - $this.parent().offset().left,
+                };
+                downEvent = e;
+                startPos  = {
+                    top:  parseInt($('.player-image').css('top')),
+                    left: parseInt($('.player-image').css('left')),
+                };
+            }
+        );
+
+        $('body').on(
+            'mouseup',
+            function () {
+                mouseDown = false;
+                margins   = {
+                    top : 0,
+                    left: 0,
+                };
+            }
+        );
+
+        $('.player-image').on(
+            'mousemove',
+            function (e) {
+                if (!mouseDown || !downEvent.pageX) {
+                    return;
+                }
+
+                var top  = (e.pageY - downEvent.pageY) + startPos.top;
+                var left = (e.pageX - downEvent.pageX) + startPos.left;
+
+                $('.card-control[data-controls=top]').val(top);
+                $('.card-control[data-controls=left]').val(left);
+            }
+        );
+
+        $('.player-image').on(
+            'drag',
+            function (e) {
+                e.preventDefault(); return false;
+            }
+        );
+
+        $(window).keydown(
+            function (e) {
+                e.preventDefault();
+                var position = {
+                    top : parseInt($('.player-image').css('top')),
+                    left: parseInt($('.player-image').css('left')),
+                };
+
+                switch (e.keyCode) {
+                    case 38:
+                        // up
+                        $('.card-control[data-controls=top]').val(
+                            position.top - 1
+                        );
+                    break;
+                    case 39:
+                        // right
+                        $('.card-control[data-controls=left]').val(
+                            position.left + 1
+                        );
+                    break;
+                    case 37:
+                        // left
+                        $('.card-control[data-controls=left]').val(
+                            position.left - 1
+                        );
+                    break;
+                    case 40:
+                        // down
+                        $('.card-control[data-controls=top]').val(
+                            position.top + 1
+                        );
+                    break;
+                }
+            }
+        );
+    })();
+/*</script>*/
+<?php $this->inlineScript()->captureEnd(); ?>

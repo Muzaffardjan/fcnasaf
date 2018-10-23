@@ -1,0 +1,62 @@
+<?php
+/**
+ * @var \Soccer\Entity\Stage    $stage
+ * @var \Soccer\Entity\Series   $series
+ */
+$this->headTitle()->append($this->translate('Delete'))
+    ->append($this->translate('Series'))
+    ->append($this->translate('Play-off stages'))
+    ->append($stage->getLabel($this->locale()->current()))
+    ->append(sprintf($this->translate('Season %s'), $stage->getParent()->getSeason()->getLabel($this->locale()->current())))
+    ->append($stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()))
+    ->append($this->translate('Tournaments'))
+    ->append($this->translate('Soccer'));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Delete series') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index', 'id' => null], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php echo $stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <?php if ($stage->getParent()->getSeason()->getType() == \Soccer\Entity\Season::TYPE_CUP): ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+        <?php else: ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/stages', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'season' => $stage->getParent()->getSeason()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>"><?php echo $stage->getParent()->getLabel($this->locale()->current()) ?></a>
+            </li>
+        <?php endif; ?>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/series', ['action' => 'index', 'id' => null], true) ?>"><?php printf('Stage %s', $stage->getLabel($this->locale()->current())) ?></a>
+        </li>
+        <li class="active"><?php echo $this->translate('Delete') ?></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <h3><?php echo $this->escapeHtml($this->translate("Are you sure?")); ?></h3>
+            <p><?php echo $this->escapeHtml($this->translate("This action can not be prevented!")); ?></p>
+            <a href="<?php echo $this->url(null, [], ['query' => ['confirm' => true],], true) ?>" class="btn btn-default">
+                <i class="icon wb-trash"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Yes")); ?></span>
+            </a>
+            <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-default">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->escapeHtml($this->translate("No")); ?></span>
+            </a>
+        </div>
+    </div>
+</div>

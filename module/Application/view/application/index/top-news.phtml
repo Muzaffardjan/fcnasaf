@@ -1,0 +1,83 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Articles\Entity\Article $article
+ */
+?>
+<?php if ($articles) : ?>
+    <?php foreach ($articles as $article) : ?>
+        <div class="col-sm-12 col-md-3">
+            <div class="blog-item">
+                <div class="gambar">
+                    <div class="date">
+                        <?php echo $article->getPublished()->format('d-m-Y') ?>
+                    </div>
+                    <img src="<?php echo $this->basePath( $article->getImage() ? $article->getImage() : 'img/placeholder.jpg' ) ?>" alt="<?php echo $this->escapeHtmlAttr($article->getTitle()) ?>" class="img-responsive" />
+                </div>
+                <div class="item-body">
+                    <div class="description">
+                        <p class="lead">
+                            <a href="<?php
+                                echo $this->url(
+                                    'app/article',
+                                    [
+                                        'locale' => $this->locale()->current(),
+                                        'uri' => $article->getUri(),
+                                    ]
+                                )
+                            ?>">
+                                <?php echo $article->getTitle() ?>
+                            </a>
+                        </p>
+
+                        <a href="<?php
+                            echo $this->url(
+                                'app/category',
+                                [
+                                    'locale' => $article->getCategory()->getLocale(),
+                                    'uri' => $article->getCategory()->getUri(),
+                                    'type' => 'html'
+                                ]
+                            )
+                        ?>" title="<?php echo $this->translate('Read more') ?>">
+                            <span class="fa fa-newspaper-o"></span>
+                            <?php echo $article->getCategory()->getTitle() ?>
+                        </a>
+                        &nbsp;
+                        <div class="fa fa-eye">
+                            <span><?php echo $article->getViews() ?></span>
+                        </div>
+
+                        <div class="clearfix" style="margin-bottom: 10px;"></div>
+
+                        <a href="<?php
+                            echo $this->url(
+                                'app/article',
+                                [
+                                    'locale' => $this->locale()->current(),
+                                    'uri' => $article->getUri(),
+                                ]
+                            )
+                        ?>" title="<?php echo $this->translate('Read More') ?>" class="readmore">
+                            <?php echo $this->translate('Read more') ?>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<div class="loadmore">
+    <a href="<?php
+        echo $this->url(
+            'app/articles',
+            [
+                'locale' => $this->locale()->current(),
+                'type' => 'html',
+            ]
+        );
+    ?>" title="<?php echo $this->translate('More news'); ?>">
+        <?php echo $this->translate('More news'); ?>
+    </a>
+</div>

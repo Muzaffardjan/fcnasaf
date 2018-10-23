@@ -1,0 +1,98 @@
+<?php  
+    // assign data to required vars
+    $titleImage = $this->basePath('img/5.jpg');
+?>
+<section class="article">
+    <div class="article-head">
+        <img class="img-responsive image" src="<?php echo $titleImage ?>">
+    </div>
+    <div class="article-content container">
+        <p class="info">
+            <i class="icon md-calendar-alt"></i> 06 Jul 2016
+            <i class="icon md-book"></i> <a href="javascript:void(0);">UFF</a>
+        </p>
+        <h2 class="article-title">
+            <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
+        </h2>
+        <div class="row">
+            <div class="col-xs-12">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem voluptatem iusto saepe fugiat similique deleniti, ipsa nihil hic sequi, cumque facilis illum nulla explicabo beatae quaerat animi quisquam, eveniet illo!
+            </div>
+            <div class="clearfix"></div>
+            <hr>
+            <div class="col-xs-12">
+                <a class="btn btn-labeled social-facebook" type="button">
+                    <span class="btn-label">
+                        <i aria-hidden="true" class="icon md-facebook"></i>
+                    </span>
+                    Like
+                </a>
+                <a class="btn btn-labeled social-twitter" type="button">
+                    <span class="btn-label">
+                        <i aria-hidden="true" class="icon md-twitter"></i>
+                    </span>
+                    Tweet
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="related-articles">
+    <div class="container">
+        <h1 class="section-title">Related articles</h1>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="article">
+                    <a href="javascript:void(0);">
+                        <div class="image">
+                            <img class="img-responsive" src="<?php echo $this->basePath('img/1.jpg') ?>" alt="">
+                        </div>
+                        <h4 class="title">lorem ipsum dolor sit</h4>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="article">
+                    <a href="javascript:void(0);">
+                        <div class="image">
+                            <img class="img-responsive" src="<?php echo $this->basePath('img/1.jpg') ?>" alt="">
+                        </div>
+                        <h4 class="title">lorem ipsum dolor sit</h4>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="article">
+                    <a href="javascript:void(0);">
+                        <div class="image">
+                            <img class="img-responsive" src="<?php echo $this->basePath('img/1.jpg') ?>" alt="">
+                        </div>
+                        <h4 class="title">lorem ipsum dolor sit</h4>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="article">
+                    <a href="javascript:void(0);">
+                        <div class="image">
+                            <img class="img-responsive" src="<?php echo $this->basePath('img/1.jpg') ?>" alt="">
+                        </div>
+                        <h4 class="title">lorem ipsum dolor sit</h4>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<?php  
+    $this->headStyle()->appendStyle(
+        "
+            .article-head:before {
+                background: -webkit-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 60%), url('".$titleImage."') 0 0 no-repeat;
+                background: -moz-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 60%), url('".$titleImage."') 0 0 no-repeat;
+                background: -o-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 60%), url('".$titleImage."') 0 0 no-repeat;
+                background: linear-gradient(to top right, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 60%), url('".$titleImage."') 0 0 no-repeat;
+            }
+        "
+    );
+?>

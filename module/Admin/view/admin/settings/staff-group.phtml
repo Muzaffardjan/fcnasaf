@@ -1,0 +1,71 @@
+<?php
+$this->headTitle()->append($this->translate('Staff group settings'))
+    ->append($this->translate('Website config'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/vendor/select2/select2.css')
+);
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+    <div class="page-header">
+        <h1 class="page-title"><?php echo $this->translate('Staff group settings') ?></h1>
+    </div>
+    <div class="page-content">
+        <?php echo $this->form()->openTag($form) ?>
+        <?php foreach ($form as $element): ?>
+            <?php if ($element instanceof \Zend\Form\Fieldset && $element->getName() == 'home_page'): ?>
+                <!-- Panel Form Elements -->
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><?php echo $this->translate($element->getLabel()) ?></h3>
+                    </div>
+                    <div class="alert alert-info alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <?php echo $this->translate('If you select more than one group, they will be merged') ?>
+                    </div>
+                    <div class="panel-body container-fluid">
+                        <?php foreach ($element as $sub): ?>
+                            <div class="form-group">
+                                <?php echo $this->formLabel($sub) ?>
+                                <?php
+                                echo $this->formSelect(
+                                    $sub->setAttribute('data-plugin', 'select2')
+                                        ->setAttribute('id', $element->getName().$sub->getName())
+                                        ->setAttribute('name', $element->getName().'['.$sub->getName().']')
+                                )
+                                ?>
+                                <?php echo $this->formElementErrors($sub) ?>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                </div>
+                <!-- End Panel Form Elements -->
+            <?php endif ?>
+        <?php endforeach ?>
+        <div class="site-action">
+            <button type="submit" class="btn-raised btn btn-success btn-floating" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Save changes')) ?>">
+                <i class="wb-check animation-scale-up"></i>
+            </button>
+        </div>
+        <?php echo $this->form()->closeTag($form) ?>
+    </div>
+<?php
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.js')
+    )
+?>

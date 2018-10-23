@@ -1,0 +1,387 @@
+<?php  
+    $this->headTitle()->append($this->translate('News'));
+    
+    $background = 'img/placeholder.jpg';
+
+    if ($articles->getCurrentItemCount()) {
+        foreach ($articles->getCurrentItems() as $article) {
+            if ($article->getImage()) {
+                $background = $article->getImage();
+                break;
+            }
+        }
+    }
+
+    $this->headStyle()->appendStyle(
+        "
+            .icon.md-eye {
+                font-size: 1.2em;
+            }
+
+            .articles-grid {
+                position: relative;
+                overflow-x: hidden;
+                margin: 0 -15px;
+            }
+        "
+    );
+?>
+
+<!-- BANNER -->
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="caption">
+                    <?php echo $this->translate('All news') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NEWS SECTION -->
+<div class="section singlepage" >
+    <div class="container">
+        <div class="row pbot-main">
+            <div class="col-xs-12 col-md-8">
+                <?php if ($articles->getCurrentItemCount()): ?>
+                    <?php foreach ($articles as $article): ?>
+                        <div class="post-item" style="margin-bottom: 0;">
+                            <div class="image-wrap">
+                                <?php if ($article->getImage()): ?>
+                                    <img src="<?php echo $this->basePath($article->getImage()) ?>" class="img-responsive">
+                                <?php endif ?>
+
+                                <div class="meta">
+                                    <div class="blog-author">
+                                        <i class="fa fa-map" style="margin-left: 30px;"></i>
+                                        <?php echo $article->getViews() ?>
+                                    </div>
+
+                                    <div class="blog-date">
+                                        <span>
+                                            <?php echo $article->getPublished()->format('d') ?>
+                                        </span>
+
+                                        <?php echo $article->getPublished()->format('M') ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="post-title">
+                                <a href="<?php echo $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) ?>">
+                                    <?php echo $article->getTitle() ?>
+                                </a>
+                            </h3>
+                        </div>
+
+                        <hr>
+                    <?php endforeach ?>
+
+                    <?php if ($articles->getTotalItemCount() > $articles->getCurrentItemCount()): ?>
+                        <div class="text-center" id="pager" style="position: relative;"></div>
+                    <?php endif ?>
+                <?php endif ?>
+            </div>
+            
+            <div class="col-xs-12 col-md-4">
+                <div class="widget recent-post">
+                    <?php if ($categories): ?>
+                        <h4 class="widget-heading"><?php echo $this->translate('Categories') ?></h4>
+
+                        <div class="widget-wrap">
+                            <?php foreach ($categories as $category): ?>
+                                <div class="media">
+                                    <div class="media-body">
+                                        <p>
+                                            <a href="<?php
+                                                echo $this->url(
+                                                    'app/category',
+                                                    [
+                                                        'locale' => $category->getLocale(),
+                                                        'uri' => $category->getUri(),
+                                                        'type' => 'html'
+                                                    ],
+                                                    [
+                                                        'query' => ['search' => $search]
+                                                    ]
+                                                );
+                                            ?>" title="detail news">
+                                                <?php echo $category->getTitle() ?>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        </div>
+                    <?php endif ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath('js/vendor/masonry/masonry.pkgd.min.js')
+    )
+    ->appendScript(
+        "
+            $(window).resize(function () {
+                if ($(window).width() > 768 && $('#style')) {
+                    $('head').append(
+                        '<style id=\"style\">'+
+                            '.articles-grid:before {'+
+                                'content: \" \";'+
+                                'display: block;'+
+                                'filter: blur(1px);'+
+                                'height: 100%;'+
+                                'left: -5%;'+
+                                'position: absolute;'+
+                                'top: 0;'+
+                                'width: 110%;'+
+                                'background: -webkit-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(\'".$this->basePath($background)."\') 0 0 no-repeat;'+
+                                'background: -moz-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(\'".$this->basePath($background)."\') 0 0 no-repeat;'+
+                                'background: -o-linear-gradient(bottom left, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(\'".$this->basePath($background)."\') 0 0 no-repeat;'+
+                                'background: linear-gradient(to top right, rgba(43, 40, 50, 0.8) 0%, rgba(83, 86, 99, 0.8) 45%, rgba(69, 77, 91, 0.6) 100%), url(\'".$this->basePath($background)."\') 0 0 no-repeat;'+
+                                'background-size: cover;'+
+                                'background-attachment: fixed;'+
+                            '}'+
+                        '</style>'
+                    );
+                } else {
+                    $('#style').remove();
+                }
+            });
+
+            $(window).resize();
+
+            $('#grid').masonry({
+              itemSelector: '.grid-item',
+            });
+    
+            // Ajax load pager
+            (function ($) {
+                var currentPageNumber = ".$articles->getCurrentPageNumber().";
+                var target            = '".$this->url('app/articles', ['locale' => $this->locale()->current(), 'type' => 'part.html', 'page' => ':page', ], ['query' => $uri->getQuery(), 'fragment' => $uri->getFragment()])."';
+                var contentBox        = $('#grid');
+                var statusBox         = $('#pager');  
+                var scrollDownMargin  = $(window).height() * 0.15;
+                var states            = {
+                    ready   : 1,
+                    end     : -1,
+                    request : 2,
+                };
+                var currentAjax       = '';
+                var state             = ".($articles->getTotalItemCount() > $articles->getCurrentItemCount() ? 'states.ready' : 'states.end').";
+                var autoload          = 0;
+                var maxAutoload       = 4;
+                var requestMsg        = '".$this->escapeJs($this->translate('Click to load more'))."';
+                var loadMsg           = '".$this->escapeJs($this->translate('Loading'))."...';
+                var endedMsg          = '".$this->escapeJs($this->translate('You reach to end'))."';
+                var errorMsg          = '".$this->escapeJs($this->translate('Something went wrong!'))."';
+
+                if (state === state.end) {
+                    // this means no content
+                    return;
+                }
+
+                if (location.hash.indexOf('page-') > -1) {
+                    (function () {
+                        var match = location.hash.match(/([0-9]+)/);
+
+                        statusBox.html('');
+                        var btn = $('<button class=\"btn btn-default\">'+loadMsg+'</button>');
+                        statusBox.append(btn);
+
+                        currentAjax = $.ajax(
+                            target.replace(':page', 1) + (target.indexOf('?') > -1 ? '&' : '?') + 'fragment=' + match[0],
+                            {
+                                success: function (response) {
+                                    btn.remove;
+                                    appendContent(response, false);
+                                    currentPageNumber = parseInt(match[0]);
+
+                                    setTimeout(
+                                        function () {
+                                            $('html, body').animate({
+                                                scrollTop: ($('#page-'+ match[0]).offset().top - scrollDownMargin)
+                                            }, 500, function () {
+                                                currentAjax = '';  
+                                            });  
+                                        },
+                                        500
+                                    );
+                                }
+                            }
+                        );
+                    })();
+                }
+                
+                // changes state according to response
+                var changeState = function (response) {
+                    if (typeof response === 'object') {
+                        if (response.isEnded === true) {
+                            state = states.end;
+                            return;
+                        }
+
+                        if (response.doRequest === true) {
+                            state = states.request;
+                            return;
+                        }
+                    } else {
+                        state = states.ready;
+                        autoload++;
+                    }
+                };
+                
+                // calls methods according to current state
+                var __invoke = function () {
+                    if (states.ready === state && maxAutoload > autoload) {
+                        load();
+                    } else if (maxAutoload === autoload) {
+                        request();
+                    } else if (states.end === state || states.request === state) {
+                        return;
+                    }
+                }
+
+                // Loads pagination content
+                var load = function () {
+                    if (typeof currentAjax == 'object') {
+                        return;
+                    }
+
+                    statusBox.html('');
+                    var btn = $('<button class=\"btn btn-default\">'+loadMsg+'</button>');
+                    statusBox.append(btn);
+
+                    currentAjax = $.ajax(
+                        target.replace(':page', currentPageNumber + 1),
+                        {
+                            success: function (response) {
+                                btn.remove();
+                                changeState(response);
+                                
+                                if (state !== states.end) {
+                                    appendContent(response);
+                                    currentPageNumber++;
+                                    location.hash = 'page-'+currentPageNumber;
+                                } else {
+                                    end();
+                                }
+                            }, 
+                            error: function () {
+                                alert(errorMsg);
+                            },
+                            complete: function () {
+                                currentAjax = '';
+                            }
+                        }
+                    );
+
+                    return currentAjax;
+                };
+                    
+                // appends content to grid
+                var appendContent = function (content, assignId = true) {
+                    var jItems = $(content);
+                    
+                    setTimeout(function () {
+                        contentBox.append(jItems)
+                        .masonry('appended', jItems)
+                        .masonry();
+                    }, 300);
+                    
+                    if (assignId) {
+                        $(jItems[0]).attr('id', 'page-'+currentPageNumber);
+                    }
+                    
+                    // just be sure
+                    $(window).resize();
+                };
+    
+                // places button at the end of the box
+                // that requests user approval to load further
+                var request = function () {
+                    statusBox.html('');
+                    var btn = $('<button class=\"btn btn-default\">'+requestMsg+'</button>');
+
+                    btn.click(function () {
+                        state    = states.ready;
+                        autoload = 0;
+                        __invoke();
+                        $(this).remove();
+                    });
+
+                    statusBox.append(btn);
+                }
+                
+                // Inform user about reaching the end of the content
+                var end = function () {
+                    statusBox.html('');
+                    var btn = $('<button class=\"btn btn-default\">'+endedMsg+'</button>');
+                    statusBox.append(btn);
+                };
+
+                $(window).scroll(function () {
+                    var documentHeight  = $(document).height() - $('footer.footer').height();
+                    var windowHeight    = $(window).height();
+
+                    if (documentHeight - windowHeight - $(window).scrollTop() < scrollDownMargin) {
+                        __invoke();
+                    }
+                });
+            })(jQuery);
+
+            // to top button 
+            (function ($) {
+                $(window).scroll(function () {
+                    var minMargin = 50;
+
+                    var showBtn = function () {
+                        $('.site-action').show();
+                    };
+
+                    var hideBtn = function () {
+                        $('.site-action').hide();
+                    }
+
+                    if ($(window).scrollTop() > minMargin) {
+                        showBtn();
+                    } else {
+                        hideBtn();
+                    }
+                });
+    
+                $('#_to-top').click(
+                    function () {
+                        location.hash = '';
+                        $('html, body').animate(
+                            {
+                                scrollTop: 0
+                            },
+                            1000
+                        );
+                    }
+                );
+            })(jQuery);
+
+            $('body').on(
+                'mousemove',
+                function (e) {
+                    if ($(e.target).data('toggle') == 'tooltip' && !$(e.target).data('tooltipped')) {
+                        $(e.target).tooltip({
+                            container: 'body'
+                        });
+                        $(e.target).trigger('focus').trigger('hover');
+                        $(e.target).data('tooltipped', true);
+                    }
+                }
+            );
+        "
+    );
+?>

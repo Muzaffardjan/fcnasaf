@@ -1,0 +1,45 @@
+<?php  
+    $this->headTitle()->append($this->translate('Add container'))
+    ->append($this->translate('Menu'));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Add container') ?></h1>
+    <div class="page-header-actions">
+        <a class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <!-- Panel Form Elements -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <?php echo $this->form()->openTag($form) ?>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('label')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-text"></i>
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('label')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('label')) ?>
+            </div>
+            <button class="btn btn-success">
+                <i class="icon wb-plus"></i>
+                <span><?php echo $this->translate('Add') ?></span>
+            </button>
+            <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->translate('Cancel') ?></span>
+            </a>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+    <!-- End Panel Form Elements -->
+</div>

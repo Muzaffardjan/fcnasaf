@@ -1,0 +1,44 @@
+<?php
+/**
+ * @var \Soccer\Entity\Tournament $tournament
+ */
+
+$this->headTitle()
+    ->append($this->translate('Delete'))
+    ->append($this->translate('Seasons'))
+    ->append($tournament->getLabel($this->locale()->current()))
+    ->append($this->translate('Soccer'));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Delete tournament') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index'], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url(null, ['action' => 'index'], true) ?>"><?php echo $tournament->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <li class="active"><?php echo $this->translate('Delete') ?></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'tournament' => $tournament->getId()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <h3><?php echo $this->escapeHtml($this->translate("Are you sure?")); ?></h3>
+            <p><?php echo $this->escapeHtml($this->translate("This action can not be prevented!")); ?></p>
+            <a href="<?php echo $this->url(null, [], ['query' => ['confirm' => true],], true) ?>" class="btn btn-default">
+                <i class="icon wb-trash"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Yes")); ?></span>
+            </a>
+            <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'tournament' => $tournament->getId()]) ?>" class="btn btn-default">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->escapeHtml($this->translate("No")); ?></span>
+            </a>
+        </div>
+    </div>
+</div>

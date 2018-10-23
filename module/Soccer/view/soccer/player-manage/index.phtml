@@ -1,0 +1,166 @@
+<?php
+$this->headTitle()->append($this->translate('Players'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-table/bootstrap-table.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+        "
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-table/bootstrap-table.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js')
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Players') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php if ($players->getCurrentItemCount()): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="staff"></table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="well text-center">
+            <h1>
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3>
+                <span><?php echo $this->translate('There is no any players.') ?></span>
+            </h3>
+        </div>
+    <?php endif; ?>
+</div>
+<div style="display:none;">
+    <div id="colactions">
+        <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => ':id'], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon">
+            <i class="icon wb-settings"></i>
+        </a>
+        <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => ':id'], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon">
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<?php
+$this->inlineScript()
+    ->captureStart();
+?>
+/*<script>*/
+    replaceAll = function (key, value, text) {
+        if (typeof this === 'string' && !text) {
+            text = this;
+        }
+
+        while (text.indexOf(key) > -1) {
+            text = text.replace(key, value);
+        }
+
+        return text;
+    };
+    // Js core overwrite
+    String.prototype.replaceAll = replaceAll;
+
+    jQuery.fn.bootstrapTable.columnDefaults.formatter = function (value, row, index) {
+        switch (this.field) {
+            case 'actions':
+                return replaceAll(':id', row.id, $('#colactions').html());
+            case 'clubs':
+                var links = [];
+                var link = '<a href="<?php echo $this->escapeJs($this->url('app/admin/soccer/club', ['action' => 'players', 'id' => '0']), true) ?>">%name%</a>';
+
+                if (value && value.length > 0) {
+                    for (var i=0; i<value.length; i++) {
+                        links.push(link.replace('0', value[i].id).replace('%name%', value[i].name));
+                    }
+
+                    return links.join(', ');
+                }
+
+                return '';
+            case 'name':
+                var keys = <?php echo $this->json($this->locale()->all()) ?>;
+                var name = '';
+
+                for (var i in keys) {
+                    name += '<p><i class="flag-icon flag-icon'+i.substring(i.lastIndexOf('-'))+'"></i>&nbsp; '+row.firstName[i]+' '+row.lastName[i]+' '+row.thirdName[i]  +'</p>'
+                }
+
+                return name;
+            default:
+                return value;
+        }
+    };
+
+    $('table#staff').bootstrapTable({
+        url: "<?php echo $this->escapeJs($this->url(null, [], true)) ?>",
+        striped: true,
+        search: true,
+        pagination: true,
+        showRefresh: true,
+        showToggle: true,
+        showColumns: true,
+        iconSize: 'outline',
+        sidePagination: 'server',
+        icons: {
+            refresh: 'wb-refresh',
+            toggle: 'wb-order',
+            columns: 'wb-list-bulleted'
+        },
+        columns: [
+            {
+                'field': 'alias',
+                'title': "<?php echo $this->escapeJs($this->translate("Alias")); ?>",
+                'sortable': true
+            },
+            {
+                'field': 'name',
+                'title': "<?php echo $this->escapeJs($this->translate("Name")); ?>",
+                'sortable': false
+            },
+            {
+                'field': 'height',
+                'title': "<?php echo $this->escapeJs($this->translate("Height")); ?>",
+                'sortable': true
+            },
+            {
+                'field': 'weight',
+                'title': "<?php echo $this->escapeJs($this->translate("Weight")); ?>",
+                'sortable': true
+            },
+            {
+                'field': 'clubs',
+                'title': "<?php echo $this->escapeJs($this->translate("Club")); ?>",
+                'sortable': false
+            },
+            {
+                'field': 'actions',
+                'title': "<?php echo $this->escapeJs($this->translate("Actions")); ?>"
+            }
+        ]
+    });
+    /*</script>*/
+<?php $this->inlineScript()->captureEnd(); ?>

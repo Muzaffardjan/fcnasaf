@@ -1,0 +1,31 @@
+<?php  
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
+?>
+<?php  
+    $namespaces = [
+        FlashMessenger::NAMESPACE_INFO      => 'info',
+        FlashMessenger::NAMESPACE_ERROR     => 'error',
+        FlashMessenger::NAMESPACE_SUCCESS   => 'success',
+        FlashMessenger::NAMESPACE_DEFAULT   => 'info',
+        FlashMessenger::NAMESPACE_WARNING   => 'warning',
+    ];
+?>
+<script type="text/javascript">
+    <?php foreach ($namespaces as $key => $value): $messages = []; ?>
+        <?php foreach ($this->flashmessenger($key) as $message): ?>
+            <?php $messages[] = '<p>'. $this->escapeHtmlAttr($this->translate($message)) .'</p>'; ?>
+        <?php endforeach ?>
+
+        <?php 
+            if ($messages) {
+                printf(
+                    'toastr.%s("%s", "%s", {positionClass: "toast-top-right", iconClass: "toast-just-text toast-%s", closeButton: true, progressBar: true, showMethod: "slideDown", timeOut: 5000})', 
+                    $value, 
+                    $this->escapeJs(join($messages, "\n")),
+                    $this->translate('Messages'),
+                    strtolower($value)
+                ); 
+            }
+        ?>
+    <?php endforeach ?>
+</script>

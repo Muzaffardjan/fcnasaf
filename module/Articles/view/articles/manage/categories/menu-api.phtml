@@ -1,0 +1,70 @@
+<?php  
+    $this->headTitle()->append($this->translate('Add category element'))
+    ->append($this->translate('Menu'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.css')
+    );
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Add category element to menu') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/menu/container', ['locale' => $this->locale()->current(), 'action' => 'edit', 'id' => $container->getId()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <!-- Panel Form Elements -->
+    <div class="panel">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $this->translate('Categories') ?></h3>
+        </div>
+        <div class="alert alert-info">
+            <p><?php echo $this->translate('You can select multiple categories at once') ?></p>
+        </div>
+        <div class="panel-body container-fluid">
+            <?php echo $this->form()->openTag($form) ?>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('selected')) ?>
+                <?php 
+                    echo $this->formSelect(
+                        $form->get('selected')
+                        ->setAttribute('class', 'form-control')
+                        ->setAttribute('data-plugin', 'select2')
+                    ) 
+                ?>
+                <?php echo $this->formElementErrors($form->get('selected')) ?>
+            </div>
+            <button class="btn btn-success">
+                <i class="icon wb-plus"></i>
+                <span><?php echo $this->translate('Add') ?></span>
+            </button>
+            <a href="<?php echo $this->url('app/admin/menu/container', ['locale' => $this->locale()->current(), 'action' => 'edit', 'id' => $container->getId()]) ?>" class="btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->translate('Cancel') ?></span>
+            </a>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+    <!-- End Panel Form Elements -->
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.js')
+    )
+?>

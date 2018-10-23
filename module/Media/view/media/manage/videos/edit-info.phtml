@@ -1,0 +1,57 @@
+<?php  
+    $this->headTitle()->append($this->translate('Edit video info'))
+    ->append($this->translate('Video'))
+    ->append($this->translate('Media'));
+
+    $form->setAttribute('action', $this->url(null, [], true));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit video info') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo ($referer ?: $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current()])) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <?php echo $this->form()->openTag($form) ?>
+            <div class="form-group">
+                <label><?php echo $this->translate('Language') ?></label>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-flag"></i>
+                    </span>     
+                    <input type="text" class="form-control disabled" disabled="" value="<?php echo $this->escapeHtml($this->locale()->all()[$info->getLocale()]) ?>">                 
+                </div>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('title')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-text"></i>
+                    </span>     
+                    <?php  
+                        echo $this->formText(
+                            $form->get('title')
+                            ->setAttribute('class', 'form-control')
+                        )
+                    ?>                   
+                </div>
+                <?php echo $this->formElementErrors($form->get('title')) ?>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success">
+                    <i class="icon wb-check"></i>
+                    <span><?php echo $this->translate('Save') ?></span>
+                </button>
+                <a href="<?php echo ($referer ?: $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current()])) ?>" class="btn btn-danger"> 
+                    <i class="icon wb-close" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Cancel') ?></span>
+                </a>
+            </div>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+</div>

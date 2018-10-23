@@ -1,0 +1,106 @@
+<?php  
+    $this->headTitle()->append($this->translate('Containers'))
+    ->append($this->translate('Menu'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-table/bootstrap-table.css'
+        )
+    );
+
+    $this->headStyle()->appendStyle(
+        "
+            #containers-table > tbody > tr > td:last-child,
+            #containers-table > thead > tr > td:last-child,
+            #containers-table > thead > tr > th:last-child {
+                width: 25% !important;
+            }   
+
+            #containers-table a {
+                text-decoration: none;
+                margin-right: 10px;
+            }
+
+            #containers-table a > .icon {
+                margin: 0;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Containers') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary" data-toggle="tooltip" data-original-title="<?php echo $this->translate('Add') ?>"> 
+            <i class="icon wb-plus"></i>
+            <span><?php echo $this->translate('Add') ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <!-- Panel Form Elements -->
+    <div class="panel">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $this->translate('Menu containers') ?></h3>
+        </div>
+        <div class="alert alert-info">
+            <p><?php echo $this->translate('Menu container is a root element of a menu, that holds elements of menu. ') ?></p>
+            <p><?php echo $this->translate('Use them like group of menu elements.') ?></p>
+            <p><?php echo $this->translate('Label of the container is just alias to make it easier to refer to them.') ?></p>
+        </div>
+        <div class="panel-body container-fluid">
+            <table id="containers-table">
+                <thead>
+                    <tr>
+                        <th data-field="label"><?php echo $this->translate('Label') ?></th>
+                        <th data-field="actions"><?php echo $this->translate('Actions') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($containers as $container): ?>
+                        <tr>
+                            <td><?php echo $container->getLabel() ?></td>
+                            <td>
+                                <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $container->getId()], true) ?>">
+                                    <i class="icon wb-pencil"></i>
+                                    <span><?php echo $this->escapeHtmlAttr($this->translate('Edit')) ?></span>
+                                </a>
+                                <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $container->getId()], true) ?>">
+                                    <i class="icon wb-trash"></i>
+                                    <span><?php echo $this->escapeHtmlAttr($this->translate('Delete')) ?></span>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- End Panel Form Elements -->
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-table/bootstrap-table.min.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js'
+        )
+    )
+    ->appendScript(
+        "
+            $('#containers-table').bootstrapTable({
+                mobileResponsive: true,
+                classes         : 'table table-condensed',
+                search          : true,
+                showToggle      : true,
+                icons: {
+                    refresh : 'wb-refresh',
+                    toggle  : 'wb-order'
+                }
+            });
+        "
+    )
+?>

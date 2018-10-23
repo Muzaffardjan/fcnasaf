@@ -1,0 +1,83 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Soccer\Form\MatchStatisticsForm $form
+ * @var \Soccer\Entity\Match            $match
+ */
+
+$this->headTitle()
+    ->getContainer()
+    ->set($this->translate('Match statistics add form'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<?php echo $this->form()->openTag($form->setAttribute('action', $this->serverUrl(true))) ?>
+<fieldset>
+    <legend class="margin-0"><?php echo $this->formLabel($form->get('label')) ?></legend>
+    <div class="row">
+        <?php $i=0; foreach ($form->get('label') as $name => $subElement): ?>
+            <?php
+            if (!$i) {
+                $subElement->setAttribute('autofocus', true);
+            }
+            ?>
+            <div class="col-sm-6">
+                <h5><?php echo $this->formLabel($subElement) ?></h5>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                        </span>
+                        <?php
+                        echo $this->formText(
+                            $subElement->setAttribute('class', 'form-control')
+                                ->setAttribute('name', sprintf('%s[%s]', $form->get('label')->getName(), $name))
+                        );
+                        ?>
+                    </div>
+                    <?php echo $this->formElementErrors($subElement); ?>
+                </div>
+            </div>
+        <?php $i++; endforeach; ?>
+    </div>
+</fieldset>
+<div class="form-group" style="width: 100%;display: block;">
+    <?php echo $this->formLabel($form->get('type')->setAttribute('class', 'form-control')),
+    $this->formSelect($form->get('type')),
+    $this->formElementErrors($form->get('type'))
+    ?>
+</div>
+<div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+            <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" class="img-responsive center-block margin-bottom-5">
+            <?php echo
+            $this->formText($form->get('hostValue')->setAttribute('class', 'form-control')),
+            $this->formElementErrors($form->get('hostValue'))
+            ?>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+            <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" class="img-responsive center-block margin-bottom-5">
+            <?php echo
+            $this->formText($form->get('guestValue')->setAttribute('class', 'form-control')),
+            $this->formElementErrors($form->get('guestValue'))
+            ?>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <button type="submit" class="btn btn-primary">
+        <?php echo $this->translate('Add') ?>
+    </button>
+</div>
+<?php echo $this->form()->closeTag($form) ?>

@@ -1,0 +1,39 @@
+<?php
+/**
+ * @var \Zend\Navigation\Navigation $container
+ */
+?>
+<?php if ($container instanceof \Zend\Navigation\Navigation): ?>
+    <ul class="nav navbar-nav navbar-right">
+        <?php foreach ($container as $page): ?>
+            <?php if ($page->hasPages()): ?>
+                <li class="dropdown">
+                    <a href="<?php echo $page->getHref() ?>" class="dropdown-toggle" data-toggle="dropdown" title="<?php echo $this->escapeHtmlAttr($page->getTitle()) ?>">
+                        <?php echo $page->getLabel() ?>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <?php echo $this->partial('application/index/main-menu', ['container' => $page]) ?>
+                    </ul>
+                </li>
+            <?php else: ?>
+                <li>
+                    <a
+                        href="<?php echo $page->getHref() ?>"
+                        title="<?php echo $this->escapeHtmlAttr($page->getTitle()) ?>"
+                    >
+                        <?php echo $page->getLabel() ?>
+                    </a>
+                </li>
+            <?php endif ?>
+        <?php endforeach ?>
+    </ul>
+<?php else: ?>
+    <?php foreach ($container as $key => $page) : ?>
+        <li>
+            <a href="<?php echo $page->getHref() ?>">
+                <?php echo $page->getLabel() ?>
+            </a>
+        </li>
+    <?php endforeach; ?>
+<?php endif ?>

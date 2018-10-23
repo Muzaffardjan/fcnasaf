@@ -1,0 +1,417 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Soccer\Entity\Match            $match
+ */
+
+$this->headLink()
+    ->appendStylesheet($this->basePath('fonts/font-awesome/font-awesome.min.css'));
+
+$this->headStyle()
+    ->appendStyle("
+    .timeline > li.timeline-period {
+        background-color: white;
+        font-size: 20px;
+    }
+
+    .timeline-dot > .icon {
+        font-size: 18px;
+    }
+    
+    .table.table-no-border > tbody > tr > td, .table > tbody > tr > th, 
+    .table.table-no-border > tfoot > tr > td, .table > tfoot > tr > th, 
+    .table.table-no-border > thead > tr > td, .table > thead > tr > th {
+        border: 0;
+    }
+");
+?>
+<section class="page-breadcrumbs">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li>
+                <a href="<?php echo $this->url('app/home', [], true) ?>"><?php echo $this->translate('Home') ?></a>
+            </li>
+            <li>
+                <a href="javascript:void(0);"><?php echo $match->getSeason()->getTournament()->getLabel($this->locale()->current()), ' ', $match->getSeason()->getLabel($this->locale()->current()) ?></a>
+            </li>
+        </ul>
+    </div>
+</section>
+<section class="match-report-clubs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9 match-state-finished">
+                <div class="row">
+                    <div class="club">
+                        <div class="col-xs-8">
+                            <div class="club-logo hidden-xs">
+                                <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" class="img-responsive">
+                            </div>
+                            <div class="club-name">Nasaf</div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="goals-scored">0</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="club">
+                        <div class="col-xs-8">
+                            <div class="club-logo hidden-xs">
+                                <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" class="img-responsive">
+                            </div>
+                            <div class="club-name">Lokomotiv</div>
+                        </div>
+                        <div class="col-xs-4" style="vertical-align: middle;">
+                            <div class="goals-scored">0</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="match-info">
+                    <h3 class="match-general">
+                        <a href="javascript:void(0);"><?php echo $match->getSeason()->getTournament()->getLabel($this->locale()->current()), ', ', $match->getSeason()->getLabel($this->locale()->current()) ?></a>
+                    </h3>
+                    <h4 class="match-data-location">
+                        <?php echo $match->getDate()->format('d'), ' ', $this->translate(strtolower($match->getDate()->format('F'))) ?> <?php echo $match->getDate()->format('Y H:i') ?>
+                        <br>
+                        <?php printf("%s, '%s' %s", $match->getStadium()->getLocated($this->locale()->current()), $match->getStadium()->getName($this->locale()->current()), $this->translate('stadium')) ?>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="match-report">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 match-report-content">
+                <div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-tabs-line">
+                        <li class="active">
+                            <a href="#live" data-toggle="tab"><?php echo $this->translate('Translation') ?></a>
+                        </li>
+                        <?php if ($match->getMatchStatistics()->count()): ?>
+                        <li>
+                            <a href="#statistics" data-toggle="tab"><?php echo $this->translate('Statistics') ?></a>
+                        </li>
+                        <?php endif; ?>
+                        <?php if ($match->getLineUp()->count()): ?>
+                        <li class="">
+                            <a href="#teams" data-toggle="tab"><?php echo $this->translate('Teams') ?></a>
+                        </li>
+                        <?php endif; ?>
+                        <li>
+                            <a href="#form" data-toggle="tab"><?php echo $this->translate('Form') ?></a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane match active" id="live">
+                            <ul class="timeline timeline-icon timeline-single">
+                                <li class="timeline-period">
+                                    <i class="icon md-timer"></i>
+                                    Full time
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-blue-500">
+                                        <i class="icon md-border-style" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">90+3'</span>
+                                        <time datetime="2015-04-08">Bobur Yo'ldoshev (Lokomotiv) will realese a corner kick</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-red-500">
+                                        <i class="icon md-collection-item-2" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">75'</span>
+                                        <time datetime="2015-04-08">Artur Gevorkyan (Lokomotiv) was deleted</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-blue-700">
+                                        <i class="icon md-swap-vertical" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">68'</span>
+                                        <time datetime="2015-04-08">Igor Golban (Nasaf) was substituted with Ogenin Krasic</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-red-500">
+                                        <i class="icon md-file" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">62'</span>
+                                        <time datetime="2015-04-08">Ilhom Shomurodov (Nasaf) was deleted</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-blue-500">
+                                        <i class="icon md-quote" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">49'</span>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="panel bg-grey-200" style="width: 80%;">
+                                            <div class="panel-body">
+                                                <p style="font-weight: 400">Jurnalistni gapirgisi keldi</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="timeline-period">
+                                    <i class="icon md-timer"></i>
+                                    Half time
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-blue-500">
+                                        <i class="icon md-square-right" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">44'</span>
+                                        <time datetime="2015-04-08">Farrux Sayfiyev (Nasaf) at offside</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-green-500">
+                                        <i class="icon fa fa-soccer-ball-o" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">42'</span>
+                                        <time datetime="2015-04-08">Shoxrux Gadoyev (Nasaf) scored a goal!</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-yellow-700">
+                                        <i class="icon md-alert-circle-o" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">27'</span>
+                                        <time datetime="2015-04-08">Bakhrom Abdurakhimov (Nasaf) was warned</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-green-500">
+                                        <i class="icon md-alert-circle-o" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">14'</span>
+                                        <time datetime="2015-04-08">Bakhrom Abdurakhimov (Nasaf) has realised shot</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-yellow-700">
+                                        <i class="icon md-collection-item-1" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="timeline-info">
+                                        <span class="green-700">10'</span>
+                                        <time datetime="2015-04-08">Artur Gevorkyan (Lokomotiv) was warned</time>
+                                    </div>
+                                </li>
+                                <li class="timeline-period">
+                                    <i class="icon md-timer"></i>
+                                    Match started
+                                </li>
+                            </ul>
+                        </div>
+                        <?php if ($match->getMatchStatistics()->count()): ?>
+                            <div class="tab-pane match" id="statistics">
+                                <div class="table-reponsive">
+                                    <table class="table table-no-border" id="match-stats-table">
+                                        <tbody>
+                                            <tr class="hidden-xs">
+                                                <td colspan="2">
+                                                    <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" class="img-responsive center-block">
+                                                    <h4 class="text-center"><?php echo $match->getHost()->getName($this->locale()->current()) ?></h4>
+                                                </td>
+                                                <td></td>
+                                                <td colspan="2">
+                                                    <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" class="img-responsive center-block">
+                                                    <h4 class="text-center"><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h4>
+                                                </td>
+                                            </tr>
+                                            <tr class="visible-xs">
+                                                <td>
+                                                    <h5 class="text-right"><?php echo $match->getHost()->getName($this->locale()->current()) ?></h5>
+                                                </td>
+                                                <td class="width-xs-150">
+                                                    &nbsp;
+                                                </td>
+                                                <td>
+                                                    <h5 class="text-left"><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h5>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                            /**
+                                             * @var \Soccer\Entity\MatchStatistics $stat
+                                             */
+                                            foreach ($match->getMatchStatistics() as $stat): ?>
+                                                <tr>
+                                                    <td>
+                                                        <h5 class="text-right margin-0"><?php echo $stat->getHostValue(), ($stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? '%' : '') ?></h5>
+                                                    </td>
+                                                    <td class="width-lg-250 width-md-150 width-sm-200 hidden-xs">
+                                                        <div class="progress progress-square margin-0 rotate-180">
+                                                            <div class="progress-bar <?php echo $stat->getHostValue() > $stat->getGuestValue() ? 'progress-bar-success': 'progress-bar-danger' ?>" style="width: <?php echo $stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? $stat->getHostValue() : round($stat->getHostValue() * 100 / ($stat->getHostValue() + $stat->getGuestValue()), 2) ?>%;" role="progressbar"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="width-lg-200 width-md-200 width-sm-200">
+                                                        <button type="button" class="close confirm-url-action" data-url="<?php echo $this->url(null, ['action' => 'statistics'], ['query' => ['action' => 'delete', 'id' => $stat->getId()]], true) ?>">
+                                                            <i class="icon wb-close"></i>
+                                                        </button>
+                                                        <h5 class="text-center margin-0"><?php echo $stat->getLabel($this->locale()->current()) ?></h5>
+                                                    </td>
+                                                    <td class="width-lg-250 width-md-150 width-sm-200 hidden-xs">
+                                                        <div class="progress progress-square margin-0">
+                                                            <div class="progress-bar <?php echo $stat->getHostValue() < $stat->getGuestValue() ? 'progress-bar-success': 'progress-bar-danger' ?>" style="width: <?php echo $stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? $stat->getGuestValue() : round($stat->getGuestValue() * 100 / ($stat->getHostValue() + $stat->getGuestValue()), 2) ?>%;" role="progressbar"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <h5 class="text-left margin-0"><?php echo $stat->getGuestValue(), ($stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? '%' : '') ?></h5>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($match->getLineUp()->count()): ?>
+                            <div class="tab-pane match" id="teams">
+                                <div class="row">
+                                    <br>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" alt=""
+                                                 class="img-responsive center-block">
+                                            <h4 class="text-center"><?php echo $match->getHost()->getName($this->locale()->current()) ?></h4>
+                                        </div>
+                                        <h4 style="font-weight: 400; text-transform: uppercase;"><?php echo $this->translate('Starters') ?></h4>
+                                        <div class="list-group">
+                                            <?php /**@var \Soccer\Entity\ClubPlayer $clubPlayer */ foreach ($match->getLineUp()->first()->getStarters() as $clubPlayer): ?>
+                                                <a class="list-group-item bg-blue-grey-200" href="javascript:void(0)">
+                                                    <h4 class="list-group-item-heading"><?php echo '<b style="font-weight: 400;">',$clubPlayer->getNumber(), '</b>&nbsp;'; ?></h4>
+                                                    <p class="list-group-item-text">
+                                                        <?php
+                                                        echo $clubPlayer->getPlayer()->getFirstName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getLastName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getThirdName($this->locale()->current());
+                                                        ?>
+                                                    </p>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+
+                                        <h4 style="font-weight: 400; text-transform: uppercase;"><?php echo $this->translate('Substitutes') ?></h4>
+                                        <div class="list-group">
+                                            <?php /**@var \Soccer\Entity\ClubPlayer $clubPlayer */ foreach ($match->getLineUp()->first()->getSubstitutes() as $clubPlayer): ?>
+                                                <a class="list-group-item bg-blue-grey-100" href="javascript:void(0)">
+                                                    <h4 class="list-group-item-heading"><?php echo '<b style="font-weight: 400;">',$clubPlayer->getNumber(), '</b>&nbsp;'; ?></h4>
+                                                    <p class="list-group-item-text">
+                                                        <?php
+                                                            echo $clubPlayer->getPlayer()->getFirstName($this->locale()->current()), '&nbsp;';
+                                                            echo $clubPlayer->getPlayer()->getLastName($this->locale()->current()), '&nbsp;';
+                                                            echo $clubPlayer->getPlayer()->getThirdName($this->locale()->current());
+                                                        ?>
+                                                    </p>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>
+                                            <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" alt=""
+                                                 class="img-responsive center-block">
+                                            <h4 class="text-center"><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h4>
+                                        </div>
+                                        <h4 style="font-weight: 400; text-transform: uppercase;"><?php echo $this->translate('Starters') ?></h4>
+                                        <div class="list-group">
+                                            <?php /**@var \Soccer\Entity\ClubPlayer $clubPlayer */ foreach ($match->getLineUp()->get(1)->getStarters() as $clubPlayer): ?>
+                                                <a class="list-group-item bg-blue-grey-200" href="javascript:void(0)">
+                                                    <h4 class="list-group-item-heading"><?php echo '<b style="font-weight: 400;">',$clubPlayer->getNumber(), '</b>&nbsp;'; ?></h4>
+                                                    <p class="list-group-item-text">
+                                                        <?php
+                                                        echo $clubPlayer->getPlayer()->getFirstName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getLastName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getThirdName($this->locale()->current());
+                                                        ?>
+                                                    </p>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+
+                                        <h4 style="font-weight: 400; text-transform: uppercase;"><?php echo $this->translate('Substitutes') ?></h4>
+                                        <div class="list-group">
+                                            <?php /**@var \Soccer\Entity\ClubPlayer $clubPlayer */ foreach ($match->getLineUp()->get(1)->getSubstitutes() as $clubPlayer): ?>
+                                                <a class="list-group-item bg-blue-grey-100" href="javascript:void(0)">
+                                                    <h4 class="list-group-item-heading"><?php echo '<b style="font-weight: 400;">',$clubPlayer->getNumber(), '</b>&nbsp;'; ?></h4>
+                                                    <p class="list-group-item-text">
+                                                        <?php
+                                                        echo $clubPlayer->getPlayer()->getFirstName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getLastName($this->locale()->current()), '&nbsp;';
+                                                        echo $clubPlayer->getPlayer()->getThirdName($this->locale()->current());
+                                                        ?>
+                                                    </p>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="tab-pane match" id="form">
+                            <div class="well text-center">
+                                <h1><i class="icon md-inbox"></i></h1>
+                                <h3>Content will be added soon</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 match-report-side">
+                <div class="panel matches-panel">
+                    <div class="panel-heading">
+                        <a href="javascript:void(0);" class="panel-title">Matches</a>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-group list-group-dividered text-center matches-list">
+                            <li class="list-group-item date">31 January</li>
+                            <li class="list-group-item">
+                                <a href="javascript:void(0);">
+                                    <span class="first-team">Nasaf</span>
+                                    <span class="score">3-0</span>
+                                    <span class="second-team">Al-jid</span>
+                                </a>
+                            </li>
+                            <li class="list-group-item date">8 January</li>
+                            <li class="list-group-item">
+                                <a href="javascript:void(0);">
+                                    <span class="first-team">Lokomotiv</span>
+                                    <span class="score">3-0</span>
+                                    <span class="second-team">Buxoro</span>
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="javascript:void(0);">
+                                    <span class="first-team">Shurtan</span>
+                                    <span class="score">0-0</span>
+                                    <span class="second-team">Bunyodkor</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

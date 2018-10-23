@@ -1,0 +1,8 @@
+data
+/data
+data/*
+.git
+.idea
+public
+/public
+public/*

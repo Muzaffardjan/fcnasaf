@@ -1,0 +1,124 @@
+<?php  
+    $this->headTitle()->append($this->translate('Create new gallery'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+    )->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+
+    $form->setAttribute(
+        'action', 
+        $this->url(
+            null, 
+            [
+                'action' => 'editGalleryStep',
+            ],
+            true
+        )
+    )
+    ->prepare();
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Create new gallery') ?></h1>
+    <div class="page-header-actions">
+        <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-placement="bottom" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+<hr style="margin-top: 0;">
+<?php echo $this->partial('media/manage/partial/gallery-steps', ['current' => 'add_gallery', 'class' => ($form->getMessages() ? 'error' : '')]) ?>
+<div class="page-content">
+    <!-- Panel -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <div class="row">
+                <?php echo $this->form()->openTag($form) ?>
+                <div class="col-md-12">
+                    <div class="form-group <?php echo $form->get('created_date')->getMessages() ? 'has-error' : '' ?>">
+                        <?php echo $this->formLabel($form->get('created_date')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon"> 
+                                <i class="icon wb-calendar" aria-hidden="true"></i>
+                            </span>
+                            <?php 
+                                echo $this->formText(
+                                    $form->get('created_date')
+                                    ->setAttribute('class', 'form-control')
+                                    ->setAttribute('data-plugin', 'datepicker')
+                                    ->setAttribute('data-format', 'dd.mm.yyyy')
+                                    ->setValue(date('d.m.Y'))
+                                ),
+                                $this->formElementErrors($form->get('created_date'))
+                            ?>
+                        </div> 
+                    </div>
+                    <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+                        <i class="icon wb-close" aria-hidden="true"></i>
+                        <span><?php echo $this->translate('Cancel and delete') ?></span>
+                    </button>
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success">
+                            <span><?php echo $this->translate('Next') ?></span>
+                            <i class="icon wb-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <?php echo $this->form()->closeTag($form) ?>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel -->
+</div>
+<?php  
+    $this->inlineScript()->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendScript(
+        "
+            $('.confirm-action').click(
+                function () {
+                    var btn = $(this);
+                    
+                    if (!btn.data('href')) {
+                        return;
+                    }
+
+                    swal({
+                      title: '".$this->escapeJs($this->translate('Are you sure'))."?',
+                      text: '".$this->escapeJs($this->translate('This operation can not be prevented'))."!',
+                      type: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#DD6B55',
+                      confirmButtonText: '".$this->escapeJs($this->translate('Yes'))."',
+                      cancelButtonText: '".$this->escapeJs($this->translate('No'))."',
+                      closeOnConfirm: false,
+                    },
+                    function() {
+                      swal('".$this->escapeJs($this->translate('Cancelled'))."!',
+                        '".$this->escapeJs($this->translate('New gallery creation cancelled'))."!',
+                        'success');
+
+                      location.href = btn.data('href');
+                    });
+                }
+            );
+        "   
+    )->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js')
+    )->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-datepicker.js')
+    );
+?>

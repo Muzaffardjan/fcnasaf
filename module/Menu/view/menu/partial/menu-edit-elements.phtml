@@ -1,0 +1,24 @@
+<ol class="dd-list">
+    <?php foreach ($container as $page): ?>
+        <li class="dd-item dd-item-alt" data-id="<?php echo $page->getId() ?>" <?php echo $page->isVisible() ? '' : 'style="opacity: 0.5;"' ?>>
+            <div class="dd-handle"></div>
+            <div class="dd-content">
+                <?php if ($page->locale): ?>
+                    <i class="flag-icon flag-icon<?php echo substr($page->locale, strrpos($page->locale, '-')) ?>"></i>
+                <?php endif ?>
+                <?php echo $page->getLabel() ?>
+                <div class="pull-right">
+                    <?php if (isset($page->options['info'])): ?>
+                        <span class="label label-info"><?php echo $this->translate($page->options['info'] ?: 'Unknown') ?></span>
+                        &nbsp;
+                    <?php endif ?>
+                    <a class="wb-pencil" href="<?php echo $this->url('app/admin/menu/page', ['action' => 'edit', 'id' => $page->getId()], ['query' => ['return' => $this->url(null, [], [], true)]], true) ?>" style="background: none; border: none;text-decoration: none;color: inherit !important;" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Edit')) ?>"></a>
+                    <button class="wb-close remove-element-btn" style="background: none; border: none;" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Remove')) ?>"></button>
+                </div>                                    
+            </div>
+            <?php if ($page->hasPages()): ?>
+                <?php echo $this->partial('menu/partial/menu-edit-elements', ['container' => $page]) ?>
+            <?php endif ?>
+        </li>
+    <?php endforeach ?>
+</ol>

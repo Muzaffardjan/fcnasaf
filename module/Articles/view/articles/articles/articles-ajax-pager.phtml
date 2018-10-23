@@ -1,0 +1,64 @@
+<?php $cnt=0; foreach ($articles as $article): $cnt++; ?>
+    <?php  
+        $flag = false;
+
+        if ($fragment) {            
+            if ($limit >= $cnt) {
+                continue;
+            }
+
+            $flag = (($limit*($fragment-1)) + 1 == $cnt);
+        }
+    ?>
+    <div <?php echo ($flag ? 'id="page-'.($fragment).'"' : '') ?> class="grid-item col-md-4 col-sm-6 col-xs-12">
+        <?php if ($article->getId() % 4 == 0 || !$article->getImage()): ?>
+            <article>
+                <div class="widget widget-article widget-shadow">
+                    <div class="widget-header cover overlay">
+                        <img class="cover-image" src="<?php echo $this->basePath($article->getImage()) ?>">
+                        <div class="overlay-panel overlay-background vertical-align">
+                            <div class="vertical-align-middle">
+                                <p class="margin-0" style="padding-left: 35px;"><?php echo $article->getPublished()->format('F d, Y') ?></p>
+                                <blockquote class="cover-quote white"><?php echo $article->getTitle() ?></blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-body padding-15">
+                        <div class="widget-body-footer" style="margin-top: 0;">
+                            <a class="btn btn-outline btn-default" href="<?php echo $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) ?>"><?php echo $this->translate('Read more') ?></a>
+                            <div class="widget-actions pull-right">
+                                <a href="javascript:void(0)" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Views')) ?>"> 
+                                    <i class="icon wb-library" aria-hidden="true"></i>
+                                    <span><?php echo $article->getViews() ?></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        <?php else: ?>
+            <article>
+                <div class="widget widget-article widget-shadow">
+                    <div class="widget-header cover overlay overlay-hover">
+                        <a href="<?php echo $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) ?>">
+                            <img class="cover-image overlay-scale img-responsive" src="<?php echo $this->basePath($article->getImage()) ?>">
+                        </a>
+                    </div>
+                    <div class="widget-body">
+                        <h3 class="widget-title"><?php echo $article->getTitle() ?></h3>
+                        <p class="widget-metas"><?php echo $article->getPublished()->format('M d, Y') ?></p>
+                        <div class="widget-body-footer">
+                            <a class="btn btn-outline btn-default" href="<?php echo $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) ?>"><?php echo $this->translate('Read more') ?></a>
+                            <div class="widget-actions pull-right">
+                                <a href="javascript:void(0)" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Views')) ?>"> 
+                                    <i class="icon wb-library" aria-hidden="true"></i>
+                                    <span><?php echo $article->getViews() ?></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>                          
+        <?php endif ?>
+    </div>         
+<?php endforeach ?>

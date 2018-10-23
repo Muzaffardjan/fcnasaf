@@ -1,0 +1,147 @@
+<?php  
+    $this->headTitle()->append($this->translate('Edit gallery photos'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit gallery photos') ?></h1>
+    <div class="page-header-actions">
+        <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-placement="bottom" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+<hr style="margin-top: 0;">
+<?php echo $this->partial('media/manage/partial/gallery-steps', ['current' => 'edit_photos']) ?>
+<div class="page-content">
+    <!-- Panel -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <div class="row">
+                <?php foreach ($photoGallery->getPhotos() as $photo): ?>
+                    <div class="col-sm-4 col-md-3" style="margin-bottom: 30px;">
+                        <figure class="overlay overlay-hover">
+                            <img class="overlay-figure img-responsive img-thumbnail" src="<?php echo $this->basePath($photo->getSmallThumbnail()) ?>">                  
+                            <figcaption class="overlay-panel overlay-background overlay-fade text-center vertical-align">
+                                <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'editPhoto', 'id' => $photo->getId()], ['query' => ['return' => $this->url(null, [],true)]]) ?>" class="btn btn-outline btn-primary btn-icon vertical-align-middle" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Edit info')) ?>">
+                                    <i class="icon wb-pencil"></i>
+                                </a> &nbsp;
+                                <button data-id="<?php echo $photo->getId() ?>" data-action="delete" class="btn btn-outline btn-primary btn-icon vertical-align-middle photo-action" data-toggle="tooltip" title="<?php echo $this->escapeHtmlAttr($this->translate('Delete')) ?>">
+                                    <i class="icon wb-trash"></i>
+                                </button>
+                            </figcaption>
+                        </figure>
+                    </div>
+                <?php endforeach ?>
+            </div>
+            <br>
+            <div class="text-center">
+                <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'addPhotosStep', 'id' => $photoGallery->getId()], ['query' => ['add' => true]]) ?>" class="btn btn-default btn-lg">
+                    <i class="icon wb-gallery" style="margin: 0;"></i>
+                    <?php echo $this->translate('Add more images') ?>
+                </a>
+            </div>
+            <a href="<?php echo $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current(), 'action' => 'editGalleryStep', 'id' => $photoGallery->getId()]) ?>" class="btn btn-default pull-left">
+                <i class="icon wb-chevron-left"></i>
+                <span><?php echo $this->translate('Back') ?></span>
+            </a>
+            <div class="pull-right">
+                <button type="button" data-href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'deleteGallery'], ['query' => ['confirm' => true]], true) ?>" class="btn btn-danger confirm-action" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>"> 
+                    <i class="icon wb-close" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Cancel') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['action' => 'finishCreatingGallery'], true) ?>" class="btn btn-success">
+                    <span><?php echo $this->translate('Next') ?></span>
+                    <i class="icon wb-chevron-right"></i>
+                </a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!-- End Panel -->
+</div>
+<?php  
+    $this->inlineScript()->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendScript(
+        "
+            $('.photo-action').click(
+                function (event) {
+                    var btn = $(this);
+                    
+                    if (!btn.data('id')) {
+                        return;
+                    }
+
+                    var deleteRoute = '".$this->url('app/admin/media/gallery', ['locale' => $this->locale()->current(), 'action' => 'deletePhoto', 'id' => ':id'])."';
+
+                    var showConfirmDialog = function (callback) {
+                        swal(
+                            {
+                                title: '".$this->escapeJs($this->translate('Are you sure to delete this photo'))."?',
+                                text: '".$this->escapeJs($this->translate('This operation can not be prevented'))."!',
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#DD6B55',
+                                confirmButtonText: '".$this->escapeJs($this->translate('Yes'))."',
+                                cancelButtonText: '".$this->escapeJs($this->translate('No'))."',
+                                closeOnConfirm: false,
+                            },
+                            function() {
+                                swal('".$this->escapeJs($this->translate('Deleted'))."!',
+                                '".$this->escapeJs($this->translate('Photo was deleted'))."!',
+                                'success');
+
+                                callback();
+                            }
+                        );
+                    }
+
+                    if (btn.data('action') == 'delete') {
+                        showConfirmDialog(
+                            function () {
+                                btn.parents('.col-md-3').remove();
+                                $.ajax(deleteRoute.replace(':id', btn.data('id')));
+                            }
+                        );
+                    } else if (btn.data('action') == 'edit') {
+
+                    }
+                }
+            );
+
+            $('.confirm-action').click(
+                function () {
+                    var btn = $(this);
+                    
+                    if (!btn.data('href')) {
+                        return;
+                    }
+
+                    swal(
+                        {
+                            title: '".$this->escapeJs($this->translate('Are you sure'))."?',
+                            text: '".$this->escapeJs($this->translate('This operation can not be prevented'))."!',
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#DD6B55',
+                            confirmButtonText: '".$this->escapeJs($this->translate('Yes'))."',
+                            cancelButtonText: '".$this->escapeJs($this->translate('No'))."',
+                            closeOnConfirm: false,
+                        },
+                        function() {
+                            swal('".$this->escapeJs($this->translate('Cancelled'))."!',
+                            '".$this->escapeJs($this->translate('New gallery creation cancelled'))."!',
+                            'success');
+
+                            location.href = btn.data('href');
+                        }
+                    );
+                }
+            );
+        "   
+    )
+?>

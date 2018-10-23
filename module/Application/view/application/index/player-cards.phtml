@@ -1,0 +1,30 @@
+<?php
+	$player = [];
+
+	/*for ($i=1; $i<=4; $i++) {
+		$player[] = $this->players[rand(0, count($this->players))];
+	}*/
+?>
+
+<div id="player-caro" class="owl-carousel owl-theme">
+	<?php foreach ($this->players as $key => $value) : ?>
+		<div class="item player-item">
+			<?php if (!empty($value->getPhotos())) : ?>
+				<div class="gambar">
+					<img src="<?php echo $this->basePath($value->getPhotos()['profile']) ?>" class="img-responsive">
+				</div>
+			<?php endif; ?>
+
+			<div class="item-body">
+				<div class="name">
+					<?php echo $value->getFirstName($this->locale()->current()) ?>
+					<?php echo $value->getLastName($this->locale()->current()) ?>
+				</div>
+
+				<div class="position">
+					<span class="cf">CF</span> Forwarder
+				</div>
+			</div>
+		</div>
+	<?php endforeach; ?>
+</div>

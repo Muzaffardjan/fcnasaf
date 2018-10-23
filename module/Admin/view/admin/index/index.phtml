@@ -1,0 +1,94 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ */
+?>
+<div class="page-header page-header-bordered">
+    <h1 class="page-title"><?php printf($this->translate('Hello %s'), $this->identity()->name) ?></h1>
+    <div class="page-header-actions">
+
+    </div>
+</div>
+<div class="page-content">
+    <h2 class="text-center">
+        <i class="icon wb-calendar"></i>
+        <span><?php echo $this->translate('Calendar of upcoming matches') ?></span>
+    </h2>
+    <?php
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager $objectManager
+     * @var \Soccer\Repository\MatchesRepository $matchesR
+     */
+    $objectManager = $this->getHelperPluginManager()
+        ->getServiceLocator()
+        ->get('Doctrine\ORM\EntityManager');
+    $matchesR = $objectManager->getRepository(\Soccer\Entity\Match::class);
+    ?>
+    <ul class="timeline timeline-simple">
+        <?php foreach ($matchesR->findNextClosest(null, \Soccer\Repository\MatchesRepository::GROUP_BY_MONTH) as $group => $matches): ?>
+            <?php
+            $period = \DateTime::createFromFormat('Y-m', $group);
+            ?>
+            <li class="timeline-period"><?php echo $this->translate(strtolower($period->format('F'))), ' ', $period->format('Y') ?></li>
+            <?php
+            /**
+             * @var \Soccer\Entity\Match $match
+             */
+            foreach ($matches as $match): ?>
+                <?php
+                /**
+                 * @var DateInterval $dateDiff
+                 */
+                $now = new \DateTime();
+                $dateDiff = $now->diff($match->getDate());
+                ?>
+                <li class="timeline-item <?php echo $match->getId() % 2 ? 'timeline-reverse' : '' ?>">
+                    <div class="timeline-dot" data-placement="<?php echo $match->getId() % 2 == 0 ? 'right' : 'left' ?>" data-toggle="tooltip" data-trigger="hover" data-original-title="<?php echo $this->escapeHtmlAttr(sprintf($this->translate('%s days left'), $dateDiff->d)) ?>"></div>
+                    <div class="timeline-content">
+                        <div class="widget widget-article widget-shadow">
+                            <div class="widget-body">
+                                <h4 class="widget-title text-center text-uppercase"><?php printf('%s %s', $match->getSeason()->getTournament()->getLabel($this->locale()->current()), $match->getSeason()->getLabel($this->locale()->current())) ?></h4>
+                                <p class="widget-metas text-center">
+                                    <i class="icon wb-calendar"></i>
+                                    <span class="widget-time" style="text-transform: uppercase;"><?php echo $this->translate('month_'.strtolower($match->getDate()->format('M'))), ' ', $match->getDate()->format('d, Y') ?></span>
+                                    &nbsp;&nbsp;
+                                    <i class="icon wb-map"></i>
+                                    <span><?php echo $match->getStadium()->getLabel($this->locale()->current()) ?></span>
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-5 text-center">
+                                        <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" alt="" class="img-responsive center-block">
+                                        <h4><?php echo $match->getHost()->getName($this->locale()->current()) ?></h4>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h4>
+                                            <i class="icon wb-time margin-0"></i>
+                                            <br>
+                                            <br>
+                                            <span><?php echo $match->getDate()->format('H:i') ?></span>
+                                        </h4>
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" alt="" class="img-responsive center-block">
+                                        <h4><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h4>
+                                    </div>
+                                </div>
+                                <div class="widget-body-footer text-center">
+                                    <p><?php printf($this->translate("%s days, %s hours, %s minutes left"), $dateDiff->days, $dateDiff->h, $dateDiff->i) ?></p>
+                                    <a class="btn btn-sm btn-primary btn-outline" href="<?php echo $this->url('app/admin/soccer/matches', ['action' => 'edit', 'id' => $match->getId()]) ?>">
+                                        <i class="icon wb-settings"></i>
+                                        <span><?php echo $this->translate('Edit match') ?></span>
+                                    </a>
+                                    <a class="btn btn-sm btn-primary btn-outline" href="<?php echo $this->url('app/admin/soccer/match-details', ['action' => 'panel', 'match' => $match->getId()]) ?>">
+                                        <i class="icon wb-info"></i>
+                                        <span><?php echo $this->translate('Match details') ?></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </ul>
+</div>

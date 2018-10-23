@@ -1,0 +1,168 @@
+<?php
+/**
+ * @var \Soccer\Entity\Tournament $tournament
+ * @var \Soccer\Entity\Season     $season
+ * @var \Soccer\Form\StagesForm   $form
+ */
+$this->headTitle()->append($this->translate('Edit'))
+    ->append($this->translate('Stages'))
+    ->append(sprintf($this->translate('Season %s'), $season->getLabel($this->locale()->current())))
+    ->append($tournament->getLabel($this->locale()->current()))
+    ->append($this->translate('Tournaments'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-touchspin/bootstrap-touchspin.css')
+    );
+
+$this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-touchspin.js'));
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .form-group.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        "
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit stage') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index'], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $tournament->getId(), 'action' => 'index'], true) ?>"><?php echo $tournament->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/stages', ['action' => 'index'], true) ?>"><?php echo $this->translate('Stages') ?></a>
+        </li>
+        <li class="active"><?php echo $this->translate('Edit') ?></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('type')),
+                $this->formSelect(
+                    $form->get('type')
+                        ->setAttribute('class', 'form-control')
+                        ->setAttribute('id', 'type-select')
+                ),
+                $this->formElementErrors($form->get('type'))
+                ?>
+            </div>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('label')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('label') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('label')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('winsBy')),
+                $this->formSelect(
+                    $form->get('winsBy')
+                        ->setAttribute('class', 'form-control dependent')
+                        ->setAttribute('data-target', '#type-select')
+                        ->setAttribute('data-value', \Soccer\Entity\Stage::TYPE_GROUP)
+                ),
+                $this->formElementErrors($form->get('winsBy'))
+                ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('matchesCount')),
+                $this->formText(
+                    $form->get('matchesCount')
+                        ->setAttribute('class', 'form-control dependent')
+                        ->setAttribute('data-target', '#type-select')
+                        ->setAttribute('data-value', \Soccer\Entity\Stage::TYPE_PLAY_OFF)
+                        ->setAttribute('data-plugin', 'TouchSpin')
+                        ->setAttribute('data-min', 1)
+                        ->setAttribute('data-max', 10)
+                ),
+                $this->formElementErrors($form->get('matchesCount'))
+                ?>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Add') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>
+<?php $this->inlineScript()->captureStart() ?>
+/*<script>*/
+    var $typeSelect         = $('#type-select');
+    var $depFromTypeSelect  = $('.dependent[data-target="#type-select"]');
+
+    $typeSelect.change(
+        function () {
+            $depFromTypeSelect.each(
+                function () {
+                    var $this   = $(this);
+
+                    if (!$this.data('fcp')) {
+                        $this.data('fcp', $this.parents('.form-group'));
+                    }
+
+                    if ($this.data('value') != $typeSelect.val()) {
+                        $this.data('fcp').addClass('disabled');
+                    } else {
+                        $this.data('fcp').removeClass('disabled');
+                    }
+                }
+            );
+        }
+    ).change();
+    /*</script>*/
+<?php $this->inlineScript()->captureEnd() ?>

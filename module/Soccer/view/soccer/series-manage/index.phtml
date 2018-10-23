@@ -1,0 +1,185 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Soccer\Entity\Stage $stage
+ */
+
+$this->headTitle()->append($this->translate('Series'));
+
+if (isset($stage)) {
+    $this->headTitle()->append(sprintf($this->translate('%s stage'), $stage->getLabel($this->locale()->current())));
+}
+
+$this->headTitle()->append(sprintf($this->translate('Season %s'), $stage->getParent()->getSeason()->getLabel($this->locale()->current())))
+    ->append($stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()))
+    ->append($this->translate('Soccer'));
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Series') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index'], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'action' => 'index'], true) ?>"><?php echo $stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <?php if ($stage->getParent()->getSeason()->getType() == \Soccer\Entity\Season::TYPE_CUP): ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+        <?php else: ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/stages', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'season' => $stage->getParent()->getSeason()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>">
+                    <span><?php echo $stage->getParent()->getLabel($this->locale()->current()) ?></span>
+                </a>
+            </li>
+        <?php endif; ?>
+        <li class="active"><span><?php printf('Stage %s', $stage->getLabel($this->locale()->current())) ?></span></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php if ($stage->getSeries()->count()): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table id="tours" class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th><?php echo $this->translate('Alias') ?></th>
+                            <th><?php echo $this->translate('First team') ?></th>
+                            <th><?php echo $this->translate('Second team') ?></th>
+                            <th><?php echo $this->translate('Winner') ?></th>
+                            <th><?php echo $this->translate('Matches') ?></th>
+                            <th><?php echo $this->translate('Actions') ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        /**
+                         * @var \Soccer\Entity\Series $series
+                         */
+                        foreach ($stage->getSeries() as $series):
+                            ?>
+                            <tr>
+                                <td><?php echo $series->getAlias() ?></td>
+                                <td class="text-center <?php echo ($series->getWinner() && $series->getFirst() && $series->getWinner()->getId() == $series->getFirst()->getId()) ? 'success' : '' ?>">
+                                    <?php if ($series->getFirst()): ?>
+                                        <img src="<?php echo $this->basePath($series->getFirst()->getSmallLogo()) ?>" class="img-responsive center-block">
+                                        <p><?php echo $series->getFirst()->getName($this->locale()->current()) ?></p>
+                                    <?php endif; ?>
+                                    <?php if ($series->getFirstPrevious()): ?>
+                                        <?php
+                                        /**
+                                         * @var \Soccer\Entity\Series $firstPreviousSeries
+                                         */
+                                        $firstPreviousSeries = $series->getFirstPrevious();
+                                        ?>
+                                        <a href="<?php echo $this->url(null, ['stage' => $firstPreviousSeries->getStage()->getId()], true) ?>">
+                                            <span><?php echo $firstPreviousSeries->getStage()->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo $firstPreviousSeries->getStage()->getParent()->getSeason()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo $firstPreviousSeries->getStage()->getParent()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo ' | '. $firstPreviousSeries->getStage()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo ' | '. $firstPreviousSeries->getAlias() ?></span>
+                                        </a>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center <?php echo ($series->getWinner() && $series->getSecond() && $series->getWinner()->getId() == $series->getSecond()->getId()) ? 'success' : '' ?>">
+                                    <?php if ($series->getSecond()): ?>
+                                        <img src="<?php echo $this->basePath($series->getSecond()->getSmallLogo()) ?>" class="img-responsive center-block">
+                                        <p><?php echo $series->getSecond()->getName($this->locale()->current()) ?></p>
+                                    <?php endif; ?>
+                                    <?php if ($series->getSecondPrevious()): ?>
+                                        <?php
+                                        /**
+                                         * @var \Soccer\Entity\Series $secondPreviousSeries
+                                         */
+                                        $secondPreviousSeries = $series->getSecondPrevious();
+                                        ?>
+                                        <a href="<?php echo $this->url(null, ['stage' => $secondPreviousSeries->getStage()->getId()], true) ?>">
+                                            <span><?php echo $secondPreviousSeries->getStage()->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo $secondPreviousSeries->getStage()->getParent()->getSeason()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo $secondPreviousSeries->getStage()->getParent()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo ' | '. $secondPreviousSeries->getStage()->getLabel($this->locale()->current()) ?></span>
+                                            <span><?php echo ' | '. $secondPreviousSeries->getAlias() ?></span>
+                                        </a>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($series->getWinner()): ?>
+                                        <b><?php echo $series->getWinner()->getName($this->locale()->current()) ?></b>
+                                    <?php else: ?>
+                                        <span><?php echo $this->translate('Not specified') ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($series->getMatches()->count()): ?>
+                                        <?php
+                                        $filter = [
+                                            'tournament' => $series->getStage()->getParent()->getSeason()->getTournament()->getId(),
+                                            'season'     => $series->getStage()->getParent()->getSeason()->getId(),
+                                            'subStage'   => $series->getStage()->getId(),
+                                            'series'     => $series->getId()
+                                        ];
+
+                                        if ($series->getStage()->getParent()->getSeason()->getType() != \Soccer\Entity\Season::TYPE_CUP) {
+                                            $filter['stage'] = $series->getStage()->getParent()->getId();
+                                        }
+                                        ?>
+                                        <?php foreach ($series->getMatches() as $match): ?>
+                                            <a class="btn btn-default btn-sm btn-inverse btn-block" style="text-decoration: none;">
+                                                <?php echo $match->getDate()->format('d.m.Y H:i') ?>
+                                                <br>
+                                                <?php echo $match->getHost()->getName($this->locale()->current()) ?>
+                                            </a>
+                                        <?php endforeach; ?>
+                                        <a class="btn btn-default btn-sm btn-inverse btn-block" style="text-decoration: none;" href="<?php echo $this->url('app/admin/soccer/matches', [], ['query' => $filter], true) ?>"><?php echo $this->translate('View all matches') ?></a>
+                                    <?php else: ?>
+                                        <span><?php echo $this->translate('No matches conducted yet') ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $series->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Edit")); ?>">
+                                        <i class="icon wb-settings"></i>
+                                    </a>
+                                    <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $series->getId()], true) ?>" class="btn btn-default btn-sm btn-inverse btn-icon" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Delete")); ?>">
+                                        <i class="icon wb-close"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="well text-center">
+            <h1>
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3>
+                <span><?php echo $this->translate('There is no any record.') ?></span>
+            </h3>
+        </div>
+    <?php endif; ?>
+</div>

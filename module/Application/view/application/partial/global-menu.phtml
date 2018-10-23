@@ -1,0 +1,42 @@
+<?php if ($container instanceof \Zend\Navigation\Navigation): ?>
+    <?php foreach ($container as $page): ?>
+        <?php if ($page->hasPages()): ?>
+            <li class="dropdown">
+                <a <?php echo $page->getTarget() ? 'target="'.$page->getTarget().'"' : '' ?> class="dropdown-toggle" data-toggle="dropdown" href="<?php echo $page->getHref() ?>" title="<?php echo $this->escapeHtmlAttr($page->getTitle()) ?>">
+                    <span><?php echo $page->getLabel() ?></span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <?php echo $this->partial('application/index/main-menu', ['container' => $page]) ?>
+                </ul>
+            </li>
+        <?php else: ?>
+            <li>
+                <a <?php echo $page->getTarget() ? 'target="'.$page->getTarget().'"' : '' ?> href="<?php echo $page->getHref() ?>" title="<?php echo $this->escapeHtmlAttr($page->getTitle()) ?>">
+                    <span><?php echo $page->getLabel() ?></span>
+                </a>
+            </li>
+        <?php endif ?>
+    <?php endforeach ?>
+<?php else: ?>
+    <?php
+    $first = $container->key();
+    ?>
+    <?php foreach ($container as $key => $page): ?>
+        <?php if ($page->hasPages() && $first != $key): ?>
+            <li class="divider"></li>
+        <?php endif ?>
+        <li>
+            <a <?php echo $page->getTarget() ? 'target="'.$page->getTarget().'"' : '' ?> href="<?php echo $page->getHref() ?>" title="<?php echo $this->escapeHtmlAttr($page->getTitle()) ?>">
+                <?php if ($page->hasPages()): ?>
+                    <b><?php echo $page->getLabel() ?></b>
+                <?php else: ?>
+                    <span><?php echo $page->getLabel() ?></span>
+                <?php endif ?>
+            </a>
+        </li>
+        <?php if ($page->hasPages()): ?>
+            <?php echo $this->partial('application/index/main-menu', ['container' => $page]) ?>
+        <?php endif ?>
+    <?php endforeach ?>
+<?php endif ?>

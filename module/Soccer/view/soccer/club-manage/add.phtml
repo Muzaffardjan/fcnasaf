@@ -1,0 +1,138 @@
+<?php
+$this->headTitle()->append($this->translate('Add new club'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+)
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-touchspin/bootstrap-touchspin.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.min.css')
+    );
+
+$this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-touchspin.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/select2/select2.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/select2.min.js'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New club') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="form-group">
+                <h5><?php echo $this->formLabel($form->get('alias')) ?></h5>
+                <?php
+                echo $this->formText(
+                    $form->get('alias')
+                        ->setAttribute('class', 'form-control')
+                );
+                echo $this->formElementErrors($form->get('alias'));
+                ?>
+            </div>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('name')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('name') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('name')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('tableName')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('tableName') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('tableName')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <h5><?php echo $this->formLabel($form->get('founded')) ?></h5>
+                <?php
+                echo $this->formText(
+                    $form->get('founded')
+                        ->setAttribute('class', 'form-control')
+                        ->setAttribute('data-plugin', 'TouchSpin')
+                        ->setAttribute('data-max', date('Y'))
+                        ->setAttribute('data-min', 1900)
+                        ->setAttribute('placeholder', '-')
+                );
+                ?>
+                <?php echo $this->formElementErrors($form->get('founded')); ?>
+            </div>
+            <div class="form-group">
+                <h5><?php echo $this->formLabel($form->get('parentClub')) ?></h5>
+                <?php
+                echo $this->formSelect(
+                    $form->get('parentClub')
+                        ->setAttribute('data-plugin', 'select2')
+                );
+                ?>
+                <?php echo $this->formElementErrors($form->get('parentClub')); ?>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Add') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

@@ -1,0 +1,257 @@
+<?php  
+    $this->headTitle()->append($this->translate('Edit photo'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+    $this->headStyle()->appendStyle(
+        "
+            .info {
+                position: relative;
+                padding: 50px 15px 15px 50px;
+                background-color: #f3f7fa;
+                border: 1px solid #eee;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit photo') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo ($referer ?: $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current()])) ?>" class="btn btn-sm btn-icon btn-success" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Done') ?>"> 
+            <i class="icon wb-check" aria-hidden="true"></i>
+        </a>
+        <a href="<?php echo ($referer ?: $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current()])) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <?php 
+                $form->setAttribute('action', $this->url(null, ['action' => 'editPhoto', 'id' => $photo->getId()], ['query' => ['return' => $return]], true));
+
+                echo $this->form()->openTag($form);
+            ?>
+                <div>
+                    <img src="<?php echo $this->basePath($photo->getSmallThumbnail()) ?>" class="img-responsive img-thumbnail center-block">
+                </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->formLabel($form->get('shot_date'))
+                    ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-calendar"></i>
+                        </span>
+                        <?php 
+                            echo $this->formText(
+                                $form->get('shot_date')
+                                ->setAttribute('class', 'form-control')
+                                ->setAttribute('data-plugin', 'datepicker')
+                                ->setAttribute('data-format', 'dd.mm.yyyy')
+                            ) 
+                        ?>
+                    </div>
+                    <?php
+                        echo $this->formElementErrors($form->get('shot_date'))
+                    ?>
+                </div>
+                <button class="btn btn-success">
+                    <i class="icon wb-check"></i>
+                    <span><?php echo $this->translate('Save') ?></span>
+                </button>
+                <a href="<?php echo ($referer ?: $this->url('app/admin/media/gallery', ['locale' => $this->locale()->current()])) ?>" class="btn btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+                    <i class="icon wb-close" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Cancel') ?></span>
+                </a>
+                <br><br>
+                <div class="form-group">
+                    <label><?php echo $this->translate('Info') ?></label>
+                    <div class="clearfix"></div>
+                    <?php if ($photo->getInfo()->count()): ?>
+                        <?php foreach ($photo->getInfo() as $info): ?>
+                            <div class="col-sm-3">
+                                <div class="info">
+                                    <div class="ribbon ribbon-warning ribbon-reverse">
+                                        <span class="ribbon-inner"><?php echo $this->locale()->all()[$info->getLocale()] ?></span>
+                                    </div>
+                                    <h5>
+                                        <?php echo $this->translate('Title') ?>: <b><?php echo $info->getTitle() ?></b>
+                                    </h5>
+                                    <hr style="margin: 10px 0;">
+                                    <div class="btn-group" style="margin: 0 auto;">
+                                        <button type="button" data-toggle="tooltip" data-modal="<?php echo $this->url(null, ['action' => 'editPhotoInfoModal', 'id' => $info->getId()], true) ?>" class="btn btn-primary" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Edit')) ?>">
+                                            <i class="icon wb-pencil"></i>
+                                        </button>
+                                        <button type="button" data-toggle="tooltip" data-href="<?php echo $this->url(null, ['action' => 'deletePhotoInfo', 'id' => $info->getId()], true) ?>" class="btn btn-danger confirm-action" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Delete')) ?>">
+                                            <i class="icon wb-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach ?>
+                        <div class="clearfix"></div>
+                        <br>
+                    <?php else: ?>
+                        <div class="well text-center">
+                            <h1 class="text-warning">
+                                <i class="icon wb-warning"></i>
+                            </h1>
+                            <h3><?php echo $this->translate('No information provided yet!') ?></h3>
+                        </div>
+                    <?php endif ?>
+                    <?php if ($locales): ?>
+                        <div class="text-center">
+                            <button data-modal="<?php echo $this->url(null, ['action' => 'addPhotoInfoModal', 'id' => $photo->getId()], true) ?>" type="button" class="btn btn-default btn-lg">
+                                <i class="icon wb-plus"></i>
+                                <span><?php echo $this->translate('Add information') ?></span>
+                            </button>
+                        </div>
+                    <?php endif ?>
+                </div>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+</div>
+<?php  
+    $this->inlineScript()->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js')
+    )->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-datepicker.js')
+    )->appendScript(
+        "
+            $('.confirm-action').click(
+                function () {
+                    var btn = $(this);
+                    
+                    if (!btn.data('href')) {
+                        return;
+                    }
+
+                    swal(
+                        {
+                            title: '".$this->escapeJs($this->translate('Are you sure'))."?',
+                            text: '".$this->escapeJs($this->translate('This operation can not be prevented'))."!',
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#DD6B55',
+                            confirmButtonText: '".$this->escapeJs($this->translate('Yes'))."',
+                            cancelButtonText: '".$this->escapeJs($this->translate('No'))."',
+                            closeOnConfirm: false,
+                        },
+                        function() {
+                            swal('".$this->escapeJs($this->translate('Deleted'))."!',
+                            '".$this->escapeJs($this->translate('Photo information was deleted'))."!',
+                            'success');
+
+                            location.href = btn.data('href');
+                        }
+                    );
+                }
+            );
+        "
+    )->appendScript(
+        "
+            $('button[data-modal]').click(
+                function () {
+                    if (!$(this).data('modal')) {
+                        return;
+                    }
+                    
+                    var id = $(this).data('id');
+                    var target = $(this).data('modal').trim().replace(':id', id || '');
+                    var btn = $(this);
+
+                    var showModal = function () {
+                        $('button[data-modal]').attr('disabled', '1');
+                        $.ajax(
+                            target,
+                            {
+                                success: function (response) {
+                                    response = $(response);
+                                    var mdl  = response;
+                                    var form = response.find('form');
+
+                                    form.submit(formSubmit);
+                                    mdl.on('hidden.bs.modal', onModalHide);
+
+                                    $('body').append(response);
+                                    mdl.modal('show').focus();
+                                    $('button[data-modal]').removeAttr('disabled', '1');
+                                },
+                                error: function (xhr) {
+                                    console.log(xhr);
+
+                                    alert('".$this->escapeJs($this->translate('Something went wrong') . ",\n" . $this->translate('Please try again')).".');
+                                }
+                            }
+                        );
+                    };
+
+                    var onModalHide = function () {
+                        $(this).nextAll('.modal-backdrop').remove();
+                        $(this).remove();
+                        $('button[data-modal]').removeAttr('disabled', '1');
+                    }
+
+                    var formSubmit = function (e) {
+                        e.preventDefault();
+                        var _form = $(this);
+
+                        $.ajax(
+                            _form.attr('action'),
+                            {
+                                method: _form.attr('method') || 'POST',
+                                data: _form.serialize(),
+                                success: function (response) {
+                                    if (typeof response === 'string') {
+                                        var _mdl  = _form.parents('.modal');
+                                        
+                                        _mdl.modal('hide');
+
+                                        setTimeout(
+                                            function () {
+                                                _mdl.remove();
+                                                response = $(response);
+                                                var mdl  = response;
+                                                var form = response.find('form');
+
+                                                form.submit(formSubmit);
+                                                mdl.on('hidden.bs.modal', onModalHide);
+
+                                                $('body').append(response);
+                                                mdl.modal('show').focus();
+                                            }, 
+                                            1000
+                                        );
+                                    }
+
+                                    if (typeof response === 'object') {
+                                        location.reload();
+                                    }
+                                },
+                                error: function (xhr) {
+                                    console.log(xhr);
+
+                                    alert('".$this->escapeJs($this->translate('Something went wrong') . ",\n" . $this->translate('Please try again')).".');
+                                }
+                            }
+                        );
+
+                        return false;
+                    };
+
+                    showModal();
+                }
+            );
+        "
+    );
+?>

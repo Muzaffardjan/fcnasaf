@@ -1,0 +1,642 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Soccer\Form\MatchesForm $form
+ */
+$this->headTitle()->append($this->translate('Edit'))
+    ->append($this->translate('Matches'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/clockpicker/clockpicker.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/clockpicker/bootstrap-clockpicker.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-datepicker.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/clockpicker.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-sweetalert.js')
+    )
+    ->appendFile(
+        $this->basePath('js/promise.js')
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New match') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'index', 'id' => null], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form->setAttribute('id', 'matches-form')) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('tournament')
+                            ->setAttribute('id', 'tournament')
+                            ->setAttribute('class', 'form-control')
+                        ?>
+                        <?php echo $this->formLabel($form->get('tournament')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-trophy"></i>
+                            </span>
+                            <?php echo $this->formSelect($form->get('tournament')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('tournament')) ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('season')
+                            ->setAttribute('id', 'season')
+                            ->setAttribute('class', 'form-control')
+                        ?>
+                        <?php echo $this->formLabel($form->get('season')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-list"></i>
+                            </span>
+                            <?php echo $this->formSelect($form->get('season')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('season')) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('stage')
+                            ->setAttribute('id', 'stage')
+                            ->setAttribute('class', 'form-control')
+                        ?>
+                        <?php echo $this->formLabel($form->get('stage')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-list"></i>
+                            </span>
+                            <?php echo $this->formSelect($form->get('stage')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('stage')) ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('subStage')
+                            ->setAttribute('id', 'subStage')
+                            ->setAttribute('class', 'form-control')
+                        ?>
+                        <?php echo $this->formLabel($form->get('subStage')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-list"></i>
+                            </span>
+                            <?php echo $this->formSelect($form->get('subStage')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('subStage')) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('tour')
+                    ->setAttribute('id', 'tour')
+                    ->setAttribute('class', 'form-control')
+                ?>
+                <?php echo $this->formLabel($form->get('tour')) ?>
+                <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-calendar-o"></i>
+                            </span>
+                    <?php echo $this->formSelect($form->get('tour')) ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('tour')) ?>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('series')
+                    ->setAttribute('id', 'series')
+                    ->setAttribute('class', 'form-control')
+                ?>
+                <?php echo $this->formLabel($form->get('series')) ?>
+                <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-sitemap"></i>
+                            </span>
+                    <?php echo $this->formSelect($form->get('series')) ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('series')) ?>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('status')
+                    ->setAttribute('id', 'series')
+                    ->setAttribute('class', 'form-control')
+                ?>
+                <?php echo $this->formLabel($form->get('status')) ?>
+                <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon fa-info"></i>
+                            </span>
+                    <?php echo $this->formSelect($form->get('status')) ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('status')) ?>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+
+                        $form->get('date')
+                            ->setAttribute('data-plugin', 'datepicker')
+                            ->setAttribute('class', 'form-control')
+                            ->setAttribute('id', 'match-date')
+                            ->setAttribute('data-format', 'dd.mm.yyyy')
+                        ?>
+                        <?php echo $this->formLabel($form->get('date')) ?>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="icon wb-calendar"></i>
+                            </span>
+                            <?php echo $this->formText($form->get('date')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('date')) ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <?php
+
+                    $form->get('time')
+                        ->setAttribute('data-plugin', 'clockpicker')
+                        ->setAttribute('class', 'form-control')
+                        ->setAttribute('id', 'match-time')
+                        ->setAttribute('data-autoclose', 'true')
+                    ?>
+                    <?php echo $this->formLabel($form->get('time')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-time"></i>
+                        </span>
+                        <?php echo $this->formText($form->get('time')) ?>
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('time')) ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('stadium')
+                    ->setAttribute('id', 'stadium')
+                    ->setAttribute('data-plugin', 'select2')
+                ?>
+                <?php echo $this->formLabel($form->get('stadium')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-map"></i>
+                    </span>
+                    <?php echo $this->formSelect($form->get('stadium')) ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('stadium')) ?>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('host')
+                            ->setAttribute('id', 'host')
+                            ->setAttribute('data-plugin', 'select2')
+                        ?>
+                        <?php echo $this->formLabel($form->get('host')) ?>
+                        <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon fa-soccer-ball-o"></i>
+                    </span>
+                            <?php echo $this->formSelect($form->get('host')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('host')) ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        $form->get('guest')
+                            ->setAttribute('id', 'guest')
+                            ->setAttribute('data-plugin', 'select2')
+                        ?>
+                        <?php echo $this->formLabel($form->get('guest')) ?>
+                        <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon fa-soccer-ball-o"></i>
+                    </span>
+                            <?php echo $this->formSelect($form->get('guest')) ?>
+                        </div>
+                        <?php echo $this->formElementErrors($form->get('guest')) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Add') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['action' => 'index', 'id' => null], true) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>
+<?php $this->inlineScript()->captureStart() ?>
+    (
+        function ($) {
+            var path = {
+                seasons: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSeasons', 'id' => ':id'], true)) ?>',
+                stages : '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchStages', 'id' => ':id'], true)) ?>',
+                subStages : '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSubStages', 'id' => ':id'], true)) ?>',
+                tours: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchTours', 'id' => ':id'], true)) ?>',
+                series: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSeries', 'id' => ':id'], true)) ?>',
+                matches: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchClubs', 'id' => ':id'], true)) ?>'
+            };
+
+            function fetch (url) {
+                return new IPromise(
+                    function (resolve, reject) {
+                        $.ajax(
+                            {
+                                url: url,
+                                success: resolve,
+                                error: reject,
+                            }
+                        );
+                    }
+                );
+            };
+
+            function displayError(xhr) {
+                swal(
+                    {
+                        title: "<?php echo $this->escapeJs($this->translate('Server error')) ?>",
+                        text: "<?php echo $this->escapeJs($this->translate('Please, try again')) ?>",
+                        type: "error",
+                        confirmButtonClass: "btn-default",
+                    }
+                );
+            }
+
+            function displayStages(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#stage')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('stage')->getEmptyOption())) ?></option>"
+                    );
+
+                $('#stage').removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#stage').html(
+                            $('#stage').html()
+                            + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displaySubStages(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#subStage')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('subStage')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#subStage').html(
+                            $('#subStage').html()
+                            + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displayTours(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#tour')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('tour')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#tour').html(
+                            $('#tour').html()
+                            + '<option value="'+ this.id +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displaySeries(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#series')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('series')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#series').html(
+                            $('#series').html()
+                            + '<option value="'+ this.id +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            $('#tournament').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#season').attr('disabled', true).html('<option>-</option>');
+                    $('#stage').attr('disabled', true).html('<option>-</option>');
+                    $('#subStage').attr('disabled', true).html('<option>-</option>');
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    fetch(path.seasons.replace(':id', $(this).val().trim()))
+                        .then(
+                            function (data) {
+                                $('#season').html(
+                                    "<option><?php echo $this->escapeJs($this->translate($form->get('season')->getEmptyOption())) ?></option>"
+                                );
+
+                                if (data) {
+                                    $('#season').removeAttr('disabled');
+
+                                    $(data).each(
+                                        function () {
+                                            $('#season').html(
+                                                $('#season').html()
+                                                + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                                            )
+                                        }
+                                    );
+                                }
+                            }
+                        )
+                        .catch(displayError);
+                }
+            );
+
+            $('#season').change(
+                function () {
+                    var $target = $(this);
+                    var $option = $target.find(':selected');
+
+                    $('#stage').attr('disabled', true).html('<option>-</option>');
+                    $('#subStage').attr('disabled', true).html('<option>-</option>');
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_LEAGUE ?>') {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(
+                                function (data) {
+                                    if (!data) {
+                                        return;
+                                    }
+
+                                    fetch(path.tours.replace(':id', data.pop().id))
+                                        .then(displayTours)
+                                        .catch(displayError);
+                                }
+                            )
+                            .catch(displayError);
+                    } else if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_CUP ?>') {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(
+                                function (data) {
+                                    if (!data) {
+                                        return;
+                                    }
+
+                                    fetch(path.subStages.replace(':id', data.pop().id))
+                                        .then(displaySubStages)
+                                        .catch(displayError);
+                                }
+                            )
+                            .catch(displayError);
+                    } else if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_EXHIBITION ?>') {
+                        // silence is gold ;)
+                    } else {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(displayStages)
+                            .catch(displayError);
+                    }
+
+                    switch ($target.data('type')) {
+                        case '<?php echo \Soccer\Entity\Season::TYPE_CUP ?>':
+                        case '<?php echo \Soccer\Entity\Season::TYPE_EXHIBITION ?>':
+                        case '<?php echo \Soccer\Entity\Season::TYPE_LEAGUE ?>':
+                            $('#stage')
+                                .html(
+                                    "<option><?php echo $this->escapeJs($this->translate($form->get('stage')->getEmptyOption())) ?></option>"
+                                );
+                    }
+                }
+            );
+
+            $('#stage').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#subStage').attr('disabled', true).html('<option>-</option>');
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    fetch(path.subStages.replace(':id', $target.val().trim()))
+                        .then(
+                            function (data) {
+                                if ($target.data('type') != '<?php echo \Soccer\Entity\Stage::TYPE_SINGLE ?>') {
+                                    displaySubStages(data);
+                                }
+                            }
+                        );
+                }
+            );
+
+            $('#subStage').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    if ($target.children(':selected').data('type') == '<?php echo \Soccer\Entity\Stage::TYPE_PLAY_OFF_SUB_STAGE ?>') {
+                        fetch(path.series.replace(':id', $target.val().trim()))
+                            .then(displaySeries)
+                            .catch(displayError);
+                    } else {
+                        fetch(path.tours.replace(':id', $target.val().trim()))
+                            .then(displayTours)
+                            .catch(displayError);
+                    }
+                }
+            );
+
+            $('#tour, #series').change(
+                function (e) {
+                    var $target = $(this);
+
+                    if (!(parseInt($target.val()) > 0)) {
+                        return;
+                    }
+
+                    var type    = {
+                        tour: 1,
+                        series: 2
+                    };
+                    var _for;
+
+                    if ($target.attr('id') == 'tour') {
+                        _for = type.tour;
+                    } else {
+                        _for = type.series;
+                    }
+
+                    fetch(path.matches.replace(':id', $target.val()) + '?for=' + _for)
+                        .then(
+                            function (data) {
+                                if (typeof data != 'object') {
+                                    return;
+                                }
+
+                                var coll = [];
+
+                                for (var i in data) {
+                                    coll.push(
+                                        {
+                                            id: data[i].id,
+                                            text: data[i].name
+                                        }
+                                    );
+                                }
+
+                                $('#host').select2({data:coll}).prop('disabled', false);
+                                $('#guest').select2({data:coll}).prop('disabled', false);
+
+                                $('#host + .select2, #guest + .select2').css('width', '100%');
+                            }
+                        )
+                        .catch(displayError);
+                }
+            );
+
+            if (!parseInt($('#season').val()) && !parseInt($('#tournament').val())) {
+                $('#season').attr('disabled', true);
+            }
+
+            if (!parseInt($('#stage').val()) && !(parseInt($('#season').val()) && $('#season').children(':selected').data('type') == '<?php echo \Soccer\Entity\Season::TYPE_CHAMPIONSHIP ?>')) {
+                $('#stage').attr('disabled', true);
+            }
+
+            if (!parseInt($('#subStage').val()) && !parseInt($('#stage').val())) {
+                $('#subStage').attr('disabled', true);
+            }
+
+            if (!parseInt($('#tour').val()) && !(parseInt($('#subStage').val()) && $('#subStage').children(':selected').data('type') == '<?php echo \Soccer\Entity\Stage::TYPE_SUB_STAGE ?>')) {
+                $('#tour').attr('disabled', true);
+            }
+
+            if (!parseInt($('#series').val()) && !(parseInt($('#subStage').val()) && $('#subStage').children(':selected').data('type') == '<?php echo \Soccer\Entity\Stage::TYPE_PLAY_OFF_SUB_STAGE ?>')) {
+                $('#series').attr('disabled', true);
+            }
+
+            if (!(parseInt($('#tour').val()) || parseInt($('#series').val()))) {
+                $('#host, #guest').prop('disabled', true);
+            }
+        }
+    )(jQuery);
+<?php $this->inlineScript()->captureEnd() ?>

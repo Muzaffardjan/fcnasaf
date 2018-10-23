@@ -1,0 +1,50 @@
+<?php  
+    $steps = [
+        [
+            'id'    => 'add_gallery',
+            'title' => 'Create gallery',
+            'icon'  => 'icon wb-add-file',
+        ], 
+        [
+            'id'    => 'edit_gallery_description',
+            'title' => 'Description',
+            'icon'  => 'icon wb-info',
+        ], 
+        [
+            'id'    => 'add_photos',
+            'title' => 'Add photos',
+            'icon'  => 'icon wb-gallery',
+        ], 
+        [
+            'id'    => 'edit_photos',
+            'title' => 'Edit photos information',
+            'icon'  => 'icon wb-pencil',
+        ], 
+        [
+            'id'    => 'done',
+            'title' => 'Done',
+            'icon'  => 'icon wb-check',
+        ], 
+    ];
+
+    $active = 0;
+
+    foreach ($steps as $order => $step) {
+        if ($step['id'] === $current) {
+            $active = $order;
+        }
+    }
+?>
+<div class="container-fluid">
+    <div class="pearls row">
+        <div class="col-sm-1"></div>
+        <?php foreach ($steps as $order => $step): ?>
+            <div class="pearl col-sm-2 <?php echo $order < $active ? 'done' : '' ?> <?php echo $order == $active ? 'current' . ($this->class ?: '') : '' ?> <?php echo $order > $active ? 'disabled' : '' ?>">
+                <div class="pearl-icon"> 
+                    <i class="<?php echo $step['icon'] ?>" aria-hidden="true"></i>
+                </div>
+                <span class="pearl-title"><?php echo $this->translate($step['title']) ?></span>
+            </div>
+        <?php endforeach ?>
+    </div>
+</div>

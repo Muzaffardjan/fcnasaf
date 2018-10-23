@@ -1,0 +1,415 @@
+<?php  
+    $this->headTitle()
+    ->append($this->translate('Edit container'))
+    ->append($this->translate('Menu'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath(
+            'assets/admin/vendor/nestable/nestable.css'
+        )
+    )
+    ->appendStylesheet(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css'
+        )
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit container') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-success" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Done') ?>"> 
+            <i class="icon wb-check" aria-hidden="true"></i>
+        </a>
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <!-- Panel Form Elements -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <?php echo $this->form()->openTag($form) ?>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('label')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-text"></i>
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('label')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('label')) ?>
+            </div>
+            <button class="btn btn-success">
+                <i class="icon wb-check"></i>
+                <span><?php echo $this->translate('Save') ?></span>
+            </button>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $this->translate('Edit elements of menu') ?></h3>
+            <div class="panel-actions">
+                <button class="panel-action btn" id="add-menu-element">
+                    <i class="icon wb-plus"></i>
+                    <span><?php echo $this->translate('Add element') ?></span>
+                </button>
+                <button class="panel-action btn" id="save-menu-changes">
+                    <i class="icon wb-check"></i>
+                    <span><?php echo $this->translate('Save changes') ?></span>
+                </button>
+                <button class="panel-action btn" id="clear-menu-element">
+                    <i class="icon wb-trash"></i>
+                    <span><?php echo $this->translate('Clear') ?></span>
+                </button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="dd" id="nestable-menu">
+                <?php if ($container->getPages()->count()): ?>
+                    <!-- <?php  
+                        $iterator = new \RecursiveIteratorIterator($navigation, \RecursiveIteratorIterator::SELF_FIRST);
+                    ?>
+                    <?php foreach ($iterator as $key => $page): ?>
+                        <?php  
+                            for ($i=0; $i<$iterator->getDepth(); $i++) {
+                                echo '-';
+                            }
+                        ?>
+                        <span><?php echo $page->getLabel() ?></span><br>
+                    <?php endforeach ?> -->
+                    <?php echo $this->partial('menu/partial/menu-edit-elements', ['container' => $navigation]) ?>
+                <?php else: ?>
+                    <div style="padding:15px;" class="dd-empty text-center">
+                        <h1 class="icon wb-inbox"></h1>
+                        <h3><?php echo $this->translate('This container has no elements') ?></h3>
+                    </div>
+                <?php endif; ?>
+            </div>        
+            <div class="loader loader-circle" style="display:none;position:absolute;top:45%;left:45%;"></div>
+        </div>
+    </div>
+    <!-- End Panel Form Elements -->
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath(
+            'js/promise.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/nestable/jquery.nestable.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/js/components/nestable.js'
+        )
+    )
+    ->appendFile(
+        $this->basePath(
+            'assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js'
+        )
+    )
+    ->captureStart();
+?>
+//<script type="text/javascript">
+
+    var EditMenuElements = function (element) {
+        var $this       = this;
+        var hasChanges  = false;
+
+        this.loadAddElementModal = function () {
+            return new IPromise(
+                function (resolve, reject) {
+                    $.ajax(
+                        "<?php echo $this->escapeJs($this->url(null, ['action' => 'getActionsModal'], true)) ?>",
+                        {
+                            success: resolve,
+                            error: reject,
+                            beforeSend: function () {
+                                $this.startLoadingState();
+                            },
+                            complete: function () {
+                                $this.endLoadingState();
+                            }
+                        }
+                    );
+                }
+            );
+        };
+
+        this.showAddElementModal = function () {
+            if (!this._mdl) {
+                this.loadAddElementModal().then(
+                    function (response) {
+                        $this._mdl = $(response).attr('id', 'actions_mdl');
+
+                        $('body').append($this._mdl);
+                        $this._mdl.modal('show').focus();
+                    }
+                );
+            } else {
+                this._mdl.modal('show').focus();
+            }
+        };
+
+        this.hideAddElementModal = function () {
+            if (this._mdl) {
+                this._mdl.modal('hide');
+            }
+        };
+
+        this.saveChanges = function () {
+            return new IPromise(
+                function (resolve, reject) {
+                    $.ajax(
+                        "<?php echo $this->url(null, ['action' => 'saveChanges'], true) ?>", 
+                        {
+                            method: "POST",
+                            data  : JSON.stringify(element.nestable('serialize')),
+                            success: function (data, textStatus, jqXHR) {
+                                if (typeof data == 'object') {
+                                    resolve(data, textStatus, jqXHR);
+                                } else {
+                                    reject(data, textStatus, jqXHR);
+                                }
+                            },
+                            error: reject,
+                            beforeSend: function () {
+                                $this.startLoadingState();
+                            },
+                            complete: function () {
+                                $this.endLoadingState();
+                            },
+                        }
+                    );
+                }
+            ).then(
+                function () {
+                    $this.setChanged(false);
+                }
+            );
+        };
+
+        this.remove = function (id) {
+            return new IPromise(
+                function (resolve, reject) {
+                    $this.saveChanges()
+                    .then(
+                        function () {
+                            $.ajax(
+                                "<?php echo $this->url('app/admin/menu/page', ['action' => 'delete', 'id' => ':id'], true) ?>".replace(':id', id), 
+                                {
+                                    method: "POST",
+                                    data  : {id: id},
+                                    success: resolve,
+                                    error: reject,
+                                    beforeSend: function () {
+                                        $this.startLoadingState();
+                                    },
+                                    complete: function () {
+                                        $this.endLoadingState();
+                                    },
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        };
+
+        this.clearElements = function () {
+            if (!element.length) {
+                return;
+            }
+
+            this.doEmptyState(element);
+
+            // Reset nestable
+            element.data('nestable').reset();
+
+            return this.saveChanges();
+        };
+
+        this.doEmptyState = function () {
+            var html = '<div style="padding:15px;" class="dd-empty text-center">'+
+                            '<h1 class="icon wb-inbox"></h1>'+
+                            '<h3><?php echo $this->translate('This container has no elements') ?></h3>'+
+                        '</div>';
+
+            element.html(html);
+        };
+
+        this.startLoadingState = function () {
+            element.css('opacity', 0.4);
+            var loader = element.parents('.panel-body')
+            .find('.loader');
+
+            loader.removeClass('loader-default')
+            .addClass('loader-circle')
+            .css(
+                'top', 
+                (element.parents('.panel-body').height() - loader.outerHeight()) / 2 + 'px'
+            )
+            .css(
+                'left', 
+                (element.parents('.panel-body').width() - loader.outerWidth()) / 2 + 'px'
+            )
+            .show();
+        };
+
+        this.endLoadingState   = function () {
+            element.css('opacity', 1);
+            element.parents('.panel-body').find('.loader').hide();
+        };
+
+        this.isChanged = function () {
+            return hasChanges;
+        }
+
+        this.setChanged = function (flag) {
+            hasChanges = flag || false;
+        }
+    };
+
+    var confirmDialog = function (title, message) {
+        return new IPromise(
+            function (resolve, reject) {
+                swal(
+                    {
+                        title: title,
+                        text: message,
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "<?php echo $this->escapeJs($this->translate('Yes')) ?>",
+                        cancelButtonText: "<?php echo $this->escapeJs($this->translate('Cancel')) ?>",
+                    },
+                    function(isConfirm) {
+                        if (isConfirm) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    }
+                );
+            }
+        );
+    };
+
+    var successDialog = function (title, message) {
+        swal(
+            {
+                title: title,
+                text: message,
+                type: "success",
+            }
+        );
+    };
+
+    var errorDialog = function (title, message) {
+        swal(
+            {
+                title: title,
+                text: message,
+                type: "error",
+            }
+        );
+    };
+
+    var editMenuElements = new EditMenuElements($('#nestable-menu'));
+
+    $('#nestable-menu').nestable(
+        {   
+            maxDepth: 10,
+            callback: editMenuElements.setChanged(true),
+        }
+    );
+
+    $('#add-menu-element').click(
+        function () {
+            editMenuElements.showAddElementModal();
+        }
+    );
+
+    $('#clear-menu-element').click(
+        function () {
+            confirmDialog(
+                "<?php echo $this->escapeJs($this->translate('Are you sure?')) ?>",
+                "<?php echo $this->escapeJs($this->translate('All menu elements will be deleted and container will be saved as empty')) ?>"
+            )
+            .then(
+                function () {
+                    editMenuElements.clearElements();
+                }
+            );
+        }
+    );
+
+    $('#save-menu-changes').click(
+        function () {
+            editMenuElements
+            .saveChanges()
+            .then(
+                function () {
+                    successDialog(
+                        "<?php echo $this->escapeJs($this->translate('Saved')) ?>",
+                        "<?php echo $this->escapeJs($this->translate('All changes successfully saved')) ?>"
+                    );
+                }
+            )
+            .catch(
+                function () {
+                    errorDialog(
+                        "<?php echo $this->escapeJs($this->translate('Server error')) ?>",
+                        "<?php echo $this->escapeJs($this->translate('Something went wrong on server side')) ?>"
+                    );
+                }
+            );
+        }
+    );
+
+    $('.remove-element-btn').click(
+        function () {
+            var li = $(this).parents('.dd-content').parent();
+
+            confirmDialog(
+                "<?php echo $this->escapeJs($this->translate('Are you sure?')) ?>",
+                "<?php echo $this->escapeJs($this->translate('Element will be deleted. This action can not be prevented.')) ?>"
+            )
+            .then(
+                function () {
+                    editMenuElements
+                    .remove(li.data('id'))
+                    .then(
+                        function () {
+                            li.fadeOut(400, function() {
+                                li.remove();
+                            });
+                        }
+                    );
+                }
+            );
+        }
+    );
+
+    // Warn user about changes
+    window.onbeforeunload = function (e) {
+        if (editMenuElements.isChanged()) {
+            var message   = "<?php echo $this->escapeJs($this->translate('Before closing this window, be sure you saved all changes!')) ?>";
+            e.returnValue = message;
+
+            return message;
+        }
+    };
+
+/*</script>*/
+<?php $this->inlineScript()->captureEnd(); ?>

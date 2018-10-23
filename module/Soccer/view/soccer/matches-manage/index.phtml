@@ -1,0 +1,576 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Zend\Paginator\Paginator       $matches
+ */
+
+$this->headTitle()
+    ->append($this->translate('Matches'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-sweetalert.js')
+    )
+    ->appendFile(
+        $this->basePath('js/promise.js')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .table > tbody > tr > td, .table > tbody > tr > th,
+            .table > tfoot > tr > td, .table > tfoot > tr > th,
+            .table > thead > tr > td, .table > thead > tr > th {
+                vertical-align: middle;
+            }
+            
+            .championship-cell > * {
+                display: block;
+                margin-bottom: 10px;
+                text-align: left;
+            }
+        "
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Matches') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Add new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <?php echo $this->form()->openTag($form->setAttribute('class', 'form form-inline text-right')) ?>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('tournament')
+                            ->setAttribute('class', 'form-control input-sm')
+                            ->setAttribute('id', 'tournament')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('tournament')->getLabel()) ?></h5>
+                            <?php echo
+                            $this->formSelect($form->get('tournament')),
+                            $this->formElementErrors($form->get('tournament'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('season')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'season')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('season')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('season')),
+                            $this->formElementErrors($form->get('season'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('stage')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'stage')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('stage')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('stage')),
+                            $this->formElementErrors($form->get('stage'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('subStage')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'subStage')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('subStage')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('subStage')),
+                            $this->formElementErrors($form->get('subStage'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('tour')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'tour')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('tour')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('tour')),
+                            $this->formElementErrors($form->get('tour'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('series')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'series')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('series')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('series')),
+                            $this->formElementErrors($form->get('series'))
+                            ?>
+                        </div>
+                        <div class="form-group margin-0 margin-right-10">
+                            <?php
+                            $form->get('status')
+                                ->setAttribute('class', 'form-control input-sm')
+                                ->setAttribute('id', 'status')
+                            ?>
+                            <h5 class="text-left margin-0 margin-bottom-5"><?php echo $this->translate($form->get('status')->getLabel()) ?></h5>
+                            <?php echo $this->formSelect($form->get('status')),
+                            $this->formElementErrors($form->get('status'))
+                            ?>
+                        </div>
+                        <div class="form-group">
+                            <h5 class="margin-0 margin-bottom-5">&nbsp;</h5>
+                            <button class="btn btn-default btn-outline btn-sm">
+                                <?php echo $this->escapeHtml($this->translate("Filter")); ?>
+                            </button>
+                        </div>
+                    <?php echo $this->form()->closeTag($form) ?>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th><?php echo $this->translate('Date') ?></th>
+                        <th><?php echo $this->translate('Host') ?></th>
+                        <th><?php echo $this->translate('Guest') ?></th>
+                        <th><?php echo $this->translate('Championship') ?></th>
+                        <th><?php echo $this->translate('Stadium') ?></th>
+                        <th><?php echo $this->translate('Actions') ?></th>
+                    </tr>
+                    <?php if ($matches->getCurrentItemCount()): ?>
+                        <?php
+                        /**
+                         * @var \Soccer\Entity\Match $match
+                         */
+                        foreach ($matches as $match):
+                            ?>
+                            <tr>
+                                <td>
+                                    <span><?php echo $match->getDate()->format('d.m.Y H:i') ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" alt="" class="img-responsive center-block hidden-xs hidden-sm">
+                                        <h5><?php echo $match->getHost()->getName($this->locale()->current()) ?></h5>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" alt="" class="img-responsive center-block hidden-xs hidden-sm">
+                                        <h5><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h5>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="championship-cell">
+                                        <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $match->getSeason()->getTournament()->getId()], true) ?>"><?php echo $match->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></a>
+                                        <?php $season = $match->getSeason(); ?>
+                                        <?php if ($season->getType() == \Soccer\Entity\Season::TYPE_LEAGUE): ?>
+                                            <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/tours', ['tournament' => $match->getSeason()->getTournament()->getId(), 'season' => $season->getId(), 'action' => 'index'], true) ?>">
+                                                <?php echo $this->escapeHtml(sprintf($this->translate("%s season"), $season->getLabel($this->locale()->current()))); ?>
+                                            </a>
+                                            <span class="btn btn-default btn-sm btn-inverse">
+                                                        <?php printf($this->translate("%s tour"), $match->getTour()->getLabel($this->locale()->current())) ?>
+                                                    </span>
+                                        <?php elseif ($season->getType() == \Soccer\Entity\Season::TYPE_CUP): ?>
+                                            <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'stage' => $season->getStages()->first()->getId(), 'id' => null], true) ?>">
+                                                <?php echo $this->escapeHtml(sprintf("%s season", $match->getSeason()->getLabel($this->locale()->current()))); ?>
+                                            </a>
+                                            <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/series', ['action' => 'index', 'stage' => $match->getStage()->getId(), 'id' => null], true) ?>">
+                                                <?php echo $this->escapeHtml(sprintf("%s stage", $match->getStage()->getLabel($this->locale()->current()))); ?>
+                                            </a>
+                                            <span class="btn btn-default btn-sm btn-inverse">
+                                                        <?php echo $match->getSeries()->getLabel($this->locale()->current()) ?>
+                                                    </span>
+                                        <?php elseif ($season->getType() == \Soccer\Entity\Season::TYPE_CHAMPIONSHIP): ?>
+                                            <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/stages', ['action' => 'index', 'tournament' => $season->getTournament()->getId(), 'season' => $season->getId(), 'id' => null], true) ?>">
+                                                <?php echo $this->escapeHtml(sprintf($this->translate("%s season"), $season->getLabel($this->locale()->current()))); ?>
+                                            </a>
+                                            <?php if ($match->getStage()->getParent()->getType() == \Soccer\Entity\Stage::TYPE_GROUP): ?>
+                                                <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/group-play', ['action' => 'index', 'stage' => $match->getStage()->getParent()->getId(), 'id' => null], true) ?>">
+                                                    <?php echo $this->escapeHtml(sprintf($this->translate("%s stage"), $match->getStage()->getParent()->getLabel($this->locale()->current()))); ?>
+                                                </a>
+                                                <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/tours', ['action' => 'index', 'tournament' => $season->getTournament()->getId(), 'season' => $season->getId(), 'stage' => $match->getStage()->getId(), 'id' => null], true) ?>">
+                                                    <?php echo $this->escapeHtml(sprintf($this->translate("%s group"), $match->getStage()->getLabel($this->locale()->current()))); ?>
+                                                </a>
+                                                <span class="btn btn-default btn-sm btn-inverse">
+                                                            <?php printf($this->translate("%s tour"), $match->getTour()->getLabel($this->locale()->current())) ?>
+                                                        </span>
+                                            <?php elseif ($match->getStage()->getParent()->getType() == \Soccer\Entity\Stage::TYPE_PLAY_OFF): ?>
+                                                <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'stage' => $match->getStage()->getParent()->getId(), 'id' => null], true) ?>">
+                                                    <?php echo $this->escapeHtml(sprintf($this->translate("%s stage"), $match->getStage()->getParent()->getLabel($this->locale()->current()))); ?>
+                                                </a>
+                                                <a class="btn btn-default btn-sm btn-inverse" href="<?php echo $this->url('app/admin/soccer/series', ['action' => 'index', 'stage' => $match->getStage()->getId(), 'id' => null], true) ?>">
+                                                    <?php echo $this->escapeHtml(sprintf($this->translate("%s stage"), $match->getStage()->getLabel($this->locale()->current()))); ?>
+                                                </a>
+                                                <span class="btn btn-default btn-sm btn-inverse">
+                                                        <?php echo $match->getSeries()->getLabel($this->locale()->current()) ?>
+                                                    </span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span><?php echo $match->getStadium()->getLabel($this->locale()->current()) ?></span>
+                                </td>
+                                <td>
+                                    <a class="btn btn-default btn-sm btn-inverse btn-block text-left" style="text-decoration: none;" href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $match->getId()], true) ?>">
+                                        <i class="icon wb-settings"></i>
+                                        <span class="hidden-xs hidden-sm"><?php echo $this->escapeHtml($this->translate("Edit")); ?></span>
+                                    </a>
+                                    <a class="btn btn-default btn-sm btn-inverse btn-block text-left" style="text-decoration: none;" href="<?php echo $this->url('app/admin/soccer/match-details', ['action' => 'panel', 'match' => $match->getId()], true) ?>">
+                                        <i class="icon wb-copy"></i>
+                                        <span class="hidden-xs hidden-sm"><?php echo $this->escapeHtml($this->translate("Edit match details")); ?></span>
+                                    </a>
+                                    <a class="btn btn-default btn-sm btn-inverse btn-block text-left" style="text-decoration: none;" href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $match->getId()], true) ?>">
+                                        <i class="icon wb-trash"></i>
+                                        <span class="hidden-xs hidden-sm"><?php echo $this->escapeHtml($this->translate("Delete")); ?></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6">
+                                <div class="well text-center">
+                                    <h1>
+                                        <i class="icon wb-inbox"></i>
+                                    </h1>
+                                    <h3>
+                                        <span><?php echo $this->translate('There is no any record.') ?></span>
+                                    </h3>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
+        </div>
+        <?php if ($matches->count() > 1): ?>
+            <div>
+                <?php
+                echo $this->paginationControl(
+                    $matches,
+                    'Sliding',
+                    'admin/partial/paginator',
+                    [
+                        'url'   => $this->serverUrl(true),
+                        'name'  => 'page'
+                    ]
+                )
+                ?>
+            </div>
+        <?php endif; ?>
+</div>
+<?php $this->inlineScript()->captureStart() ?>
+    (
+        function ($) {
+            var path = {
+                seasons: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSeasons', 'id' => ':id'], true)) ?>',
+                stages : '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchStages', 'id' => ':id'], true)) ?>',
+                subStages : '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSubStages', 'id' => ':id'], true)) ?>',
+                tours: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchTours', 'id' => ':id'], true)) ?>',
+                series: '<?php echo $this->escapeJs($this->url(null, ['action' => 'fetchSeries', 'id' => ':id'], true)) ?>'
+            };
+
+            function fetch (url) {
+                return new IPromise(
+                    function (resolve, reject) {
+                        $.ajax(
+                            {
+                                url: url,
+                                success: resolve,
+                                error: reject,
+                            }
+                        );
+                    }
+                );
+            };
+
+            function displayError(xhr) {
+                swal(
+                    {
+                        title: "<?php echo $this->escapeJs($this->translate('Server error')) ?>",
+                        text: "<?php echo $this->escapeJs($this->translate('Please, try again')) ?>",
+                        type: "error",
+                        confirmButtonClass: "btn-default",
+                    }
+                );
+            }
+
+            function displayStages(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#stage')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('stage')->getEmptyOption())) ?></option>"
+                    ).removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#stage').html(
+                            $('#stage').html()
+                            + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displaySubStages(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#subStage')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('subStage')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#subStage').html(
+                            $('#subStage').html()
+                            + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displayTours(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#tour')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('tour')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#tour').html(
+                            $('#tour').html()
+                            + '<option value="'+ this.id +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            function displaySeries(options) {
+                if (!options) {
+                    return;
+                }
+
+                $('#series')
+                    .html(
+                        "<option><?php echo $this->escapeJs($this->translate($form->get('series')->getEmptyOption())) ?></option>"
+                    )
+                    .removeAttr('disabled');
+
+                $(options).each(
+                    function () {
+                        $('#series').html(
+                            $('#series').html()
+                            + '<option value="'+ this.id +'">'+ this.label +'</option>'
+                        )
+                    }
+                );
+            }
+
+            $('#tournament').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#season').attr('disabled', true).html('<option>-</option>');
+                    $('#stage').attr('disabled', true).html('<option>-</option>');
+                    $('#subStage').attr('disabled', true).html('<option>-</option>');
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    fetch(path.seasons.replace(':id', $(this).val().trim()))
+                        .then(
+                            function (data) {
+                                $('#season').html(
+                                    "<option><?php echo $this->escapeJs($this->translate($form->get('season')->getEmptyOption())) ?></option>"
+                                );
+
+                                if (data) {
+                                    $('#season').removeAttr('disabled');
+
+                                    $(data).each(
+                                        function () {
+                                            $('#season').html(
+                                                $('#season').html()
+                                                + '<option value="'+ this.id +'" data-type="'+ this.type +'">'+ this.label +'</option>'
+                                            )
+                                        }
+                                    );
+                                }
+                            }
+                        )
+                        .catch(displayError);
+                }
+            );
+
+            $('#season').change(
+                function () {
+                    var $target = $(this);
+                    var $option = $target.find(':selected');
+
+                    $('#stage').attr('disabled', true);
+                    $('#subStage').attr('disabled', true);
+                    $('#tour').attr('disabled', true);
+                    $('#series').attr('disabled', true);
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_LEAGUE ?>') {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(
+                                function (data) {
+                                    if (!data) {
+                                        return;
+                                    }
+
+                                    fetch(path.tours.replace(':id', data.pop().id))
+                                        .then(displayTours)
+                                        .catch(displayError);
+                                }
+                            )
+                            .catch(displayError);
+                    } else if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_CUP ?>') {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(
+                                function (data) {
+                                    if (!data) {
+                                        return;
+                                    }
+
+                                    fetch(path.subStages.replace(':id', data.pop().id))
+                                        .then(displaySubStages)
+                                        .catch(displayError);
+                                }
+                            )
+                            .catch(displayError);
+                    } else if ($option.data('type') == '<?php echo \Soccer\Entity\Season::TYPE_EXHIBITION ?>') {
+                        // silence is gold ;)
+                    } else {
+                        fetch(path.stages.replace(':id', $target.val().trim()))
+                            .then(displayStages)
+                            .catch(displayError);
+                    }
+
+                    switch ($target.data('type')) {
+                        case '<?php echo \Soccer\Entity\Season::TYPE_CUP ?>':
+                        case '<?php echo \Soccer\Entity\Season::TYPE_EXHIBITION ?>':
+                        case '<?php echo \Soccer\Entity\Season::TYPE_LEAGUE ?>':
+                            $('#stage')
+                                .html(
+                                    "<option><?php echo $this->escapeJs($this->translate($form->get('stage')->getEmptyOption())) ?></option>"
+                                );
+                    }
+                }
+            );
+
+            $('#stage').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#subStage').attr('disabled', true);
+                    $('#tour').attr('disabled', true);
+                    $('#series').attr('disabled', true);
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    fetch(path.subStages.replace(':id', $target.val().trim()))
+                        .then(
+                            function (data) {
+                                if ($target.data('type') != '<?php echo \Soccer\Entity\Stage::TYPE_SINGLE ?>') {
+                                    displaySubStages(data);
+                                }
+                            }
+                        );
+                }
+            );
+
+            $('#subStage').change(
+                function () {
+                    var $target = $(this);
+
+                    $('#tour').attr('disabled', true).html('<option>-</option>');
+                    $('#series').attr('disabled', true).html('<option>-</option>');
+
+                    if (!$target.children(':selected').attr('value')) {
+                        return;
+                    }
+
+                    if ($target.children(':selected').data('type') == '<?php echo \Soccer\Entity\Stage::TYPE_PLAY_OFF_SUB_STAGE ?>') {
+                        fetch(path.series.replace(':id', $target.val().trim()))
+                            .then(displaySeries)
+                            .catch(displayError);
+                    } else {
+                        fetch(path.tours.replace(':id', $target.val().trim()))
+                            .then(displayTours)
+                            .catch(displayError);
+                    }
+                }
+            );
+
+            if (!parseInt($('#season').val()) && !parseInt($('#tournament').val())) {
+                $('#season').attr('disabled', true);
+            }
+
+            if (!parseInt($('#stage').val()) && !parseInt($('#season').val())) {
+                $('#stage').attr('disabled', true);
+            }
+
+            if (!parseInt($('#subStage').val()) && !parseInt($('#stage').val())) {
+                $('#subStage').attr('disabled', true);
+            }
+
+            if (!parseInt($('#tour').val()) && !parseInt($('#subStage').val())) {
+                $('#tour').attr('disabled', true);
+            }
+
+            if (!parseInt($('#series').val()) && !parseInt($('#subStage').val())) {
+                $('#series').attr('disabled', true);
+            }
+        }
+    )(jQuery);
+<?php $this->inlineScript()->captureEnd() ?>

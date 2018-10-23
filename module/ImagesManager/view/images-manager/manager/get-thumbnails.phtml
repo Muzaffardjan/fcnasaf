@@ -1,0 +1,288 @@
+<?php
+    $this->headTitle()
+    ->append($this->translate('Image cropping'));
+
+    $this->headLink()
+    ->appendStylesheet($this->basePath('assets/admin/css/../fonts/material-design/material-design.css'))
+    ->appendStylesheet($this->basePath('assets/admin/vendor/cropper/cropper.css'));
+
+    $this->headStyle()->appendStyle(
+        "
+            .btn-group .btn + .btn,
+            .btn-group .btn + .btn-group,
+            .btn-group .btn-group + .btn,
+            .btn-group .btn-group + .btn-group {
+              margin-left: 0;
+            }
+            
+            .cropper-preview {
+              overflow: hidden;
+            }
+            
+            .img-preview {
+              float: left;
+              margin: 0 10px 10px 0;
+              overflow: hidden;
+            }
+            
+            .img-preview > img {
+              max-width: 100%;
+            }
+            
+            .preview-lg {
+              width: 263px;
+              height: 148px;
+            }
+            
+            .preview-md {
+              width: 139px;
+              height: 78px;
+            }
+            
+            .preview-sm {
+              width: 69px;
+              height: 39px;
+            }
+            
+            .preview-xs {
+              width: 35px;
+              height: 20px;
+              margin-right: 0;
+            }
+            
+            .cropper,
+            .cropper-toolbar {
+              margin-bottom: 15px;
+            }
+            
+            @media (min-width: 1200px) {
+              .cropper {
+                max-height: 600px;
+              }
+            }
+            
+            @media (min-width: 769px) {
+              .cropper {
+                max-height: 400px;
+              }
+            }
+            
+            @media (max-width: 768px) {
+              .cropper {
+                max-height: 300px;
+              }
+            }
+            
+            @media (max-width: 480px) {
+              .cropper {
+                max-height: 246px;
+              }
+            }
+            
+            @media (max-width: 586px) {
+              .btn-group .btn {
+                padding: 6px 8px;
+              }
+              .cropper {
+                max-height: 246px;
+              }
+            }
+
+            #cropper-tools {
+                width: 100%;
+            }
+
+            #cropper-tools > .btn > .icon {
+                font-size: 1.3em; 
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Image cropping') ?> <span id="state">(<?php echo $done, '/', $total ?>)</span></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current(), 'action' => 'getThumbnails'], ['query' => ['cancel' => true]]) ?>" class="btn btn-danger" data-toggle="tooltip" data-container="body" title="<?php echo $this->escapeHtmlAttr($this->translate('Cancel')) ?>">
+            <i class="icon md-close"></i>
+            <span class="hidden-xs"><?php echo $this->translate('Cancel') ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">    
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <div class="row">
+                <div class="col-md-9">
+                    <h4><?php echo $this->translate('Cropper') ?></h4>
+                    <div class="cropper" id="simpleCropper">
+                        <img src="<?php echo $this->basePath($image['href']) ?>">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h4><?php echo $this->translate('Preview') ?></h4>
+                    <div class="cropper-preview clearfix" id="simpleCropperPreview">
+                        <div class="img-preview preview-lg"></div>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="btn-group" id="cropper-tools">
+                        <button type="button" class="btn btn-dark" data-container="body" data-toggle="tooltip" data-option="0.1" data-cropper-method="zoom" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Zoom in')) ?>">
+                            <i class="icon md-zoom-in"></i>
+                        </button>
+                        <button type="button" class="btn btn-dark" data-container="body" data-toggle="tooltip" data-option="-0.1" data-cropper-method="zoom" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('Zoom out')) ?>">
+                            <i class="icon md-zoom-out"></i>
+                        </button>
+                        <button type="button" class="btn btn-dark" data-cropper-method="rotate" data-option="-90"
+                      data-toggle="tooltip" data-container="body" title="<?php echo $this->escapeHtmlAttr($this->translate('Turn left')) ?>">
+                            <i class="icon md-refresh-sync"></i>
+                            <span class="hidden-xs"><?php echo $this->translate('Turn left') ?></span>
+                        </button>
+                        <button type="button" class="btn btn-dark" data-cropper-method="rotate" data-option="90"
+                      data-toggle="tooltip" data-container="body" title="<?php echo $this->escapeHtmlAttr($this->translate('Turn right')) ?>">
+                            <i class="icon md-refresh"></i>
+                            <span class="hidden-xs"><?php echo $this->translate('Turn right') ?></span>
+                        </button>
+                        <button type="button" class="btn btn-dark" data-toggle="tooltip" id="save-continue" data-container="body" title="<?php echo $this->escapeHtmlAttr($this->translate('Save & continue')) ?>">
+                            <i class="icon md-floppy"></i>
+                            <span class="hidden-xs"><?php echo $this->translate('Save and continue') ?></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+    $this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/cropper/cropper.min.js'))
+    ->appendScript(
+        '
+            window.wandh = {
+                width: '.$thumbnailer->getWidth().',
+                height: '.$thumbnailer->getHeight().',
+            };
+
+            (function() {
+                if (typeof FormData !== "function") {
+                    alert("'.$this->escapeJs($this->translate('Your browser do not support this function please update it!')).'");
+                } else {
+                    var cropper = $("#simpleCropper img");
+
+                    cropper.cropper({
+                        aspectRatio: (wandh.width/wandh.height),
+                        preview: "#simpleCropperPreview > .img-preview",
+                        responsive: true,
+                    });
+
+                    $(document).on("click", "[data-cropper-method]", function() {
+                      var data = $(this).data(),
+                        method = $(this).data(\'cropper-method\'),
+                        result;
+                      if (method) {
+                        result = cropper.cropper(method, data.option);
+                      }
+                    });
+
+                    $("#save-continue").click(function () {
+                        var data = cropper.cropper(\'getData\', true);
+
+                        var showProgress = function () {
+                            var progress = $("<div class=\"progress\" id=\"_progressy-in\" style=\"height: 30px;width:300px;\">"+
+                                                "<div class=\"progress-bar progress-bar-striped active\" style=\"width: 100%\">"+
+                                                "</div>"+
+                                            "</div>");
+                            var backdrop = $("<div class=\"modal-backdrop in\" id=\"_progressy\"></div>");
+                            $("body").append(backdrop);
+                            $("body").append(progress);
+                            $("body").addClass("modal-open");
+
+                            progress.css(
+                                {
+                                    "top": (($(window).height() - progress.height())/2) + "px",
+                                    "left": (($(window).width() - progress.width())/2) + "px",
+                                    "position": "fixed",
+                                    "z-index": "1600",
+                                }
+                            );
+                        };
+
+                        var hideProgress = function () {
+                            $("body").removeClass("modal-open");
+                            $("#_progressy").remove();
+                            $("#_progressy-in").remove();
+                        }
+
+                        showProgress();
+
+                        $.ajax(
+                            "'.$this->url(
+                                null, 
+                                [
+                                    'locale' => $this->locale()->current(),
+                                    'action' => 'getThumbnails',
+                                ]
+                            ).'",
+                            {
+                                method : "POST",
+                                data   : data,
+                                beforeSend: function () {
+                                    cropper.cropper("disable");
+                                },
+                                success: function (response) {
+                                    if (false != response.href 
+                                        && false != response.ratio
+                                    ) {
+                                        cropper.cropper(
+                                            "replace",
+                                            response.href
+                                        );
+
+                                        cropper.cropper(
+                                            "setAspectRatio",
+                                            response.ratio
+                                        );                         
+                                    }
+                                },
+                                complete: function (response) {
+                                    hideProgress();
+                                    cropper.cropper("enable");
+
+                                    if (200 === response.status && 4 === response.readyState) {
+                                        var data = response.responseJSON;
+
+                                        if (false != data.ratio &&
+                                            false != data.href
+                                        ) {
+                                            cropper.cropper(
+                                                "setAspectRation",
+                                                data.ratio
+                                            );
+
+                                            cropper.cropper(
+                                                "replace",
+                                                "'.$this->basePath('/').'" + data.href
+                                            );
+                                            
+                                            var text = $("#state").text()
+                                            .trim();
+                                            var done = parseInt(
+                                                text.substr(1, text.indexOf("/")-1)
+                                            ) + 1;
+
+                                            $("#state").text(
+                                                "("+done + text.substr(text.indexOf("/"))
+                                            );
+                                        }
+
+                                        if (data.return) {
+                                            location.href = data.return;
+                                        }
+                                    }
+                                }
+                            }
+                        );
+                    });
+                }
+            })();
+        '
+    );
+?>

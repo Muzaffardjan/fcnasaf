@@ -1,0 +1,56 @@
+<?php  
+use Zend\Uri\UriFactory;
+
+$uri    = UriFactory::factory($url);
+$query  = $uri->getQueryAsArray();
+
+if ($this->pageCount): ?>
+    <div class="text-center">
+        <ul class="pagination pagination-gap">
+            <!-- Previous page link -->
+            <?php if (isset($this->previous)): ?>
+                <li>
+                    <a href="<?php echo $uri->setQuery(array_merge($query, ['page' => $this->previous])); ?>">
+                        <i class="icon md-chevron-left"></i>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="javascript:void(0);">
+                        <i class="icon md-chevron-left"></i>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Numbered page links -->
+            <?php foreach ($this->pagesInRange as $page): ?>
+                <?php if ($page != $this->current): ?>
+                    <li>
+                        <a href="<?php echo $uri->setQuery(array_merge($query, ['page' => $page])); ?>">
+                        <?php echo $page; ?>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="active">
+                        <a href="javascript:void(0);"><?php echo $page; ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <!-- Next page link -->
+            <?php if (isset($this->next)): ?>
+                    <li>
+                        <a href="<?php echo $uri->setQuery(array_merge($query, ['page' => $this->next])); ?>">
+                            <i class="icon md-chevron-right"></i>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="disabled">
+                        <a href="javascript:void(0);">
+                            <i class="icon md-chevron-right"></i>
+                        </a>
+                    </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+<?php endif; ?>

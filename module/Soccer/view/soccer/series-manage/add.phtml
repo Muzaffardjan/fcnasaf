@@ -1,0 +1,226 @@
+<?php
+/**
+ * @var \Soccer\Entity\Stage     $stage
+ * @var \Soccer\Form\PlayOffForm $form
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ */
+
+$this->headTitle()->append($this->translate('Add'))
+    ->append($this->translate('Series'))
+    ->append($stage->getLabel($this->locale()->current()))
+    ->append($this->translate('Play-off stages'))
+    ->append($stage->getParent()->getLabel($this->locale()->current()))
+    ->append(sprintf($this->translate('Season %s'), $stage->getParent()->getSeason()->getLabel($this->locale()->current())))
+    ->append($stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()))
+    ->append($this->translate('Tournaments'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/select2/select2.min.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/select2.js')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .form-group.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        "
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New series') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index', 'id' => null], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php echo $stage->getParent()->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <?php if ($stage->getParent()->getSeason()->getType() == \Soccer\Entity\Season::TYPE_CUP): ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+        <?php else: ?>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/stages', ['tournament' => $stage->getParent()->getSeason()->getTournament()->getId(), 'season' => $stage->getParent()->getSeason()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php printf('Season %s', $stage->getParent()->getSeason()->getLabel($this->locale()->current())) ?></a>
+            </li>
+            <li>
+                <a href="<?php echo $this->url('app/admin/soccer/play-off', ['action' => 'index', 'id' => null, 'stage' => $stage->getParent()->getId()], true) ?>"><?php echo $stage->getParent()->getLabel($this->locale()->current()) ?></a>
+            </li>
+        <?php endif; ?>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/series', ['action' => 'index', 'id' => null], true) ?>"><?php printf('Stage %s', $stage->getLabel($this->locale()->current())) ?></a>
+        </li>
+        <li class="active"><?php echo $this->translate('Add') ?></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <?php
+            // initial setting of form's first element
+            $form->get('first')
+                ->setAttribute('data-plugin', 'select2')
+                ->setAttribute('id', 'first-club')
+                ->setOption('label_attributes', ['for' => 'first-club']);
+
+            $form->get('firstPrevious')
+                ->setAttribute('data-plugin', 'select2')
+                ->setAttribute('id', 'first-series')
+                ->setOption('label_attributes', ['for' => 'first-series']);
+            ?>
+            <h4><?php echo $this->translate("First team") ?></h4>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('first')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="icon fa-soccer-ball-o"></span>
+                    </span>
+                    <?php echo
+                        $this->formSelect($form->get('first')),
+                        $this->formElementErrors($form->get('first'))
+                    ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('firstPrevious')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="icon fa-sitemap"></span>
+                    </span>
+                    <?php echo
+                    $this->formSelect($form->get('firstPrevious')),
+                    $this->formElementErrors($form->get('firstPrevious'))
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-body">
+            <?php
+            // initial setting of form's first element
+            $form->get('second')
+                ->setAttribute('data-plugin', 'select2')
+                ->setAttribute('id', 'second-club')
+                ->setOption('label_attributes', ['for' => 'second-club']);
+
+            $form->get('secondPrevious')
+                ->setAttribute('data-plugin', 'select2')
+                ->setAttribute('id', 'second-series')
+                ->setOption('label_attributes', ['for' => 'second-series']);
+            ?>
+            <h4><?php echo $this->translate("Second team") ?></h4>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('second')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="icon fa-soccer-ball-o"></span>
+                    </span>
+                    <?php echo
+                    $this->formSelect($form->get('second')),
+                    $this->formElementErrors($form->get('second'))
+                    ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('secondPrevious')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="icon fa-sitemap"></span>
+                    </span>
+                    <?php echo
+                    $this->formSelect($form->get('secondPrevious')),
+                    $this->formElementErrors($form->get('secondPrevious'))
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="form-group">
+                <?php
+                $form->get('alias')
+                ->setAttribute('id', 'alias-of-series')
+                ->setAttribute('class', 'form-control');
+                ?>
+                <?php echo
+                    $this->formLabel($form->get('alias')),
+                    $this->formText($form->get('alias')),
+                    $this->formElementErrors($form->get('alias'))
+                ?>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('winner')
+                    ->setAttribute('data-plugin', 'select2')
+                    ->setAttribute('id', 'series-winner');
+                ?>
+                <?php echo $this->formLabel($form->get('winner')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="icon fa-trophy"></span>
+                    </span>
+                    <?php echo
+                    $this->formSelect($form->get('winner')),
+                    $this->formElementErrors($form->get('winner'))
+                    ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <?php
+                $form->get('final')
+                    ->setAttribute('id', 'alias-of-final-series')
+                    ->setAttribute('class', 'form-control');
+                ?>
+                <div class="checkbox-custom checkbox-primary">
+                        <?php echo $this->formCheckbox($form->get('final')) ?>
+                        <?php echo $this->formLabel($form->get('final')) ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('final')) ?>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Add') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

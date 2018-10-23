@@ -1,0 +1,97 @@
+<?php
+$this->headTitle()->append($this->translate('Videos'));
+$this->headLink()->appendStylesheet($this->basePath('css/videos.css'));
+?>
+
+<!-- BANNER -->
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="caption">
+                    <?php echo $this->translate('Videos') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="page-title"></div>
+        </div>
+
+        <div class="row">
+            <?php if ($videos->getCurrentItemCount()): ?>
+                <?php foreach ($videos as $info): ?>
+                    <div class="col-sm-4 col-md-4">
+                        <a href="<?php echo $this->url('app/media/video', ['locale' => $info->getLocale(), 'uri' => $info->getUri()]) ?>" class="video-item">
+                            <div class="poster">
+                                <img src="<?php echo $info->getVideo()->getPoster() ?>" class="img-responsive">
+                            </div>
+
+                            <i style="position: absolute; color: #ffffff; font-size: 100px; left: 35%; top: 25%" class="glyphicon glyphicon-play-circle"></i>
+
+                            <div class="description">
+                                <h3 class="title"><?php echo $info->getTitle() ?></h3>
+
+                                <p class="info">
+                                    <i class="icon md-calendar"></i>
+                                    <?php echo $info->getVideo()->getDate()->format('d M Y') ?>
+
+                                    <span class="pull-right">
+                                        <i class="icon md-favorite"></i>
+                                        <?php $likes = $info->getVideo()->getLikes(); ?>
+                                        <span class="likes"><?php echo $likes ?></span>
+                                        <?php echo $this->translate('like(s)') ?>
+                                    </span>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                <?php endforeach ?>
+            <?php else: ?>
+                <div class="well text-center">
+                    <h1>
+                        <i class="icon md-inbox"></i>
+                    </h1>
+                    <h3><?php echo $this->translate('Content will be added soon') ?></h3>
+                </div>
+            <?php endif ?>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <?php if ($videos->count() > 1): ?>
+                    <?php
+                    echo $this->paginationControl(
+                    // the paginator object
+                        $videos,
+                        // the scrolling style
+                        'Sliding',
+                        // the partial to use to render the control
+                        'application/partial/paginator',
+                        // the route to link to when a user clicks a control link
+                        [
+                            'url' => $this->serverUrl(true),
+                            'name' => 'page',
+                        ]
+                    );
+                    ?>
+                <?php endif ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="videos">
+    <div class="container">
+        <div class="row">
+            <div class="clearfix"></div>
+            <div class="col-xs-12">
+
+            </div>
+        </div>
+    </div>  
+</section>

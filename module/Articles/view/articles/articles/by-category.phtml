@@ -1,0 +1,86 @@
+<!-- BANNER -->
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="caption">NEWS</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NEWS SECTION -->
+<div class="section singlepage" >
+    <div class="container">
+        <div class="row pbot-main">
+            <div class="col-xs-12 col-md-8">
+                <?php foreach ($this->articles as $article) : ?>
+                    <div class="post-item" style="margin-bottom: 0;">
+                            <div class="image-wrap">
+                                <?php if ($article->getImage()): ?>
+                                    <img src="<?php echo $this->basePath($article->getImage()) ?>" class="img-responsive">
+                                <?php endif ?>
+
+                                <div class="meta">
+                                    <div class="blog-author">
+                                        <i class="fa fa-map" style="margin-left: 30px;"></i>
+                                        <?php echo $article->getViews() ?>
+                                    </div>
+
+                                    <div class="blog-date">
+                                        <span>
+                                            <?php echo $article->getPublished()->format('d') ?>
+                                        </span>
+
+                                        <?php echo $article->getPublished()->format('F, Y') ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="post-title">
+                                <a href="<?php echo $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) ?>">
+                                    <?php echo $article->getTitle() ?>
+                                </a>
+                            </h3>
+                        </div>
+
+                        <hr>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="col-xs-12 col-md-4">
+                <div class="widget recent-post">
+                    <?php if ($categories): ?>
+                        <h4 class="widget-heading"><?php echo $this->translate('Categories') ?></h4>
+
+                        <div class="widget-wrap">
+                            <?php foreach ($categories as $category): ?>
+                                <div class="media">
+                                    <div class="media-body">
+                                        <p>
+                                            <a href="<?php
+                                                echo $this->url(
+                                                    'app/category',
+                                                    [
+                                                        'locale' => $category->getLocale(),
+                                                        'uri' => $category->getUri(),
+                                                        'type' => 'html'
+                                                    ],
+                                                    [
+                                                        'query' => ['search' => $search]
+                                                    ]
+                                                );
+                                            ?>" title="detail news">
+                                                <?php echo $category->getTitle() ?>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        </div>
+                    <?php endif ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

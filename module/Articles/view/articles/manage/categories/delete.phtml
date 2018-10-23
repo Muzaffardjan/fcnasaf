@@ -1,0 +1,32 @@
+<?php  
+    $this->headTitle()->append($this->translate('Delete category'));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Delete category') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/articles/categories', ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <h3><?php echo $this->translate(sprintf('Do you really want to delete \'%s\' category?', $category->getTitle())) ?></h3>
+            <p><?php echo $this->translate('This operation can not be prevented!') ?></p>
+            <?php if ($category->getArticles()): ?>
+                <p class="text-danger">
+                    <?php printf($this->translate('%s article(s) will be deleted too!'), count($category->getArticles())) ?>
+                </p>
+            <?php endif ?>
+            <a href="<?php echo $this->url('app/admin/articles/categories', ['locale' => $this->locale()->current(), 'action' => 'delete', 'id' => $category->getUri(), 'targetLocale' => $category->getLocale()], ['query' => ['confirm' => true]]) ?>" class="btn btn-default">
+                <i class="icon wb-trash"></i>
+                <span><?php echo $this->translate('Yes') ?></span>
+            </a>
+            <a href="<?php echo $this->url('app/admin/articles/categories', ['locale' => $this->locale()->current()]) ?>" class="btn btn-default">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->translate('No') ?></span>
+            </a>
+        </div>
+    </div>
+</div>

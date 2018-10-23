@@ -1,0 +1,61 @@
+<div class="section video">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="page-title">
+                    <h2 class="lead">
+                        <a href="<?php echo $this->url('app/media/videos', [], true) ?>">
+                            <?php echo $this->translate('Videos') ?>
+                        </a>
+                    </h2>
+                    <div class="border-style"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <?php if ($videosInfo): ?>
+                <?php foreach ($videosInfo as $info): ?>
+                    <div class="col-sm-4 col-md-4">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <a href="<?php echo $this->url('app/media/video', ['uri' => $info->getUri(), 'locale' => $this->locale()->current()], true) ?>">
+                                <i class="fa fa-play-circle-o" style="position: absolute; display: inline; color: #ffffff; top: 30%; left: 40%; font-size: 500%;"></i>
+                                <img src="<?php echo $this->basePath($info->getVideo()->getPoster()) ?>" alt="" class="img-responsive">
+                            </a>
+                        </div>
+
+                        <div class="video-info" style="color: #ffffff;">
+                            <span class="pull-right">
+                                <i class="fa fa-heart-o"></i>
+                                <span><?php echo $info->getVideo()->getLikes() ?></span>
+                            </span>
+
+                            <span style="text-transform: capitalize;">
+                                <?php
+                                    echo $info->getVideo()
+                                        ->getDate()
+                                        ->format('d'),
+                                    ' ',
+                                    $this->translate('month_'.strtolower($info->getVideo()->getDate()->format('M'))),
+                                    ' ',
+                                    $info->getVideo()
+                                        ->getDate()
+                                        ->format('Y');
+                                ?>
+                            </span>
+                        </div>
+
+                        <a href="<?php echo $this->url('app/media/video', ['uri' => $info->getUri(), 'locale' => $this->locale()->current()]) ?>" class="title">
+                            <?php echo $info->getTitle() ?>
+                        </a>
+                    </div>
+                <?php endforeach ?>
+            <?php else: ?>
+                <div class="well text-center">
+                    <h1><i class="icon md-inbox"></i></h1>
+                    <h3><?php echo $this->escapeHtml($this->translate("Content will be added soon")); ?></h3>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

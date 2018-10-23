@@ -1,0 +1,107 @@
+<?php
+/**
+ * @var \Zend\Paginator\Paginator $galleries
+ */
+$galleries = $this->galleries;
+
+$this->headTitle()->append($this->translate('Photo galleries'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/vendor/bootstrap-select/bootstrap-select.css')
+);
+
+$this->headStyle()->appendStyle(
+    "
+        .widget-title {
+            width:          95%; 
+            white-space:    nowrap; 
+            overflow:       hidden; 
+            text-overflow:  ellipsis;
+        }
+
+        .widget-title:last-child {
+            margin-bottom: 20px;
+        }
+    "
+);
+?>
+<div class="page-header page-header-bordered" style="margin-bottom: 0;">
+    <h1 class="page-title"><?php echo $this->translate('Photo galleries') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/media/gallery', ['action' => 'add'], true) ?>" class="btn btn-primary" data-toggle="tooltip" data-original-title="<?php echo $this->escapeJs($this->translate('Create')) ?>"> 
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->translate('Create new') ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content padding-0">  
+    <?php if ($galleries->count()): ?>
+        <ul class="blocks no-space blocks-100 blocks-xlg-3 blocks-md-2">
+            <?php foreach ($galleries as $gallery): ?>
+                <?php  
+                    $isDraft = ($gallery->getStatus() === \Media\Entity\PhotoGallery::STATUS_DRAFT);
+                ?>
+                <li class="widget">
+                    <div class="widget-header cover overlay overlay-hover">
+                        <img class="cover-image overlay-grayscale" src="<?php echo $this->basePath($gallery->getPhotos()->count()? $gallery->getPhotos()->current()->getThumbnail() : 'img/placeholder.jpg') ?>" alt="...">                        
+                        <div <?php echo $isDraft ? 'style="background-color: rgba(231, 76, 60, 0.5) !important;"': '' ?> class="overlay-panel overlay-fade overlay-background overlay-background-fixed text-center vertical-align">
+                            <div class="vertical-align-middle">
+                                <div class="widget-time widget-divider">
+                                    <span><?php echo $gallery->getCreatedDate()->format('F d, Y') ?></span>
+                                </div>
+                                <?php if ($gallery->getInfo()->count() && !$isDraft): ?>
+                                    <?php foreach ($gallery->getInfo() as $info): ?>
+                                        <h4 class="widget-title text-left hidden-xs"><?php echo $info->getTitle() ?></h4>
+                                        <h6 class="widget-title text-left visible-xs small" style="font-size: 0.8em;"><?php echo $info->getTitle() ?></h6>
+                                    <?php endforeach ?>            
+                                <?php else: ?>
+                                    <?php if ($isDraft): ?>
+                                        <h2 class="text-danger"><?php echo $this->translate('Draft') ?></h2>
+                                    <?php endif ?>                        
+                                <?php endif ?>
+                                <?php if (!$isDraft && $gallery->getInfo()->count()): ?>
+                                    <?php if ($gallery->getInfo()->count() == 1): ?>
+                                        <a target="_blank" href="<?php echo $this->url('app/media/gallery', ['locale' => $gallery->getInfo()->first()->getLocale(), 'uri' => $gallery->getInfo()->first()->getUri()]) ?>" class="btn btn-outline btn-inverse">
+                                            <i class="flag-icon flag-icon-<?php echo substr($info->getLocale(), strrpos($info->getLocale(), '-') + 1) ?>"></i>
+                                            <span><?php echo $this->translate('View') ?></span>
+                                        </a>
+                                    <?php else: ?>
+                                        <?php foreach ($gallery->getInfo() as $info): ?>
+                                            <a target="_blank" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate('View in') . ' ' . $this->locale()->all()[$info->getLocale()]) ?>" href="<?php echo $this->url('app/media/gallery', ['locale' => $info->getLocale(), 'uri' => $info->getUri()]) ?>" class="btn btn-outline btn-inverse">
+                                                <i class="flag-icon flag-icon-<?php echo substr($info->getLocale(), strrpos($info->getLocale(), '-') + 1) ?>"></i>
+                                            </a>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                <?php endif ?>
+                                <a href="<?php echo $this->url(null, ['action' => 'editGallery', 'id' => $gallery->getId()], true) ?>" class="btn btn-outline btn-inverse"><?php echo $this->translate('Edit') ?></a>
+                                <a href="<?php echo $this->url(null, ['action' => 'deleteGallery', 'id' => $gallery->getId()], true) ?>" class="btn btn-outline btn-inverse"><?php echo $this->translate('Delete') ?></a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            <?php endforeach ?>
+        </ul>                
+    <?php endif ?>
+    <?php if ($galleries->count() > 1): ?>
+        <?php
+            echo $this->paginationControl(
+                // the paginator object
+                $galleries,
+                // the scrolling style
+                'Sliding',
+                // the partial to use to render the control
+                'admin/partial/paginator.phtml',
+                // the route to link to when a user clicks a control link
+                [
+                    'url' => $this->serverUrl(true),
+                    'name' => 'page',
+                ]
+            );
+        ?>
+    <?php endif ?>
+</div>
+<?php
+    $this->inlineScript()
+        ->appendFile($this->basePath('assets/admin/vendor/bootstrap-select/bootstrap-select.js'))
+        ->appendFile($this->basePath('assets/admin/js/components/bootstrap-select.js'));
+?>

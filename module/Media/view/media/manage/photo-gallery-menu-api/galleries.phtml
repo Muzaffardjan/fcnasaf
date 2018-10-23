@@ -1,0 +1,133 @@
+<?php  
+    $this->headTitle()->append($this->translate('Add gallery element'))
+    ->append($this->translate('Menu'));
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+        <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Add gallery element to menu') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $return ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-original-title="<?php echo $this->translate('Cancel') ?>"> 
+            <i class="icon wb-close"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <!-- Panel Form Elements -->
+    <div class="panel">
+        <div class="panel-body container-fluid">
+            <?php echo $this->form()->openTag($form) ?>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('label')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-text"></i>
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('label')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('label')) ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('title')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-chat"></i>
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('title')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('title')) ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('fragment')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        #
+                    </span>
+                    <?php 
+                        echo $this->formText(
+                            $form->get('fragment')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('fragment')) ?>
+            </div>
+            <div class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    <span class="sr-only"><?php echo $this->translate('Close') ?></span>
+                </button>
+                <?php echo $this->translate('Galleries will be displayed in below language') ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('locale')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-globe"></i>
+                    </span>
+                    <?php 
+                        echo $this->formSelect(
+                            $form->get('locale')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('locale')) ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('target')) ?>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="icon wb-bookmark"></i>
+                    </span>
+                    <?php 
+                        echo $this->formSelect(
+                            $form->get('target')
+                            ->setAttribute('class', 'form-control')
+                        ) 
+                    ?>
+                </div>
+                <?php echo $this->formElementErrors($form->get('target')) ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('visible')) ?>
+                <?php 
+                    echo $this->formCheckbox(
+                        $form->get('visible')
+                        ->setAttribute('data-plugin', 'switchery')
+                        ->setAttribute('data-class-name', 'switchery margin-10')
+                    ) 
+                ?>
+                <?php echo $this->formElementErrors($form->get('visible')) ?>
+            </div>
+            <button class="btn btn-success">
+                <i class="icon wb-check"></i>
+                <span><?php echo $this->translate('Save') ?></span>
+            </button>
+            <a href="<?php echo $return ?>" class="btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->translate('Cancel') ?></span>
+            </a>
+            <?php echo $this->form()->closeTag($form) ?>
+        </div>
+    </div>
+    <!-- End Panel Form Elements -->
+</div>

@@ -1,0 +1,53 @@
+<?php
+$this->headTitle()->append($this->translate('Staff groups'))
+    ->append($this->translate('Staff'));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Staff groups') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus"></i>
+            <span><?php echo $this->escapeHtml($this->translate("Create new")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php if (count($groups)): ?>
+        <div class="panel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered margin-0">
+                        <thead>
+                        <tr>
+                            <th><?php echo $this->escapeHtml($this->translate("Group name")); ?></th>
+                            <th><?php echo $this->escapeHtml($this->translate("Action")); ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($groups as $group): ?>
+                            <tr>
+                                <td><?php echo $group->getName() ?></td>
+                                <td>
+                                    <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $group->getId()], true) ?>" class="btn btn-sm btn-icon btn-flat btn-default" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Edit")); ?>">
+                                        <i class="icon wb-wrench" aria-hidden="true"></i>
+                                    </a>
+                                    <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $group->getId()], true) ?>" class="btn btn-sm btn-icon btn-flat btn-default" data-toggle="tooltip" data-original-title="<?php echo $this->escapeHtmlAttr($this->translate("Delete")); ?>">
+                                        <i class="icon wb-close" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="well text-center">
+            <h1>
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3><?php echo $this->escapeHtml($this->translate("There is no any staff groups")); ?></h3>
+        </div>
+    <?php endif; ?>
+</div>

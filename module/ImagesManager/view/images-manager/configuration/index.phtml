@@ -1,0 +1,282 @@
+<?php  
+    $this->headTitle()->append($this->translate('Image display settings'));
+?>
+<div class="page-content">
+    <h2><?php echo $this->translate('Image display settings') ?></h2>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div>
+                        <ul role="tablist" data-plugin="nav-tabs" class="nav nav-tabs nav-tabs-line">
+                            <li role="presentation" class="active">
+                                <a role="tab" href="#watermark" data-toggle="tab">
+                                    <span><?php echo $this->translate('Watermark') ?></span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content padding-vertical-15">
+                            <div role="tabpanel" id="watermark" class="tab-pane active">
+                                <?php  
+                                    $form->setAttribute('action', $this->url('app/admin/images-manager-config', ['locale' => $this->locale()->current()]))
+                                    ->setAttribute('class', 'form-horizontal')
+                                    ->setAttribute('id', 'watermark-settings')
+                                    ->prepare();
+
+                                    echo $this->form()->openTag($form);
+                                ?>
+                                <div class="form-group <?php echo ($form->get('watermark_use')->getMessages()? 'has-error': '') ?>">
+                                    <label for="watermark_use" class="col-sm-3 control-label"><?php echo $form->get('watermark_use')->getLabel() ?></label>
+                                    <div class="col-sm-9">
+                                        <div class="pull-right">
+                                            <?php 
+                                                echo $this->formCheckbox(
+                                                    $form->get('watermark_use')
+                                                    ->setAttribute('class', 'form-control')
+                                                    ->setAttribute('id', 'toggle-watermark')
+                                                );
+                                            ?>                                            
+                                        </div>
+                                        <?php if ($form->get('watermark_use')->getMessages()): ?>
+                                            <?php echo $this->formElementErrors($form->get('watermark_use')) ?>
+                                        <?php endif ?>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="form-group <?php echo ($form->get('watermark')->getMessages()? 'has-error': '') ?>">
+                                    <label for="watermark" class="col-sm-3 control-label"><?php echo $form->get('watermark')->getLabel() ?></label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group input-group-file">
+                                            <input type="text" id="filepath" class="form-control">
+                                            <span class="input-group-btn">
+                                                <span class="btn btn-primary btn-file"> 
+                                                <i aria-hidden="true" class="icon wb-upload"></i>
+                                                    <?php 
+                                                        echo $this->formFile(
+                                                            $form->get('watermark')
+                                                            ->setAttribute('class', 'form-control')
+                                                            ->setAttribute('id', 'watermark-file-input')
+                                                            ->setAttribute('accept', 'image/png')
+                                                        );
+                                                    ?>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <?php if ($form->get('watermark')->getMessages()): ?>
+                                            <?php echo $this->formElementErrors($form->get('watermark')) ?>
+                                        <?php endif ?>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="form-group <?php echo ($form->get('scale')->getMessages()? 'has-error': '') ?>">
+                                    <label for="scale" class="col-sm-3 control-label"><?php echo $form->get('scale')->getLabel() ?></label>
+                                    <div class="col-sm-9">
+                                        <?php 
+                                            echo $this->formText(
+                                                $form->get('scale')
+                                                ->setAttribute('class', 'form-control')
+                                                ->setAttribute('placeholder', '100%')
+                                            );
+                                        ?> 
+                                        <?php if ($form->get('scale')->getMessages()): ?>
+                                            <?php echo $this->formElementErrors($form->get('scale')) ?>
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                                <div class="form-group <?php echo ($form->get('x_position')->getMessages()? 'has-error': '') ?>">
+                                    <label for="x_position" class="col-sm-3 control-label"><?php echo $form->get('x_position')->getLabel() ?></label>
+                                    <div class="col-sm-9">
+                                        <?php 
+                                            echo $this->formSelect(
+                                                $form->get('x_position')
+                                                ->setAttribute('class', 'form-control positioning')
+                                            );
+                                        ?> 
+                                        <?php if ($form->get('x_position')->getMessages()): ?>
+                                            <?php echo $this->formElementErrors($form->get('x_position')) ?>
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                                <div class="form-group <?php echo ($form->get('y_position')->getMessages()? 'has-error': '') ?>">
+                                    <label for="y_position" class="col-sm-3 control-label"><?php echo $form->get('y_position')->getLabel() ?></label>
+                                    <div class="col-sm-9">
+                                        <?php 
+                                            echo $this->formSelect(
+                                                $form->get('y_position')
+                                                ->setAttribute('class', 'form-control positioning')
+                                            );
+                                        ?> 
+                                        <?php if ($form->get('y_position')->getMessages()): ?>
+                                            <?php echo $this->formElementErrors($form->get('y_position')) ?>
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 margin-bottom-25">
+                                    <h4><?php echo $this->translate('Preview') ?></h4>
+                                    <div id="preview-watermark" style="width: 100%;height:300px;background: gray url('<?php echo $this->basePath('img/example_watermark.png') ?>');background-repeat: no-repeat;">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <button class="btn btn-success" type="submit">
+                                        <?php echo $this->translate('Save changes') ?>
+                                    </button>
+                                </div>
+                                <?php echo $this->form()->closeTag($form) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php  
+    $this->inlineScript()->appendScript(
+        "
+            function isDirectionsUnchecked() 
+            {
+                var states = 0;
+
+                $('.repeating-direction').each(
+                    function () {
+                        if (!this.checked) {
+                            states++;
+                        }
+                    }
+                );
+
+                return (states == 2);
+            }
+
+            function generatePreview() 
+            {
+                var toggleWatermark = $('#toggle-watermark');
+
+                if (toggleWatermark[0].checked) {
+                    $('#preview-watermark').parent().slideDown();
+                    
+                    // Size settings
+                    var scale       = $('input[name=scale]').val();
+                    var watermark   = $('#preview-watermark');
+                    
+                    if (scale > 0 && scale < 101) {
+                        watermark.css(
+                            'background-size',
+                            scale + '%  '+ scale + '%'
+                        );
+                    }
+
+                    // !Size settings
+
+                    // Position settings
+                    var positions = {
+                        x: {
+                            '-1': 'left',
+                            '0': 'center',
+                            '1': 'right'
+                        },
+                        y: {
+                            '-1': 'bottom',
+                            '0': 'center',
+                            '1': 'top'
+                        },
+                    };
+                    watermark.css(
+                        'background-position',
+                        ''
+                        + positions.x[$('select[name=x_position]').val()] + ' '
+                        + positions.y[$('select[name=y_position]').val()]
+                    );
+                    // !Position settings
+                } else {
+                    $('#preview-watermark').parent().slideUp();
+                }
+            }
+
+            $('#watermark-file-input').change(
+                function () {
+                    $('#filepath').val($(this).val());
+                }
+            );
+
+            $('#toggle-watermark').change(
+                function () {
+                    if (!this.checked) {
+                        $('#watermark-settings').find('input, select').not(this).attr('disabled', true);  
+                    } else {
+                        $('#watermark-settings').find('input, select').not(this).removeAttr('disabled');
+                    }
+
+                    for (var i in window.tempSwitchery) {
+                        if (this.checked) {
+                            window.tempSwitchery[i].enable();
+                        } else {
+                            window.tempSwitchery[i].disable()
+                        }
+                    }
+
+                    $('#repeat-watermark').trigger('change');
+                }
+            );
+
+            $('#repeat-watermark').change(
+                function () {
+                    var state = this.checked;
+                    var directions = {
+                        x: window.tempSwitchery.repeat_x,
+                        y: window.tempSwitchery.repeat_y
+                    };
+
+                    if (this.checked) {
+                        $('.positioning').attr('disabled', true);
+                        
+                        for (var i in directions) {
+                            if (directions[i].isDisabled()) {
+                                directions[i].enable();
+                            }
+                        }
+
+                        if (isDirectionsUnchecked()) {
+                            $('.repeating-direction').click();
+                        }
+                    }
+
+                    if (!this.checked) {
+                        $('.positioning').removeAttr('disabled');
+
+                        for (var i in directions) {
+                            if (!directions[i].isDisabled()) {
+                                directions[i].disable();
+                            }
+                        }
+                    }
+                }
+            );
+
+            $('#watermark-settings').change(generatePreview);
+            $('#watermark-settings').click(generatePreview);
+            $('#watermark-settings').on('keyup', generatePreview);
+
+            $(window).ready(
+                function () {
+                    window.tempSwitchery = {};
+
+                    $('#watermark-settings').find('input[type=\"checkbox\"]').each(
+                        function () {
+                            var current = new Switchery(this, {color: $.colors('primary', 600)});
+                            
+                            if ($(this).is('#toggle-watermark')) {
+                                return;
+                            }
+
+                            window.tempSwitchery[this.name] = current;
+                        }
+                    );
+
+                    $('#toggle-watermark').change();
+                }
+            );
+        "
+    );
+?>

@@ -1,0 +1,104 @@
+<?php
+/**
+ * @var \Soccer\Entity\Stage       $stage
+ * @var \Soccer\Entity\Stage       $subStage
+ * @var \Soccer\Form\GroupPlayForm $form
+ */
+$this->headTitle()->append($this->translate('Edit'))
+    ->append($this->translate('Groups'))
+    ->append($stage->getLabel($this->locale()->current()))
+    ->append(sprintf($this->translate('Season %s'), $stage->getSeason()->getLabel($this->locale()->current())))
+    ->append($stage->getSeason()->getTournament()->getLabel($this->locale()->current()))
+    ->append($this->translate('Tournaments'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .form-group.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        "
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Edit group') ?></h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/tournaments', ['action' => 'index', 'id' => null], true) ?>"><?php echo $this->translate('Tournaments') ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/seasons', ['tournament' => $stage->getSeason()->getTournament()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php echo $stage->getSeason()->getTournament()->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/stages', ['tournament' => $stage->getSeason()->getTournament()->getId(), 'season' => $stage->getSeason()->getId(), 'action' => 'index', 'id' => null], true) ?>"><?php printf('Season %s', $stage->getSeason()->getLabel($this->locale()->current())) ?></a>
+        </li>
+        <li>
+            <a href="<?php echo $this->url('app/admin/soccer/group-play', ['action' => 'index', 'id' => null], true) ?>"><?php echo $stage->getLabel($this->locale()->current()) ?></a>
+        </li>
+        <li class="active"><?php echo $this->translate('Edit') ?></li>
+    </ol>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('label')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('label') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('label')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Save') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['id' => null, 'action' => 'index'], true) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

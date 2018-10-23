@@ -1,0 +1,130 @@
+<?php
+$this->headTitle()->append($article->getTitle());
+$this->headMeta()
+    ->appendName('description', $short = str_replace('"', '', substr(strip_tags($article->getBody()), 0, 255)))
+    ->appendName('twitter:card', 'summary_large_image')
+    ->appendName('twitter:title', $title = str_replace('"', '', $article->getTitle()))
+    ->appendName('twitter:description', $short)
+    ->appendProperty('og:type', 'article')
+    ->appendProperty('og:title', $title)
+    ->appendProperty('og:description', $short)
+    ->appendProperty('og:url', $this->serverUrl(true))
+    ->appendProperty('og:site_name', str_replace('"', '', $this->translate('Title name')));
+
+$titleImage = $article->getImage() ? $this->basePath($article->getImage()) : 'img/placeholder.jpg';
+
+if ($article->getImage()) {
+    $imageSrc = $this->serverUrl() . $this->basePath($titleImage);
+    $this->headMeta()
+        ->appendProperty('og:image', $imageSrc)
+        ->appendName('twitter:image', $imageSrc);
+}
+?>
+
+<!-- BANNER -->
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12"></div>
+        </div>
+    </div>
+</div>
+
+<!-- NEWS SECTION -->
+<div class="section singlepage" >
+    <div class="container">
+        <div class="row pbot-main">
+            <div class="col-xs-12 col-md-8">
+                <div class="post-item detail">
+                    <div class="image-wrap">
+                        <img class="img-responsive" src="<?php echo $titleImage ?>">
+                    </div>
+
+                    <h3 class="post-title">
+                        <?php echo $article->getTitle() ?>
+                    </h3>
+
+                    <div class="meta-single">
+                        <div class="blog-date">
+                            <span class="fa fa-calendar"></span>
+                            <?php echo $article->getPublished()->format('d M Y') ?>
+                        </div>
+
+                        &nbsp;
+
+                        <?php if ($article->getCategory()) : ?>
+                            <div class="blog-author">
+                                <span class="fa fa-file-text"></span>
+                                <a href="<?php
+                                echo $this->url(
+                                    'app/category',
+                                    [
+                                        'locale' => $article->getCategory()->getLocale(),
+                                        'type' => 'html',
+                                        'uri' => $article->getCategory()->getUri()
+                                    ]
+                                );
+                                ?>">
+                                    <?php echo $article->getCategory()->getTitle() ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php echo $article->getBody() ?>
+                </div>
+
+                <hr>
+
+                <a
+                    target="_blank"
+                    href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $this->serverUrl(true); ?>"
+                    class="btn btn-primary"
+                >
+                    <span class="btn-label">
+                        <i aria-hidden="true" class="fa fa-facebook"></i>
+                    </span>
+                    <?php echo $this->translate('Share') ?>
+                </a>
+
+                <a
+                    target="_blank"
+                    href="https://twitter.com/home?status=<?php echo $this->serverUrl(true); ?>"
+                    class="btn btn-info"
+                >
+                    <span class="btn-label">
+                        <i aria-hidden="true" class="fa fa-twitter"></i>
+                    </span>
+                    <?php echo $this->translate('Tweet') ?>
+                </a>
+
+                <div class="pull-right">
+                    <h3 style="margin: 0;">
+                        <i class="fa fa-eye"></i>
+                        <?php echo $article->getViews() ?>
+                    </h3>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="col-xs-12 col-md-4">
+                <div class="widget recent-post">
+                    <h4 class="widget-heading">
+                        <?php echo $this->translate('Related') ?>
+                    </h4>
+
+                    <div class="widget-wrap">
+                        <?php
+                            echo $this->relatedArticles(
+                                $article,
+                                6,
+                                'articles/partial/page-related'
+                            );
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

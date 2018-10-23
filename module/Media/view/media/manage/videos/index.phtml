@@ -1,0 +1,99 @@
+<?php  
+    $this->headTitle()->append($this->translate('Video'))
+    ->append($this->translate('Media'));
+
+    $this->headStyle()->appendStyle(
+        "
+            .info-title {
+                width: 95%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Videos') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['action' => 'add'], true) ?>" class="btn btn-primary"> 
+            <i class="icon wb-plus"></i>
+            <span><?php echo $this->translate('Add new') ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="alert alert-warning">
+            <?php echo $this->translate('Videos that do not have infromation, will not be displayed to visitors!') ?>
+        </div>
+        <div class="panel-body container-fluid">
+            <?php if ($videos->getCurrentItemCount()): ?>
+                <div class="row">
+                    <?php foreach ($videos as $video): ?>
+                        <div class="col-sm-4">
+                            <figure class="overlay margin-5">
+                                <img src="<?php echo $this->basePath($video->getPoster()) ?>">                        
+                                <figcaption class="overlay-panel overlay-background">
+                                    <h4 class="text-center margin-0">
+                                        <i class="icon wb-play"></i>
+                                    </h4>
+                                    <h5 class="margin-5">
+                                        <i class="icon wb-calendar"></i>
+                                        <?php echo $video->getDate()->format('d.M.Y') ?>
+                                    </h5>
+                                    <?php if ($video->getInfo()->count()): ?>
+                                            <?php foreach ($video->getInfo() as $info): ?>
+                                        <h5 class="margin-5 info-title">
+                                                <i class="icon wb-info"></i>
+                                                <i class="flag-icon flag-icon<?php echo substr($info->getLocale(), strrpos($info->getLocale(), '-')) ?>"></i>  
+                                                <span><?php echo $info->getTitle() ?></span>
+                                        </h5>                      
+                                            <?php endforeach ?>                                       
+                                    <?php endif ?>
+                                    <div class="margin-5">
+                                        <a href="<?php echo $this->url(null, ['action' => 'edit', 'id' => $video->getId()], true) ?>">
+                                            <i class="icon wb-pencil"></i>
+                                            <span><?php echo $this->translate('Edit') ?></span>
+                                        </a>
+                                        &nbsp;&nbsp;
+                                        <a href="<?php echo $this->url(null, ['action' => 'delete', 'id' => $video->getId()], true) ?>">
+                                            <i class="icon wb-trash"></i>
+                                            <span><?php echo $this->translate('Delete') ?></span>
+                                        </a>
+                                    </div>
+                                </figcaption>
+                            </figure>
+                        </div>
+                    <?php endforeach ?>
+                </div>
+            <?php endif ?>
+        </div>
+    </div>
+    <?php if ($videos->count() > 1): ?>
+        <?php
+            echo $this->paginationControl(
+                // the paginator object
+                $videos,
+                // the scrolling style
+                'Sliding',
+                // the partial to use to render the control
+                'admin/partial/paginator',
+                // the route to link to when a user clicks a control link
+                array(
+                    'url'   => $this->serverUrl(true),
+                    'name'  => 'page',
+                )
+            );
+        ?>
+    <?php endif ?>
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-datepicker.js')
+    )
+?>

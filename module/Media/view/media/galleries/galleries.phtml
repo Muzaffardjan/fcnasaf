@@ -1,0 +1,83 @@
+<?php
+$this->headTitle()->append($this->translate('Galleries'));
+$this->headLink()->appendStylesheet($this->basePath('css/galleries.css'));
+?>
+
+<div class="section subbanner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="caption">
+                    <?php echo $this->translate('Galleries') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-title"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <?php if ($galleries->getCurrentItemCount()): ?>
+                <?php foreach ($galleries as $info): ?>
+                    <div class="col-sm-12 col-md-4">
+                        <div class="shop-item">
+                            <div class="gambar">
+                                <?php $photos = $info->getGallery()->getPhotos(); $photo = $photos[0]; ?>
+                                <img src="<?php echo $photo->getThumbnail() ?>" class="img-responsive">
+                            </div>
+                            <div class="item-body">
+                                <div class="name">
+                                    <?php echo $info->getTitle() ?>
+                                </div>
+
+                                <div class="price">
+                                    <?php echo $info->getGallery()->getCreatedDate()->format('d.m.Y') ?>
+
+                                    <a href="<?php echo $this->url('app/media/gallery', ['locale' => $info->getLocale(), 'uri' => $info->getUri()]) ?>" title="" class="shop-buy">
+                                        <?php echo $this->translate('Read more'); ?>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            <?php else: ?>
+                <div class="well text-center">
+                    <h1><i class="icon md-inbox"></i></h1>
+                    <h3><?php echo $this->translate('Content will be added soon') ?></h3>
+                </div>
+            <?php endif ?>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <?php if ($galleries->count() > 1): ?>
+                    <?php
+                    echo $this->paginationControl(
+                        // the paginator object
+                        $galleries,
+                        // the scrolling style
+                        'Sliding',
+                        // the partial to use to render the control
+                        'application/partial/paginator',
+                        // the route to link to when a user clicks a control link
+                        [
+                            'url' => $this->serverUrl(true),
+                            'name' => 'page',
+                        ]
+                    );
+                    ?>
+                <?php endif ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php echo $this->videos()->setDisplayCount(4)->setPartial('application/index/nasaf-tv-section')->render(); ?>

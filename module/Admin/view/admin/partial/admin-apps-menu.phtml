@@ -1,0 +1,22 @@
+<?php 
+use Zend\Navigation\Page\Mvc as MvcPage;
+?>
+<?php foreach ($container as $item): ?>
+    <?php  
+        if (!$this->isGranted($item->getPermission())) {
+            continue;
+        }
+
+        if ($item instanceof MvcPage) {
+            $params = $item->getParams() ? $item->getParams() : [];
+
+            $item->setParams(array_merge($params, ['locale' => $this->locale()->current()]));
+        }
+    ?>
+    <li>
+        <a href="<?php echo $item->getHref() ?>" class="text-truncate" title="<?php echo $this->escapeHtmlAttr($this->translate($item->getLabel())) ?>">
+            <i class="<?php echo $item->icon ?>"></i>
+            <span><?php echo $this->translate($item->getLabel()) ?></span>
+        </a>
+    </li>
+<?php endforeach ?>

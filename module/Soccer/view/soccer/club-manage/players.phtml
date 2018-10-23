@@ -1,0 +1,159 @@
+<?php
+$this->headTitle()->append($this->translate('Edit players'))
+    ->append($club->getName($this->locale()->current()))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()->appendStylesheet(
+    $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+)
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-touchspin/bootstrap-touchspin.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.min.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+            .md-hc-li {
+                width: 1.1em;
+                text-align: center;
+            }
+        "
+    );
+
+$this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-touchspin.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/select2/select2.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/select2.min.js'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <div>
+        <?php if ($club->getSmallLogo()): ?>
+            <img style="float: left;margin-right: 10px;" src="<?php echo $this->basePath($club->getSmallLogo()) ?>" class="img-responsive">
+        <?php endif; ?>
+        <h1 class="page-title" style="padding-top: 5px;">
+            <?php echo $club->getName($this->locale()->current()) ?>
+        </h1>
+        <p><?php echo $this->escapeHtml($this->translate("Players count")); ?>: <?php echo count($players) ?></p>
+    </div>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/soccer/club-player', ['action' => 'add'], true) ?>" class="btn btn-primary">
+            <i class="icon wb-plus" aria-hidden="true"></i>
+            <span><?php echo $this->translate('Add player') ?></span>
+        </a>
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-icon btn-inverse" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Return to clubs') ?>">
+            <i class="icon wb-list" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel">
+        <div class="panel-body">
+            <?php if ($club->getPlayers()->count()): ?>
+                <div class="row" style="padding-top: 15px;padding-bottom: 15px;">
+                    <?php foreach ($players as $clubPlayer): ?>
+                        <?php
+                            if (!isset($position) || $position instanceof \Soccer\Entity\PlayerPosition && $clubPlayer->getPosition() instanceof \Soccer\Entity\PlayerPosition && $position->getId() !== $clubPlayer->getPosition()->getId()):
+                                $position = $clubPlayer->getPosition();
+                                $count    = count(Zend\Stdlib\ArrayUtils::filter($players,function ($player) use ($position) { return $position->getId() == $player->getPosition()->getId(); }));
+                        ?>
+                                <div class="col-xs-12 text-center">
+                                    <h3 class="text-uppercase"><?php echo $position->getPluralLabel($this->locale()->current()) ?> (<?php echo $count ?>)</h3>
+                                    <hr>
+                                </div>
+                        <?php endif; ?>
+                        <div class="col-md-6 col-lg-4" style="margin-bottom: 15px;">
+                            <div class="widget widget-shadow">
+                                <div class="widget-header bg-blue-600 white padding-15 clearfix">
+                                    <a class="avatar avatar-lg pull-left margin-right-20" href="javascript:void(0)">
+                                        <?php $photos = $clubPlayer->getPlayer()->getPhotos(); ?>
+                                        <?php if (isset($photos['profile_small'])): ?>
+                                            <img src="<?php echo $this->basePath($photos['profile_small']) ?>">
+                                        <?php else: ?>
+                                            <img src="<?php echo $this->basePath('img/player_no_photo_small.jpg') ?>">
+                                        <?php endif; ?>
+                                    </a>
+                                    <div class="font-size-18 text-truncate"><?php printf('%s %s %s', $clubPlayer->getPlayer()->getFirstName($this->locale()->current()), $clubPlayer->getPlayer()->getLastName($this->locale()->current()), $clubPlayer->getPlayer()->getThirdName($this->locale()->current())) ?></div>
+                                    <div class="grey-300 font-size-12 text-uppercase"><?php echo $clubPlayer->getNumber(), ', ', $clubPlayer->getPosition() ? $clubPlayer->getPosition()->getLabel($this->locale()->current()) : $this->translate('Unspecified') ?></div>
+                                </div>
+                                <div class="widget-content">
+                                    <ul class="list-group list-group-bordered text-uppercase">
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/player', ['action' => 'changeProfilePhoto', 'id' => $clubPlayer->getPlayer()->getId()], true) ?>">
+                                                <i class="md-hc-li md-image-alt font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Change photo")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/player', ['action' => 'editCard', 'id' => $clubPlayer->getPlayer()->getId()], true) ?>">
+                                                <i class="md-hc-li md-collection-image font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Edit card")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/club-player', ['action' => 'edit', 'id' => $clubPlayer->getId()], true) ?>">
+                                                <i class="md-hc-li md-account-box-mail font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Edit club info")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/player', ['action' => 'edit', 'id' => $clubPlayer->getPlayer()->getId()], true) ?>">
+                                                <i class="md-hc-li md-account-box font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Edit player")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/club-player', ['action' => 'transfer', 'id' => $clubPlayer->getId()], true) ?>">
+                                                <i class="md-hc-li md-swap font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Transfer")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/club-player', ['action' => 'endedCareer', 'id' => $clubPlayer->getId()], true) ?>">
+                                                <i class="md-hc-li md-time font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Ended career")); ?></span>
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $this->url('app/admin/soccer/club-player', ['action' => 'delete', 'id' => $clubPlayer->getId()], true) ?>">
+                                                <i class="md-hc-li md-close font-size-16" aria-hidden="true" draggable="true"></i>
+                                                &nbsp;
+                                                <span><?php echo $this->escapeHtml($this->translate("Remove from club")); ?></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center">
+                    <h1>
+                        <i class="icon md-accounts-outline margin-0"></i>
+                    </h1>
+                    <h3><?php echo $this->escapeHtml($this->translate("No players added yet")); ?></h3>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

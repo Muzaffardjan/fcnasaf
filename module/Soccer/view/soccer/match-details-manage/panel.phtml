@@ -1,0 +1,1011 @@
+<?php
+/**
+ * @var \Zend\View\Renderer\PhpRenderer $this
+ * @var \Soccer\Entity\Match            $match
+ */
+
+$this->headTitle()
+    ->append($match->getHost()->getName($this->locale()->current()) . ' - ' . $match->getGuest()->getName($this->locale()->current()))
+    ->append($this->translate('Details'))
+    ->append($this->translate('Matches'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/fonts/material-design/material-design.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/multi-select/multi-select.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.css')
+    );
+
+$this->headStyle()
+    ->appendStyle(
+        "
+        .timeline > li.timeline-period {
+            background-color: white;
+            font-size: 20px;
+        }
+    
+        .timeline-dot > .icon {
+            font-size: 18px;
+        }
+        
+        .has-timeline {
+            overflow: auto;
+            max-height: 600px;
+        }
+        
+        .ms-holder > .ms-container {
+            width: 100%;
+        }
+        
+        .ms-holder .ms-list {
+            height: 500px;
+        }
+        
+        .table.table-no-border > tbody > tr > td, .table > tbody > tr > th, 
+        .table.table-no-border > tfoot > tr > td, .table > tfoot > tr > th, 
+        .table.table-no-border > thead > tr > td, .table > thead > tr > th {
+            border: 0;
+        }
+        
+        .rotate-180 {
+            -webkit-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+        }
+        
+        .timeline-content img {
+            max-width:100%;
+            height: auto;
+        }
+        "
+    );
+
+$this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-sweetalert/sweet-alert.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-sweetalert.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/multi-select/jquery.multi-select.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/multi-select.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/ckfinder/ckfinder.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/ckeditor/ckeditor.js')
+    )
+    ->appendFile(
+        $this->basePath('js/promise.js')
+    );
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+
+$goalCriteria = \Doctrine\Common\Collections\Criteria::create();
+$expr         = \Doctrine\Common\Collections\Criteria::expr();
+
+$goalCriteria->where(
+    $expr->neq('goal', null)
+);
+
+$goals = $match->getEvents()->matching($goalCriteria);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('Match details') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/soccer/matches', ['action' => 'index', 'id' => null], true) ?>" class="btn btn-warning">
+            <i class="icon wb-arrow-left" aria-hidden="true"></i>
+            <span class="hidden-xs"><?php echo $this->escapeHtml($this->translate("Return to matches")); ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <div class="panel nav-tabs-horizontal">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <div class="row">
+                    <div class="col-xs-5">
+                        <h4 class="text-center"><?php echo $match->getHost()->getName($this->locale()->current()) ?></h4>
+                        <img src="<?php echo $this->basePath($match->getHost()->getLogo()) ?>" style="max-width: 120px;" class="img-responsive center-block">
+                        <h2 class="text-center" id="host-goals">
+                            <?php if ($match->getStatus() == \Soccer\Entity\Match::STATUS_QUEUE): ?>
+                                <span>-</span>
+                            <?php else: ?>
+                                <?php
+                                $hostGoals = 0;
+
+                                /**
+                                 * @var \Soccer\Entity\MatchEvent $goalEvent
+                                 */
+                                foreach ($goals as $goalEvent) {
+                                    if ($goalEvent->getGoal()->getFromClub()->getId() == $match->getHost()->getId()) {
+                                        $hostGoals++;
+                                    }
+                                }
+                                ?>
+                                <span><?php echo $hostGoals ?></span>
+                            <?php endif; ?>
+                        </h2>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="vertical-align height-50">
+                            <h1 class="text-center" style="vertical-align: middle;">
+                                <?php if ($match->getStatus() == \Soccer\Entity\Match::STATUS_QUEUE): ?>
+                                    <i class="icon wb-time margin-0"></i>
+                                <?php else: ?>
+
+                                <?php endif; ?>
+                                <span style="display: none;">
+                                    <span>00</span>
+                                    <span class="animation-fade animation-reverse animation-delay-1s animation-repeat">:</span>
+                                    <span>00</span>
+                                </span>
+                            </h1>
+                            <h3 class="text-center">
+                                <?php if ($match->getStatus() == \Soccer\Entity\Match::STATUS_FINISHED): ?>
+                                    <span class="label label-info"><?php echo $this->translate('Full time') ?></span>
+                                <?php elseif ($match->getStatus() == \Soccer\Entity\Match::STATUS_ONGOING): ?>
+                                    <span class="label label-success"><?php echo $this->translate('Live') ?></span>
+                                <?php else: ?>
+                                    <span class="label label-default"><?php echo $this->translate('Queue') ?></span>
+                                <?php endif; ?>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-xs-5">
+                        <h4 class="text-center"><?php echo $match->getGuest()->getName($this->locale()->current()) ?></h4>
+                        <img src="<?php echo $this->basePath($match->getGuest()->getLogo()) ?>" style="max-width: 120px;" class="img-responsive center-block">
+                        <h2 class="text-center" id="guest-goals">
+                            <?php if ($match->getStatus() == \Soccer\Entity\Match::STATUS_QUEUE): ?>
+                                <span>-</span>
+                            <?php else: ?>
+                                <?php
+                                $guestGoals = 0;
+
+                                /**
+                                 * @var \Soccer\Entity\MatchEvent $goalEvent
+                                 */
+                                foreach ($goals as $goalEvent) {
+                                    if ($goalEvent->getGoal()->getFromClub()->getId() == $match->getGuest()->getId()) {
+                                        $guestGoals++;
+                                    }
+                                }
+                                ?>
+                                <span><?php echo $guestGoals ?></span>
+                            <?php endif; ?>
+                        </h2>
+                    </div>
+                    <div class="col-xs-12">
+                        <h4 class="text-center margin-top-0">
+                            <span><?php printf("%s %s %s %s", $match->getDate()->format('d'), ucfirst($this->translate(strtolower($match->getDate()->format('F')))), $match->getDate()->format('Y'), $match->getDate()->format('H:i')) ?></span>
+                            <br>
+                            <span><?php printf("%s '%s' %s", $match->getStadium()->getLocated($this->locale()->current()), $match->getStadium()->getName($this->locale()->current()), $this->translate("stadium")) ?></span>
+                            <br>
+                            <?php if ($match->getStage()->getType() == \Soccer\Entity\Stage::TYPE_SINGLE): ?>
+                                <span><?php printf("%s %s %s-%s", $match->getStage()->getSeason()->getTournament()->getLabel($this->locale()->current()), $match->getStage()->getSeason()->getLabel($this->locale()->current()), $match->getTour()->getLabel($this->locale()->current()), $this->translate('tour')) ?></span>
+                            <?php endif; ?>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs nav-tabs-line" data-plugin="nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#match-events">
+                    <i class="icon wb-order" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Events') ?></span>
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#match-stats">
+                    <i class="icon wb-stats-bars" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Stats') ?></span>
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#match-line-ups">
+                    <i class="icon wb-list" aria-hidden="true"></i>
+                    <span><?php echo $this->translate('Line up') ?></span>
+                </a>
+            </li>
+        </ul>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane active has-timeline" id="match-events">
+                    <div class="text-center">
+                        <div class="btn-group">
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="goal" data-key="alt+1" data-original-title="alt+1" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Goal') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="card" data-key="alt+2" data-original-title="alt+2" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Card') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-worker-url="<?php echo $this->url('app/admin/soccer/match-events', ['match' => $match->getId(), 'action' => 'comment'], true) ?>" data-match-event="comment" data-key="alt+3" data-original-title="alt+3" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Comment') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="cornerKick" data-key="alt+4" data-original-title="alt+4" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Corner kick') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="foul" data-key="alt+5" data-original-title="alt+5" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Foul') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="shot" data-key="alt+6" data-original-title="alt+6" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Shot') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="substitution" data-key="alt+7" data-original-title="alt+7" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Substitution') ?></span>
+                            </button>
+                            <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-worker-url="<?php echo $this->url('app/admin/soccer/match-events', ['match' => $match->getId(), 'action' => 'period'], true) ?>" data-match-event="period" data-key="alt+8" data-original-title="alt+8" data-toggle="tooltip" data-container="body">
+                                <span><?php echo $this->translate('Period') ?></span>
+                            </button>
+                        </div>
+                    </div>
+                    <?php if ($match->getEvents()->count()): ?>
+                        <br>
+                        <ul class="timeline timeline-icon timeline-single">
+                            <?php
+                                /**
+                                 * @var \Soccer\Entity\MatchEvent $event
+                                 */
+                                foreach ($match->getEvents() as $event):
+                            ?>
+                                <li class="timeline-item">
+                                    <div class="timeline-dot bg-blue-500">
+                                        <i class="icon md-quote" aria-hidden="true"></i>
+                                    </div>
+                                    <?php if ($event->getMinutes() || $event->getSeconds()): ?>
+                                        <div class="timeline-info">
+                                            <span class="green-700"><?php echo $event->getMinutes(), (($event->getExtra() ? '+'.$event->getExtra() : '')) ?>'</span>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($event->getType() == \Soccer\Entity\MatchEvent::TYPE_COMMENT): ?>
+                                        <div class="timeline-content">
+                                            <div class="panel bg-grey-200" style="width: 80%;">
+                                                <div class="panel-body">
+                                                    <p style="font-weight: 400"><?php echo $event->getComment()->getText() ?></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div>
+                                        <button class="btn btn-danger confirm-url-action" data-url="<?php echo $this->url('app/admin/soccer/match-events', ['action' => 'delete', 'match' => $match->getId()], ['query' => ['id' => $event->getId()]], true) ?>"><?php echo $this->translate('Delete') ?></button>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <br>
+                        <div class="well well-info text-center">
+                            <h1 class="white">
+                                <i class="md md-info"></i>
+                            </h1>
+                            <h3 class="white"><?php echo $this->translate('Nothing added yet!') ?></h3>
+                        </div>
+                    <?php endif; ?>
+                    <!--<ul class="timeline timeline-icon timeline-single">
+                        <li class="timeline-period">
+                            <i class="icon md-timer"></i>
+                            Full time
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-blue-500">
+                                <i class="icon md-border-style" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">90+3'</span>
+                                <time datetime="2015-04-08">Bobur Yo'ldoshev (Lokomotiv) will realese a corner kick</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-red-500">
+                                <i class="icon md-collection-item-2" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">75'</span>
+                                <time datetime="2015-04-08">Artur Gevorkyan (Lokomotiv) was deleted</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-blue-700">
+                                <i class="icon md-swap-vertical" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">68'</span>
+                                <time datetime="2015-04-08">Igor Golban (Nasaf) was substituted with Ogenin Krasic</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-red-500">
+                                <i class="icon md-file" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">62'</span>
+                                <time datetime="2015-04-08">Ilhom Shomurodov (Nasaf) was deleted</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-blue-500">
+                                <i class="icon md-quote" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">49'</span>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="panel bg-grey-200" style="width: 80%;">
+                                    <div class="panel-body">
+                                        <p style="font-weight: 400">Jurnalistni gapirgisi keldi</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-period">
+                            <i class="icon md-timer"></i>
+                            Half time
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-blue-500">
+                                <i class="icon md-square-right" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">44'</span>
+                                <time datetime="2015-04-08">Farrux Sayfiyev (Nasaf) at offside</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-green-500">
+                                <i class="icon fa fa-soccer-ball-o" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">42'</span>
+                                <time datetime="2015-04-08">Shoxrux Gadoyev (Nasaf) scored a goal!</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-yellow-700">
+                                <i class="icon md-alert-circle-o" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">27'</span>
+                                <time datetime="2015-04-08">Bakhrom Abdurakhimov (Nasaf) was warned</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-green-500">
+                                <i class="icon md-alert-circle-o" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">14'</span>
+                                <time datetime="2015-04-08">Bakhrom Abdurakhimov (Nasaf) has realised shot</time>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <div class="timeline-dot bg-yellow-700">
+                                <i class="icon md-collection-item-1" aria-hidden="true"></i>
+                            </div>
+                            <div class="timeline-info">
+                                <span class="green-700">10'</span>
+                                <time datetime="2015-04-08">Artur Gevorkyan (Lokomotiv) was warned</time>
+                            </div>
+                        </li>
+                        <li class="timeline-period">
+                            <i class="icon md-timer"></i>
+                            Match started
+                        </li>
+                    </ul>-->
+                </div>
+                <div class="tab-pane" id="match-stats">
+                    <div class="table-reponsive" style="margin: 0 -30px -30px -30px;">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-outline btn-primary btn-default btn-quick match-event-btn" data-match-event="stats" data-worker-url="<?php echo $this->url(null, ['action' => 'statistics'], [], true) ?>" data-key="alt+1" data-original-title="alt+1" data-toggle="tooltip" data-container="body">
+                                    <span><?php echo $this->translate('Add') ?></span>
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        <table class="table table-no-border" id="match-stats-table">
+                            <tbody>
+                            <?php if ($match->getMatchStatistics()->count()): ?>
+                                    <?php
+                                    /**
+                                     * @var \Soccer\Entity\MatchStatistics $stat
+                                     */
+                                    foreach ($match->getMatchStatistics() as $stat): ?>
+                                        <tr>
+                                            <td>
+                                                <h5 class="text-right margin-0"><?php echo $stat->getHostValue(), ($stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? '%' : '') ?></h5>
+                                            </td>
+                                            <td class="width-lg-250 width-md-150 width-sm-200 hidden-xs">
+                                                <div class="progress progress-square margin-0 rotate-180">
+                                                    <div class="progress-bar <?php echo $stat->getHostValue() > $stat->getGuestValue() ? 'progress-bar-success': 'progress-bar-danger' ?>" style="width: <?php echo $stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? $stat->getHostValue() : round($stat->getHostValue() * 100 / ($stat->getHostValue() + $stat->getGuestValue()), 2) ?>%;" role="progressbar"></div>
+                                                </div>
+                                            </td>
+                                            <td class="width-lg-200 width-md-200 width-sm-200">
+                                                <button type="button" class="close confirm-url-action" data-url="<?php echo $this->url(null, ['action' => 'statistics'], ['query' => ['action' => 'delete', 'id' => $stat->getId()]], true) ?>">
+                                                    <i class="icon wb-close"></i>
+                                                </button>
+                                                <h5 class="text-center margin-0"><?php echo $stat->getLabel($this->locale()->current()) ?></h5>
+                                            </td>
+                                            <td class="width-lg-250 width-md-150 width-sm-200 hidden-xs">
+                                                <div class="progress progress-square margin-0">
+                                                    <div class="progress-bar <?php echo $stat->getHostValue() < $stat->getGuestValue() ? 'progress-bar-success': 'progress-bar-danger' ?>" style="width: <?php echo $stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? $stat->getGuestValue() : round($stat->getGuestValue() * 100 / ($stat->getHostValue() + $stat->getGuestValue()), 2) ?>%;" role="progressbar"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <h5 class="text-left margin-0"><?php echo $stat->getGuestValue(), ($stat->getType() == \Soccer\Entity\MatchStatistics::TYPE_PERCENT ? '%' : '') ?></h5>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="well text-center">
+                                                <h1><i class="icon wb-inbox margin-0"></i></h1>
+                                                <h3><?php echo $this->translate('Empty') ?></h3>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="match-line-ups">
+                    <?php echo $this->form()->openTag($matchLineUpForm->setAttribute('action', $this->url(null, ['action' => 'saveMatchLineUp'], true))) ?>
+                        <div class="row">
+                        <?php if ($match->getLineUp()->count() < 2): ?>
+                            <div class="col-xs-12">
+                                <div class="alert alert-info">
+                                    <?php echo $this->translate('Other function will be available after addition of line ups') ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <img src="<?php echo $this->basePath($match->getHost()->getSmallLogo()) ?>" alt="" class="img-responsive center-block">
+                            </div>
+                            <div class="form-group center-block ms-holder">
+                                <?php $matchLineUpForm->get('hostStarters')
+                                    ->setAttribute('id', 'hostStarters')
+                                ?>
+                                <?php echo
+                                $this->formLabel($matchLineUpForm->get('hostStarters')),
+                                $this->formSelect($matchLineUpForm->get('hostStarters')),
+                                $this->formElementErrors($matchLineUpForm->get('hostStarters'))
+                                ?>
+                            </div>
+                            <div class="form-group center-block ms-holder">
+                                <?php $matchLineUpForm->get('hostSubstitutes')
+                                    ->setAttribute('id', 'hostSubstitutes')
+                                ?>
+                                <?php echo
+                                $this->formLabel($matchLineUpForm->get('hostSubstitutes')),
+                                $this->formSelect($matchLineUpForm->get('hostSubstitutes')),
+                                $this->formElementErrors($matchLineUpForm->get('hostSubstitutes'))
+                                ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <img src="<?php echo $this->basePath($match->getGuest()->getSmallLogo()) ?>" alt="" class="img-responsive center-block">
+                            </div>
+                            <div class="form-group center-block ms-holder">
+                                <?php $matchLineUpForm->get('guestStarters')
+                                    ->setAttribute('id', 'guestStarters')
+                                ?>
+                                <?php echo
+                                $this->formLabel($matchLineUpForm->get('guestStarters')),
+                                $this->formSelect($matchLineUpForm->get('guestStarters')),
+                                $this->formElementErrors($matchLineUpForm->get('guestStarters'))
+                                ?>
+                            </div>
+                            <div class="form-group center-block ms-holder">
+                                <?php $matchLineUpForm->get('guestSubstitutes')
+                                    ->setAttribute('id', 'guestSubstitutes')
+                                ?>
+                                <?php echo
+                                $this->formLabel($matchLineUpForm->get('guestSubstitutes')),
+                                $this->formSelect($matchLineUpForm->get('guestSubstitutes')),
+                                $this->formElementErrors($matchLineUpForm->get('guestSubstitutes'))
+                                ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <button class="btn btn-primary" type="submit">
+                                    <?php echo $this->translate('Save') ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php echo $this->form()->closeTag($matchLineUpForm) ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="modal fade modal-fill-in" id="mdlTemplate" tabindex="-1" style="padding-right: 17px;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function () {
+        window._btnQuickLog = [];
+        window._quickBtns   = false;
+
+        function startTick()
+        {
+
+        }
+
+        function stopTick()
+        {
+
+        }
+
+        $(window)
+            .on(
+                'keydown',
+                function (e) {
+                    if (_btnQuickLog.length && _btnQuickLog[_btnQuickLog.length - 1].key == e.key) {
+                        return;
+                    }
+
+                    _btnQuickLog.push(
+                         {
+                             keyCode: e.keyCode,
+                             key: e.key
+                         }
+                     );
+                }
+            )
+            .on(
+                'keyup',
+                function (e) {
+                    if (!(_btnQuickLog && _btnQuickLog.length)) {
+                        return;
+                    }
+
+                    var all_keys = [];
+
+                    $(_btnQuickLog).each(function (index) {
+                        all_keys.push(this.key.toLowerCase());
+
+                        if (this.key === e.key) {
+                            _btnQuickLog.splice(index, 1);
+                        }
+                    });
+
+                    all_keys = all_keys.join('+') || '';
+
+                    if (_quickBtns === false) {
+                        _quickBtns = $('.btn-quick');
+                    }
+
+                    if (!all_keys) {
+                        return;
+                    }
+
+                    _quickBtns.each(
+                        function () {
+                            var $this = $(this);
+
+                            if (!($this.data('key')
+                                && $this.is(':visible')
+                                && $this.data('key') == all_keys)) {
+                                return;
+                            }
+
+                            $this.click();
+                        }
+                    );
+                }
+            );
+
+        var initMultiSelect = function () {
+            var target;
+
+            var filter = function (of, to) {
+                var vals = of.val();
+
+                to.find('option').each(
+                    function () {
+                        if (vals.indexOf($(this).attr('value')) > -1) {
+                            $(this).prop('disabled', true);
+                        } else {
+                            $(this).prop('disabled', false);
+                        }
+                    }
+                );
+                to.multiSelect('refresh');
+            };
+
+            filter($('#hostStarters'), $('#hostSubstitutes'));
+            filter($('#hostSubstitutes'), $('#hostStarters'));
+            filter($('#guestStarters'), $('#guestSubstitutes'));
+            filter($('#guestSubstitutes'), $('#guestStarters'));
+        };
+        
+        var selectedMultiSelect = function () {
+            var target;
+
+            if (this.$element.attr('id') == 'hostStarters') {
+                target = '#hostSubstitutes';
+            }
+
+            if (this.$element.attr('id') == 'hostSubstitutes') {
+                target = '#hostStarters';
+            }
+
+            if (this.$element.attr('id') == 'guestStarters') {
+                target = '#guestSubstitutes';
+            }
+
+            if (this.$element.attr('id') == 'guestSubstitutes') {
+                target = '#guestStarters';
+            }
+
+            if (!target) {
+                return;
+            }
+
+            var vals = this.$element.val();
+
+            $(target).find('option').each(
+                    function () {
+                        if (vals.indexOf($(this).attr('value')) > -1) {
+                            $(this).prop('disabled', true);
+                        } else {
+                            $(this).prop('disabled', false);
+                        }
+                    }
+                );
+            $(target).multiSelect('refresh');
+        };
+
+        var deselectedMultiSelect = function (e) {
+            var target;
+
+            if (this.$element.attr('id') == 'hostStarters') {
+                target = '#hostSubstitutes';
+            }
+
+            if (this.$element.attr('id') == 'hostSubstitutes') {
+                target = '#hostStarters';
+            }
+
+            if (this.$element.attr('id') == 'guestStarters') {
+                target = '#guestSubstitutes';
+            }
+
+            if (this.$element.attr('id') == 'guestSubstitutes') {
+                target = '#guestStarters';
+            }
+
+            if (!target || !e) {
+                return;
+            }
+
+            $(target).find('option[disabled]').each(
+                function () {
+                    var option = $(this);
+
+                    if (e.indexOf(option.attr('value')) > -1) {
+                        option.prop('disabled', false);
+                    }
+                }
+            );
+
+            $(target).multiSelect('refresh');
+        };
+         
+        $('#hostStarters, #hostSubstitutes, #guestStarters, #guestSubstitutes')
+            .multiSelect({
+                afterSelect: selectedMultiSelect,
+                afterDeselect: deselectedMultiSelect
+            });
+
+        <?php if ($match->getLineUp()->count() < 2): ?>
+            $('#hostStarters, #hostSubstitutes, #guestStarters, #guestSubstitutes')
+                .multiSelect('deselect_all');
+        <?php endif; ?>
+
+        initMultiSelect();
+
+        // Match stats
+        var forms = {
+            add: {
+                statistics: '<?php echo $this->escapeJs($this->url(null, ['action' => 'statistics'], ['query' => ['do' => 'add']], true)) ?>'
+            }
+        };
+
+        var Worker = function (url, element) {
+            var worker = this;
+            var modal = $('#mdlTemplate');
+            var form;
+
+            modal.on(
+                'shown.bs.modal',
+                function () {
+                    modal.find('input[autofocus]').focus()
+                }
+            );
+
+            this.show   = function () {
+                if (!element.data('worker-form') || element.data('worker-form') === null) {
+                    $.ajax(url)
+                        .done(
+                            function (data) {
+                                element.data('worker-form', $(data));
+
+                                var ck = element.data('worker-form').find('[data-plugin=ckeditor]');
+
+                                if (ck.length > 0) {
+                                    var editor = CKEDITOR.replace(ck[0]);
+
+                                    CKFinder.setupCKEditor(editor);
+                                }
+
+                                var submit = function (e) {
+                                    // prevent default
+                                    e.preventDefault();
+
+                                    var $form = $(this);
+
+                                    $form.find('button[type=submit]').prop('disabled', true);
+
+                                    var fck  = $form.find('[data-plugin=ckeditor]');
+
+                                    if (fck.length) {
+                                        fck[0].value = CKEDITOR.instances[fck.attr('id')].getData();
+                                    }
+
+                                    $.ajax(
+                                        {
+                                            url : $form.attr('action') || null,
+                                            type: $form.attr('method') || 'GET',
+                                            data: $form.serialize()
+                                        }
+                                    ).done(
+                                        function (data, jqxhr) {
+                                            if (typeof data != 'object') {
+                                                var _frm = $(data);
+
+                                                if (_frm.is('form') || _frm.find('form')) {
+                                                    if (!_frm.is('form')) {
+                                                        _frm = _frm.find('form');
+                                                    }
+
+                                                    $form.html(_frm.html());
+
+                                                    var ck = $form.find('[data-plugin=ckeditor]');
+
+                                                    if (ck.length > 0) {
+                                                        var editor = CKEDITOR.replace(ck.attr('id'));
+
+                                                        CKFinder.setupCKEditor(editor);
+                                                    }
+                                                }
+                                            } else {
+                                                element.trigger('success.' + element.data('match-event'), data, jqxhr);
+
+                                                swal(
+                                                    {
+                                                        title: '<?php echo $this->escapeJs($this->translate('Done')) ?>',
+                                                        type: 'success'
+                                                    }
+                                                );
+
+                                                worker.hide();
+                                            }
+                                        }
+                                    ).fail(
+                                        function () {
+                                            swal(
+                                                {
+                                                    title: '<?php echo $this->escapeJs($this->translate('Server error')) ?>',
+                                                    text: '<?php echo $this->escapeJs($this->translate('Something went wrong on server side')) ?>',
+                                                    type: 'error'
+                                                }
+                                            );
+                                        }
+                                    );
+                                };
+
+                                if (element.data('worker-form').is('form')) {
+                                    element.data('worker-form').submit(submit);
+                                } else {
+                                    element.data('worker-form').find('form').submit(submit);
+                                }
+
+                                modal.find('.modal-body').html('').append(element.data('worker-form'));
+                                modal.modal('show');
+                            }
+                        )
+                        .fail(
+                            function () {
+                                swal(
+                                    {
+                                        title: '<?php echo $this->escapeJs($this->translate('Server error')) ?>',
+                                        text: '<?php echo $this->escapeJs($this->translate('Something went wrong on server side')) ?>',
+                                        type: 'error'
+                                    }
+                                );
+                            }
+                        );
+
+                    form = element.data('worker-form');
+                } else {
+                    modal.find('.modal-body').html('').append(element.data('worker-form'));
+                    modal.modal('show');
+                }
+            };
+
+            this.hide   = function () {
+                if (modal) {
+                    modal.modal('hide');
+                }
+            };
+
+            this.init = function () {
+                this.show();
+            };
+        };
+
+
+        $('.match-event-btn').click(
+            function (e) {
+                var $matchEventButton = $(this);
+                var event;
+
+                if (!(event = $matchEventButton.data('match-event')) || !$matchEventButton.data('worker-url')) {
+                    return;
+                }
+
+                $matchEventButton.trigger(event);
+            }
+        ).on(
+            'stats',
+            function () {
+                var $target = $(this);
+
+                if (!$target.data('worker')) {
+                    $target.data('worker', new Worker($target.data('worker-url'), $target));
+                }
+
+                $target.data('worker').init();
+            }
+        ).on(
+            'success.stats',
+            function (e, data, jqxhr) {
+                $('#match-stats-table')
+                    .append(
+                        '<tr>'+
+                            '<td>'+
+                                '<h5 class="text-right margin-0">'+ data.hostValue + (data.type == '<?php echo \Soccer\Entity\MatchStatistics::TYPE_PERCENT ?>' ? '%' : '') +'</h5>'+
+                            '</td>'+
+                            '<td>'+
+                                '<div class="progress progress-square margin-0 rotate-180">'+
+                                    '<div class="progress-bar '+ (data.hostValue > data.guestValue ? 'progress-bar-success': 'progress-bar-danger') +'" style="width: '+ (data.type == '<?php echo \Soccer\Entity\MatchStatistics::TYPE_PERCENT ?>' ? data.hostValue : (Math.ceil(parseInt(data.hostValue) * 100 / (parseInt(data.hostValue) + parseInt(data.guestValue))))) +'%" role="progressbar"></div>'+
+                                '</div>'+
+                            '</td>'+
+                            '<td>' +
+                                '<button type="button" class="close confirm-url-action" data-url="'+ ('<?php echo $this->url(null, ['action' => 'statistics'], ['query' => ['action' => 'delete', 'id' => ':id']], true) ?>').replace(':id', data.id) +'">'+
+                                    '<i class="icon wb-close"></i>'+
+                                '</button>'+
+                                '<h5 class="text-center margin-0">'+ data.label['<?php echo $this->locale()->current() ?>'] +'</h5>'+
+                            '</td>'+
+                            '<td>'+
+                                '<div class="progress progress-square margin-0">'+
+                                    '<div class="progress-bar '+ (data.hostValue < data.guestValue ? 'progress-bar-success': 'progress-bar-danger') +'" style="width: '+ (data.type == '<?php echo \Soccer\Entity\MatchStatistics::TYPE_PERCENT ?>' ? data.guestValue : (Math.ceil(parseInt(data.guestValue) * 100 / (parseInt(data.guestValue) + parseInt(data.guestValue))))) +'%" role="progressbar"></div>'+
+                                '</div>'+
+                            '</td>'+
+                            '<td>'+
+                                '<h5 class="text-left margin-0">'+ data.guestValue + (data.type == '<?php echo \Soccer\Entity\MatchStatistics::TYPE_PERCENT ?>' ? '%' : '') +'</h5>'+
+                            '</td>'+
+                            '<td>'+
+                                ''+
+                            '</td>'+
+                        '</tr>'
+                    )
+                    .find('div.well')
+                    .parents('tr')
+                    .remove();
+            }
+        ).on(
+            'comment',
+            function () {
+                var $target = $(this);
+
+                if (!$target.data('worker')) {
+                    $target.data('worker', new Worker($target.data('worker-url'), $target));
+                }
+
+                $target.data('worker').init();
+            }
+        ).on(
+            'period',
+            function () {
+                var $target = $(this);
+
+                if (!$target.data('worker')) {
+                    $target.data('worker', new Worker($target.data('worker-url'), $target));
+                }
+
+                $target.data('worker').init();
+            }
+        ).on(
+            'success.period',
+            function (e, data) {
+                switch (data.type) {
+                    case "<?php echo \Soccer\Entity\MatchPeriod::TYPE_START ?>":
+                        startTick();
+                        break;
+                    case "<?php echo \Soccer\Entity\MatchPeriod::TYPE_FINISH ?>":
+                        stopTick();
+                        break;
+                }
+            }
+        )
+
+        $('body').on(
+            'click',
+            '.confirm-url-action',
+            function () {
+                var $btn = $(this);
+
+                if (!$btn.data('url')) {
+                    return;
+                }
+
+                swal(
+                    {
+                        type: 'warning',
+                        title: '<?php echo $this->escapeJs($this->translate('Are you sure?')) ?>',
+                        showCancelButton: true
+                    },
+                    function () {
+                        $.ajax($btn.data('url'))
+                            .done(
+                                function () {
+                                    $btn.parents('tr').hide(400);
+                                    $btn.parents('.timeline-item').hide(400);
+                                }
+                            );
+                    }
+                );
+            }
+        );
+    };
+</script>

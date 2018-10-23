@@ -1,0 +1,159 @@
+<?php
+    $this->headTitle()->append($this->translate('Add new staff member'))
+        ->append($this->translate('Staff'));
+
+    $this->headLink()
+        ->appendStylesheet(
+            $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.css')
+        )
+        ->appendStylesheet(
+            $this->basePath('assets/admin/vendor/select2/select2.min.css')
+        );
+
+    $this->inlineScript()
+        ->appendFile(
+            $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.min.js')
+        )
+        ->appendFile(
+            $this->basePath('assets/admin/js/components/bootstrap-datepicker.min.js')
+        )
+        ->appendFile(
+            $this->basePath('assets/admin/vendor/select2/select2.min.js')
+        )
+        ->appendFile(
+            $this->basePath('assets/admin/js/components/select2.min.js')
+        );
+
+    $this->formElementErrors()->setMessageOpenFormat(
+        '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+    )->setMessageSeparatorString(
+        '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+    );
+
+    $form->setAttribute('action', $this->url(null, [], [], true));
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New staff member') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form); ?>
+    <div class="panel panel-bordered">
+        <div class="panel-body">
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('photo')) ?>
+                <div class="alert alert-info text-center padding-15">
+                    <h4>
+                        <i class="icon wb-alert-circle margin-0" style="font-size:48px;"></i>
+                    </h4>
+                    <h4><?php echo $this->escapeHtml($this->translate("Select photo first")); ?></h4>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-4">
+                        <div class="img-thumbnail">
+                            <img class="img-responsive center-block" style="background-color:#A9BAFF;" src="<?php echo $this->basePath($form->get('photo')->getValue() ?: 'img/no_photo.png') ?>">
+                        </div>
+                        <?php echo $this->formText($form->get('photo')->setAttribute('class', 'form-control')->setAttribute('style', 'margin-bottom:5px;')) ?>
+                        <a href="<?php echo $this->url(null, ['action' => 'photo'], ['query' => ['return' => $this->url(null, [], [], true)]], true) ?>" class="btn btn-default btn-block">
+                            <i class="icon wb-image"></i>
+                            <span><?php echo $this->escapeHtml($this->translate("Select or change")); ?></span>
+                        </a>
+                    </div>
+                </div>
+                <?php echo $this->formElementErrors($form->get('photo')) ?>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('firstname')) ?>
+                    <?php echo $this->formText($form->get('firstname')->setAttribute('class', 'form-control')) ?>
+                    <?php echo $this->formElementErrors($form->get('firstname')) ?>
+                </div>
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('lastname')) ?>
+                    <?php echo $this->formText($form->get('lastname')->setAttribute('class', 'form-control')) ?>
+                    <?php echo $this->formElementErrors($form->get('lastname')) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('birthDate')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon wb-calendar"></i></span>
+                        <?php echo $this->formText(
+                            $form->get('birthDate')
+                            ->setAttribute('class', 'form-control')
+                            ->setAttribute('data-plugin', 'datepicker')
+                            ->setAttribute(
+                                'data-format',
+                                'dd.mm.yyyy'
+                            )
+                            ->setAttribute('data-end-date', date('d.m.Y'))
+                            ->setAttribute('data-start-view', 2)
+                        ) ?>
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('birthDate')) ?>
+                </div>
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('inClubSince')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-time"></i>
+                        </span>
+                        <?php echo $this->formSelect($form->get('inClubSince')->setAttribute('class', 'form-control')->setAttribute('data-plugin', 'select2')) ?>
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('inClubSince')) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('position')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-text"></i>
+                        </span>
+                        <?php echo $this->formText(
+                            $form->get('position')
+                                ->setAttribute('class', 'form-control')
+                        ) ?>
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('position')) ?>
+                </div>
+                <div class="form-group col-sm-6">
+                    <?php echo $this->formLabel($form->get('group')) ?>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="icon wb-users"></i>
+                        </span>
+                        <?php
+                            echo $this->formSelect(
+                                $form->get('group')
+                                    ->setAttribute('class', 'form-control')
+                                    ->setAttribute('data-plugin', 'select2')
+                            )
+                        ?>
+                    </div>
+                    <?php echo $this->formElementErrors($form->get('group')) ?>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-success">
+                <i class="icon wb-plus"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Add")); ?></span>
+            </button>
+            <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn btn-danger">
+                <i class="icon wb-close"></i>
+                <span><?php echo $this->escapeHtml($this->translate("Cancel")); ?></span>
+            </a>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

@@ -1,0 +1,222 @@
+<?php
+$this->headTitle()->append($this->translate('Add new player'))
+    ->append($this->translate('Soccer'));
+
+$this->headLink()
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.min.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/css/../fonts/material-design/material-design.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-touchspin/bootstrap-touchspin.css')
+    )
+    ->appendStylesheet(
+        $this->basePath('assets/admin/vendor/select2/select2.min.css')
+    );
+
+$this->inlineScript()
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-datepicker/bootstrap-datepicker.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-datepicker.min.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/bootstrap-touchspin.js'))
+    ->appendFile($this->basePath('assets/admin/vendor/select2/select2.min.js'))
+    ->appendFile($this->basePath('assets/admin/js/components/select2.min.js'));
+
+$this->formElementErrors()->setMessageOpenFormat(
+    '<ul class="list-group text-danger">
+                <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+)->setMessageSeparatorString(
+    '</li>
+            <li class="list-group-item padding-0" style="padding-left:10px !important;">
+                    <i class="icon wb-alert" aria-hidden="true"></i>'
+);
+?>
+<div class="page-header">
+    <h1 class="page-title"><?php echo $this->translate('New player') ?></h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-sm btn-icon btn-danger" data-toggle="tooltip" data-container="body" data-original-title="<?php echo $this->translate('Cancel') ?>">
+            <i class="icon wb-close" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <?php echo $this->form()->openTag($form) ?>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="form-group">
+                <h5><?php echo $this->formLabel($form->get('alias')) ?></h5>
+                <?php
+                    echo $this->formText(
+                        $form->get('alias')
+                        ->setAttribute('class', 'form-control')
+                    );
+                    echo $this->formElementErrors($form->get('alias'));
+                ?>
+            </div>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('firstname')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('firstname') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                        echo $this->formText(
+                                            $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('firstname')->getName(), $name))
+                                        );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('lastname')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('lastname') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('lastname')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('thirdname')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('thirdname') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('thirdname')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend class="margin-0"><?php echo $this->formLabel($form->get('country')) ?></legend>
+                <div class="row">
+                    <?php foreach ($form->get('country') as $name => $subElement): ?>
+                        <div class="col-md-3 col-sm-6">
+                            <h5><?php echo $this->formLabel($subElement) ?></h5>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="flag-icon flag-icon<?php echo substr($name, strrpos($name, '-'))?>"></i>
+                                    </span>
+                                    <?php
+                                    echo $this->formText(
+                                        $subElement->setAttribute('class', 'form-control')
+                                            ->setAttribute('name', sprintf('%s[%s]', $form->get('country')->getName(), $name))
+                                    );
+                                    ?>
+                                </div>
+                                <?php echo $this->formElementErrors($subElement); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <?php echo $this->formLabel($form->get('birthDate')) ?>
+                <div class="input-group">
+                    <?php
+                        echo $this->formText(
+                            $form->get('birthDate')
+                            ->setAttribute('class', 'form-control')
+                            ->setAttribute('data-plugin', 'datepicker')
+                            ->setAttribute('data-format', 'dd.mm.yyyy')
+                            ->setAttribute('data-start-view', 2)
+                        )
+                    ?>
+                    <span class="input-group-addon">
+                        <i class="icon wb-calendar"></i>
+                    </span>
+                </div>
+                <?php echo $this->formElementErrors($form->get('birthDate')) ?>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <h5><?php echo $this->formLabel($form->get('weight')) ?></h5>
+                        <?php
+                            echo $this->formText(
+                                $form->get('weight')
+                                    ->setAttribute('class', 'form-control')
+                                    ->setAttribute('data-plugin', 'TouchSpin')
+                                    ->setAttribute('data-postfix', 'kg')
+                                    ->setAttribute('data-max', '150')
+                                    ->setAttribute('data-min', '30')
+                                    ->setAttribute('placeholder', '-')
+                            );
+                        ?>
+                        <?php echo $this->formElementErrors($form->get('weight')); ?>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <h5><?php echo $this->formLabel($form->get('height')) ?></h5>
+                        <?php
+                        echo $this->formText(
+                            $form->get('height')
+                                ->setAttribute('class', 'form-control')
+                                ->setAttribute('data-plugin', 'TouchSpin')
+                                ->setAttribute('data-postfix', 'cm')
+                                ->setAttribute('data-max', '250')
+                                ->setAttribute('data-min', '100')
+                                ->setAttribute('placeholder', '-')
+                        );
+                        ?>
+                        <?php echo $this->formElementErrors($form->get('height')); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-raised">
+                    <i class="icon md-check"></i>
+                    <span><?php echo $this->translate('Add') ?></span>
+                </button>
+                <a href="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" class="btn btn-raised btn-danger">
+                    <i class="icon md-close"></i>
+                    <?php echo $this->translate('Cancel') ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->form()->closeTag($form) ?>
+</div>

@@ -1,0 +1,184 @@
+<?php 
+    $this->headTitle()->append($this->translate('Articles'));
+
+    $this->headLink()->appendStylesheet(
+        $this->basePath('assets/admin/vendor/bootstrap-select/bootstrap-select.css')
+    )->appendStylesheet(
+        $this->basePath('assets/admin/css/apps/documents.css')
+    );
+
+    $this->headStyle()->appendStyle(
+        "
+            .article-actions {
+                margin-top:     10px;
+                border-top:     1px solid #E4EAEC;
+                padding:        5px;
+                position:       absolute;
+                bottom:         0;
+                left:           0;
+                width:          100%;
+            }
+
+            .articles-item {
+                position:       relative;
+                border:         1px solid #E4EAEC;
+                padding:        7px;
+                height:         100%;
+            }
+
+            .app-documents .articles .blocks > li {
+                margin-bottom:  20px;
+            }
+
+            .articles-item .title {
+                width:          90%;
+                white-space:    nowrap;
+                overflow:       hidden;
+                text-overflow:  ellipsis;
+            }
+
+            .app-documents .articles {
+                padding-top:    20px;
+            }
+        "
+    );
+?>
+<div class="page-header">
+    <h1 class="page-title margin-bottom-10">
+        <?php echo $this->translate('Articles') ?>
+        <small>(<?php printf($this->translate('%s Articles'), $count) ?>)</small>
+    </h1>
+    <div class="page-header-actions">
+        <a href="<?php echo $this->url('app/admin/articles/articles', ['locale' => $this->locale()->current(), 'action' => 'add']) ?>" class="btn btn-primary"> 
+        <i class="icon wb-plus" aria-hidden="true"></i>
+            <span class="hidden-xs"><?php echo $this->translate('Create') ?></span>
+        </a>
+    </div>
+</div>
+<div class="page-content">
+    <form action="<?php echo $this->url(null, ['locale' => $this->locale()->current()]) ?>" method="GET">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <select data-plugin="selectpicker" name="locale" data-style="btn-outline" class="bs-select-hidden">
+                        <option><?php echo $this->translate('Filter'), ': ', $this->translate('Language') ?></option>
+                        <?php foreach ($this->locale()->all() as $locale => $language): ?>
+                            <option <?php if ($query->get('locale') == $locale) echo 'selected=""' ?> value="<?php echo $locale ?>"><?php echo $language ?></option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+                <button type="submit" class="input-search-btn"> 
+                    <i class="icon wb-search" aria-hidden="true"></i>
+                </button>
+                <input class="form-control" <?php if ($query->get('search')) echo 'value="'.$query->get('search').'"' ?> name="search" placeholder="<?php echo $this->escapeHtmlAttr($this->translate('Search')) ?>..." type="text">
+            </div>
+        </div>
+    </form>
+    <?php if ($articles->getCurrentItemCount() || $query->toArray()): ?>
+        <?php if ($query->get('search') && mb_strwidth($query->get('search'), 'UTF-8') < 4): ?>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <?php printf($this->translate('Search string must be at least %s characters long'), 4) ?>
+            </div>    
+        <?php endif ?>
+        <div class="documents-wrap articles">
+            <?php if (!$articles->count()): ?>
+                <h1 class="text-center">
+                    <i class="icon wb-emoticon"></i>
+                </h1>
+                <h3 class="text-center"><?php echo $this->translate('No matches found') ?></h3>
+                <br><br>
+            <?php else: ?>
+                <ul class="blocks blocks-100 blocks-xlg-4 blocks-md-3 blocks-xs-2" data-plugin="matchHeight">
+                    <?php foreach ($articles as $article): ?>
+                        <li style="height: 180px;">
+                            <div class="articles-item">
+                                <?php if (\Articles\Entity\Article::STATUS_DRAFT == $article->getStatus()): ?>
+                                    <i class="icon wb-bookmark text-warning"></i>
+                                    <h4 class="title" title="<?php echo $this->escapeHtmlAttr($article->getTitle()) ?>">
+                                        <a href="javascript:void(0);">
+                                            <?php if ($article->getTitle()): ?>
+                                                <span><?php echo $article->getTitle() ?></span>
+                                            <?php else: ?>
+                                                <span><?php echo $this->translate('Draft') ?></span>
+                                            <?php endif ?>
+                                        </a>
+                                    </h4>
+                                    <?php if ($article->getLocale()): ?>
+                                        <p><?php echo $this->locale()->all()[$article->getLocale()] ?></p>
+                                    <?php endif ?>
+                                    <p class="label label-info"><?php echo $this->translate('Status'), ': ', $this->translate('draft') ?></p>
+                                <?php elseif (\Articles\Entity\Article::STATUS_ACTIVE == $article->getStatus()): ?>
+                                    <i class="icon flag-icon flag-icon-<?php echo substr($article->getLocale(), strrpos($article->getLocale(), '-') + 1) ?>" aria-hidden="true"></i>
+                                    <h4 class="title" title="<?php echo $this->escapeHtmlAttr($article->getTitle()) ?>">
+                                        <a href="<?php echo $article->getUri() ? $this->url('app/article', ['locale' => $article->getLocale(), 'uri' => $article->getUri()]) : 'javascript:void(0);' ?>" target="_blank"><?php echo $article->getTitle() ?></a>
+                                    </h4>
+                                    <p>
+                                        <?php echo $this->translate('Category') ?>: <?php echo $article->getCategory()? $article->getCategory()->getTitle(): $this->translate('Not specified') ?>
+                                    </p>
+                                    <?php if ($article->getPublished() instanceof \DateTime && $article->getPublished()->getTimestamp() > time()): ?>
+                                        <p class="label label-warning"><?php echo $this->translate('Status'), ': ', $this->translate('awating') ?></p>
+                                    <?php else: ?>
+                                        <p class="label label-success"><?php echo $this->translate('Status'), ': ', $this->translate('active') ?></p>
+                                    <?php endif ?>
+                                <?php elseif (\Articles\Entity\Article::STATUS_HIDDEN == $article->getStatus()): ?>
+                                    <i style="padding-left: 2px;" class="icon wb-info text-success"></i>
+                                    <h4 class="title" title="<?php echo $this->escapeHtmlAttr($article->getTitle()) ?>">
+                                        <a href="#"><?php echo $article->getTitle() ?></a>
+                                    </h4>
+                                    <p class="label label-info"><?php echo $this->translate('Status'), ': ', $this->translate('hidden') ?></p>
+                                <?php endif ?>
+                                <div class="article-actions text-right">
+                                    <a class="btn btn-default btn-sm" href="<?php echo $this->url('app/admin/articles/articles', ['locale' => $this->locale()->current(), 'action' => 'edit', 'id' => $article->getId()]) ?>">
+                                        <i class="icon wb-edit"></i>
+                                        <span><?php echo $this->translate('Edit') ?></span>
+                                    </a>
+                                    <a class="btn btn-default btn-sm" href="<?php echo $this->url('app/admin/articles/articles', ['locale' => $this->locale()->current(), 'action' => 'delete', 'id' => $article->getId()]) ?>">
+                                        <i class="icon wb-trash"></i>
+                                        <span><?php echo $this->translate('Delete') ?></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>                
+                    <?php endforeach ?>
+                </ul>
+                <?php if ($articles->count() > 1): ?>
+                    <?php
+                        echo $this->paginationControl(
+                            // the paginator object
+                            $articles,
+                            // the scrolling style
+                            'Sliding',
+                            // the partial to use to render the control
+                            'articles/partial/manage.phtml',
+                            // the route to link to when a user clicks a control link
+                            array(
+                                'url'   => $this->serverUrl(true),
+                                'name'  => 'page',
+                            )
+                        );
+                    ?>
+                <?php endif ?>
+            <?php endif ?>
+        </div>
+    <?php else: ?>
+        <div class="well">
+            <h1 class="text-center">
+                <i class="icon wb-inbox"></i>
+            </h1>
+            <h3 class="text-center"><?php echo $this->translate('Articles are not added yet!') ?></h3>
+        </div>
+    <?php endif ?>
+</div>
+<?php  
+    $this->inlineScript()
+    ->appendFile(
+        $this->basePath('assets/admin/vendor/bootstrap-select/bootstrap-select.js')
+    )
+    ->appendFile(
+        $this->basePath('assets/admin/js/components/bootstrap-select.js')
+    );
+?>
